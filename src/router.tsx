@@ -6,6 +6,7 @@ import { Login } from './views/Auth/Login';
 import { NotFound } from './views/Layouts/NotFound';
 import { CargasTrabajos } from './views/CargasTrabajo/CargasTrabajos';
 import { Mapa } from './views/Mapa/Mapa';
+import { Operadores } from './views/Operadores/Operadores';
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
             {
                 path: '/mapa',
                 element: <Mapa />
+            },
+            {
+                path: '/operadores',
+                element: <Operadores />
             },
         ]
     },

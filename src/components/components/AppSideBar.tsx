@@ -9,34 +9,43 @@ import {
   SidebarMenuItem,
   SidebarFooter
 } from "@/components/ui/sidebar"
-import { Calendar, ChevronUp, Home, Inbox, Search, Settings } from "lucide-react"
+import { Calendar, ChevronUp, Home, icons, Inbox, } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { FaUser } from "react-icons/fa";
-
+import { useNavigate } from 'react-router-dom';
+import { FaUserTie } from "react-icons/fa";
+import { FaClipboardList } from "react-icons/fa";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import { IoHome } from "react-icons/io5";
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+
   const items = [
     {
       title: "Home",
       url: "/",
-      icon: Home,
+      icon: <IoHome />
     },
     {
       title: "Mapa",
       url: "/mapa",
-      icon: Inbox,
+      icon: <FaMapMarkedAlt />
     },
     {
       title: "Cargas de trabajo",
       url: "/cargasTrabajo",
-      icon: Calendar,
+      icon: <FaClipboardList />
+    },
+    {
+      title: "Operadores",
+      url: "/operadores",
+      icon: <FaUserTie />
     },
   ]
 
@@ -51,7 +60,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
-                      <item.icon />
+                      {item.icon}
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
@@ -69,7 +78,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <FaUser /> Username
-                    <ChevronUp className="ml-auto" />
+                  <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -79,7 +88,10 @@ export function AppSidebar() {
                 <DropdownMenuItem>
                   <span>Account</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  localStorage.setItem("TOKEN", "");
+                  navigate("/login");
+                }}>
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
