@@ -1,18 +1,25 @@
+import { AppSidebar } from '@/components/components/AppSideBar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import ZustandPrincipal from '@/Zustand/ZustandPrincipal';
 import React, { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
 export const DefaultLayout = () => {
-    const[token, setToken] = useState(false);
+  const { token } = ZustandPrincipal();
 
-  if (!token) {
+  if (!localStorage.getItem("TOKEN")) {
     return <Navigate to="login" />
   }
 
   return (
     <>
-      <main className=''>
-        <Outlet />
-      </main>
+      <SidebarProvider>
+        <AppSidebar/>
+        <main>
+          <SidebarTrigger/>
+          <Outlet />
+        </main>
+      </SidebarProvider>
     </>
   )
 }

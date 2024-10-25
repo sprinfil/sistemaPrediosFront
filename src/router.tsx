@@ -4,6 +4,8 @@ import { DashBoard } from './views/Layouts/DashBoard';
 import { GuestLayout } from './views/Layouts/GuestLayout';
 import { Login } from './views/Auth/Login';
 import { NotFound } from './views/Layouts/NotFound';
+import { CargasTrabajos } from './views/CargasTrabajo/CargasTrabajos';
+import { Mapa } from './views/Mapa/Mapa';
 
 const router = createBrowserRouter([
     {
@@ -17,6 +19,14 @@ const router = createBrowserRouter([
             {
                 path: '/dashboard',
                 element: <DashBoard />
+            },
+            {
+                path: '/cargasTrabajo',
+                element: <CargasTrabajos />
+            },
+            {
+                path: '/mapa',
+                element: <Mapa />
             },
         ]
     },
