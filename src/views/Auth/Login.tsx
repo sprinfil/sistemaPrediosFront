@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input"
 import ZustandPrincipal from '@/Zustand/ZustandPrincipal'
 import { Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
+import { Loader } from '@/components/components/Loader'
+import { FaUserCircle } from "react-icons/fa";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ export const Login = () => {
     console.log(values)
 
     //TODO: IMPLEMENTAR SERVICIO DE INICIO DE SESION
-    
+
 
     localStorage.setItem("TOKEN", "TOKEN_PRUEBA");
     navigate("/");
@@ -46,7 +48,10 @@ export const Login = () => {
 
   return (
     <div className='h-[100vh] w-full flex items-center justify-center'>
-      <Card className='w-[30%] p-5 '>
+      <Card className='w-[600px]  p-5 shadow-md shadow-green-800'>
+        <div className='w-full items-center  flex justify-center'>
+          <FaUserCircle className='w-[100px] h-[100px] text-primary' />
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full flex flex-col">
             <FormField
@@ -81,7 +86,8 @@ export const Login = () => {
                 </FormItem>
               )}
             />
-              <Button type="submit" className='ml-auto'>Log in</Button>
+            {/* <Loader /> */}
+            <Button type="submit" className='ml-auto'>Iniciar Sesión</Button>
           </form>
         </Form>
       </Card>
