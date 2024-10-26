@@ -15,7 +15,7 @@ export const DefaultLayout = () => {
     <>
       <SidebarProvider>
         <AppSidebar/>
-        <main className='w-full h-full p-1'>
+        <main className='w-full h-full p-2'>
           <SidebarTrigger/>
           <Outlet />
         </main>

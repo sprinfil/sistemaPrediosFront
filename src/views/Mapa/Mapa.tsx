@@ -9,6 +9,7 @@ export const Mapa = () => {
 
   return (
     <div>
+      <p>Mapa</p>
       <div className='mb-4'>
         <MenuBarMapa />
       </div>
