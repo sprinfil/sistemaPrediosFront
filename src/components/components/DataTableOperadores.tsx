@@ -37,23 +37,8 @@ import {
 } from "@/components/ui/table"
 import { CiCirclePlus } from "react-icons/ci";
 import { ModalCrearOperador } from "./ModalCrearOperador"
+import { ModalEditarOperador } from "./ModalEditarOperador";
 
-const data: Operador[] = [
-  {
-    id: 1,
-    nombre_completo: "Miguel Angel Murillo Jaimes",
-    username: "Mike",
-    rol: "Operador de Válvulas",
-    estado: "activo"
-  },
-  {
-    id: 2,
-    nombre_completo: "Osmar Alejandro Liera Gomez",
-    username: "osmarlg",
-    rol: "Operador de Predios",
-    estado: "inactivo"
-  },
-]
 
 export type Operador = {
   id: number,
@@ -63,58 +48,76 @@ export type Operador = {
   estado: string
 }
 
-export const columns: ColumnDef<Operador>[] = [
-  {
-    accessorKey: "nombre_completo",
-    header: "Nombre Completo",
-  },
-  {
-    accessorKey: "username",
-    header: "Nombre de Usuario"
-  },
-  {
-    accessorKey: "rol",
-    header: "Rol"
-  },
-  {
-    accessorKey: "estado",
-    header: "Estado",
-    cell: ({ cell }) => {
-      const operador: Operador = cell.row.original;
-      if (operador.estado == "activo") {
+
+
+export function DataTableOperadores({ data, setData }) {
+  const columns: ColumnDef<Operador>[] = [
+    {
+      accessorKey: "name",
+      header: "Nombre Completo",
+    },
+    {
+      accessorKey: "username",
+      header: "Nombre de Usuario"
+    },
+    {
+      accessorKey: "role",
+      header: "Rol",
+      cell: ({ row }) => {
+        const data = row.original?.roles;
+        let roles = "";
+        data?.map((rol) => {
+          roles += rol.name + ' ';
+        })
         return (
-          <div className="bg-green-500 p-1 flex items-center justify-center rounded-md text-white">
-            <p>activo</p>
-          </div>
-        )
-      } else {
-        return (
-          <div className="bg-red-500 p-1 flex items-center justify-center rounded-md text-white">
-            <p>inactivo</p>
-          </div>
+          <div>{roles}</div>
         )
       }
-
-    }
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-
-      return (
-        <>
-          <Button variant={"outline"}>
-            <BsPencilSquare />
-          </Button>
-        </>
-      )
     },
-  },
-]
+    // {
+    //   accessorKey: "estado",
+    //   header: "Estado",
+    //   cell: ({ cell }) => {
+    //     const operador: Operador = cell.row.original;
+    //     if (operador.estado == "activo") {
+    //       return (
+    //         <div className="bg-green-500 p-1 flex items-center justify-center rounded-md text-white">
+    //           <p>activo</p>
+    //         </div>
+    //       )
+    //     } else {
+    //       return (
+    //         <div className="bg-red-500 p-1 flex items-center justify-center rounded-md text-white">
+    //           <p>inactivo</p>
+    //         </div>
+    //       )
+    //     }
+    //   }
+    // },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const operador = row.original
+        console.log(operador)
+        return ( 
+          <>
+            <ModalEditarOperador
+              trigger={
+                <Button variant={"outline"}>
+                  <BsPencilSquare />
+                </Button>
+              }
+              operador = {operador}
+              setData={setData}
+            />
 
-export function DataTableOperadores() {
+          </>
+        )
+      },
+    },
+  ]
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -147,9 +150,9 @@ export function DataTableOperadores() {
       <div className="flex items-center py-4 gap-4">
         <Input
           placeholder="Nombre Completo..."
-          value={(table.getColumn("nombre_completo")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("nombre_completo")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="w-[200px]"
         />
@@ -163,6 +166,7 @@ export function DataTableOperadores() {
         />
         <div className="ml-auto">
           <ModalCrearOperador
+            setData={setData}
             trigger={
               <Button>
                 Agregar Operador

@@ -1,7 +1,7 @@
 import React from 'react'
-import '../../css/loader.css'
+import '../../css/loaderSecondary.css'
 
-export const Loader = () => {
+export const LoaderSecondary = () => {
     return (
         <div className='loader'></div>
     )

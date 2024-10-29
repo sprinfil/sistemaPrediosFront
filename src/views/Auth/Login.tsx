@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card'
-import React from 'react'
+import React, { useState } from 'react'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -16,12 +16,20 @@ import {
 import { Input } from "@/components/ui/input"
 import ZustandPrincipal from '@/Zustand/ZustandPrincipal'
 import { Navigate } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom';
+import { ToastAction } from "@/components/ui/toast"
 import { Loader } from '@/components/components/Loader'
 import { FaUserCircle } from "react-icons/fa";
+import { LoaderSecondary } from '@/components/components/LoaderSecondary'
+import { login } from '@/lib/AuthService'
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast'
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { token, setToken,setUser } = ZustandPrincipal();
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
   const formSchema = z.object({
     username: z.string().min(2).max(50),
     password: z.string().min(2).max(50)
@@ -35,14 +43,16 @@ export const Login = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-
-    //TODO: IMPLEMENTAR SERVICIO DE INICIO DE SESION
-
-
-    localStorage.setItem("TOKEN", "TOKEN_PRUEBA");
-    navigate("/");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await login(setLoading, values?.username, values?.password, setToken, setUser);
+    } catch (e) {
+      toast({
+        title: 'Ocurrio un error',
+        description: e?.response?.data?.data?.message,
+        action: <ToastAction altText="Intenar de nuevo">Intenar de nuevo</ToastAction>,
+      })
+    }
   }
 
 
@@ -86,8 +96,16 @@ export const Login = () => {
                 </FormItem>
               )}
             />
-            {/* <Loader /> */}
-            <Button type="submit" className='ml-auto'>Iniciar Sesión</Button>
+
+            <Button type="submit" className='ml-auto' disabled={loading}>
+              {
+                loading ?
+                  <><LoaderSecondary /></>
+                  :
+                  <></>
+              }
+              Iniciar Sesión
+            </Button>
           </form>
         </Form>
       </Card>

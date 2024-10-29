@@ -1,13 +1,17 @@
 import ZustandPrincipal from '@/Zustand/ZustandPrincipal';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 export const GuestLayout = () => {
-  const {token} = ZustandPrincipal(); 
+  const { token } = ZustandPrincipal();
+  const navigate = useNavigate();
 
-  if (localStorage.getItem("TOKEN")) {
-    return <Navigate to="dashboard" />
-  }
+  useEffect(() => {
+    if (localStorage.getItem("TOKEN")) {
+      return navigate('/')
+    }
+  }, [token])
 
   return (
     <>

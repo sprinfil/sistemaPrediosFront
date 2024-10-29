@@ -31,13 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { crearOperador } from "@/lib/OperadorService"
+import { crearOperador, editarOperador } from "@/lib/OperadorService"
 import { useRef, useState } from "react"
 import { ToastAction } from "@/components/ui/toast"
 import { Loader2 } from "lucide-react"
 import { LoaderSecondary } from "./LoaderSecondary"
 
-export function ModalCrearOperador({ trigger, setData }) {
+export function ModalEditarOperador({ trigger, setData, operador }) {
   const [loading, setLoading] = useState();
   const { toast } = useToast();
   const cancelarButton = useRef();
@@ -49,12 +49,8 @@ export function ModalCrearOperador({ trigger, setData }) {
       name: z.string().min(2, {
         message: "El nombre completo tiene que tener al menos 2 caracteres.",
       }),
-      password: z.string().min(2, {
-        message: "La contraseña debe tener al menos 2 caracteres.",
-      }),
-      password_confirmation: z.string().min(2, {
-        message: "Se debe confirmar la contraseña",
-      }),
+      password: z.string().optional(),
+      password_confirmation: z.string().optional(),
       role: z.string().min(1, {
         message: "Se debe seleccionar un rol",
       }),
@@ -67,7 +63,9 @@ export function ModalCrearOperador({ trigger, setData }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      name: operador?.name,
+      username: operador?.username, 
+      role: operador?.roles != null ? operador?.roles[0]?.name : '',
     },
   })
 
@@ -80,7 +78,7 @@ export function ModalCrearOperador({ trigger, setData }) {
     };
 
     try {
-      await crearOperador(setLoading, valuesTemp, setData);
+      await editarOperador(operador?.id, setLoading, valuesTemp, setData);
       form.reset({
         username: '',
         name: '',
@@ -114,7 +112,7 @@ export function ModalCrearOperador({ trigger, setData }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Crear Nuevo Operador</AlertDialogTitle>
+          <AlertDialogTitle>Editar Operador</AlertDialogTitle>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="select-none px-3 space-y-2 flex flex-col w-full max-h-[80vh] overflow-auto">
               <FormField
