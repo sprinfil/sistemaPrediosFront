@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal, PlusCircle } from "lucide-react"
-import { BsPencilSquare } from "react-icons/bs";
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -35,89 +35,79 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { CiCirclePlus } from "react-icons/ci";
-import { ModalCrearOperador } from "./ModalCrearOperador"
-import { ModalEditarOperador } from "./ModalEditarOperador";
+import { CiCirclePlus } from "react-icons/ci"
+import { ModalCrearCargaTrabajo } from "./ModalCrearCargaTrabajo"
+
+const data = [
+  {
+    id: 1,
+    nombre: 'SECUENCIA RUTA 04A-LIBRO 2',
+    operador_asignado: 'Osmar Alejandro Liera Gomez',
+    estado: 'EN PROCESO',
+    fecha_asignacion: '30 de Enero del 2024',
+    fecha_finalizacion: 'NO FINALIZADA'
+  },
+]
 
 
-export type Operador = {
-  id: number,
-  nombre_completo: string,
-  username: string,
-  rol: string,
-  estado: string
-}
-
-
-
-export function DataTableOperadores({ data, setData }) {
-  const columns: ColumnDef<Operador>[] = [
+export function DataTableCargasTrabajo() {
+  const columns = [
     {
-      accessorKey: "name",
-      header: "Nombre Completo",
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
     {
-      accessorKey: "username",
-      header: "Nombre de Usuario"
+      accessorKey: "nombre",
+      header: "Nombre",
     },
     {
-      accessorKey: "role",
-      header: "Rol",
-      cell: ({ row }) => {
-        const data = row.original?.roles;
-        let roles = "";
-        console.log(data)
-        data?.map((rol) => { 
-          roles += rol.name + ' ';
-        })
-        return (
-          <div>{roles}</div>
-        )
-      }
+      accessorKey: "operador_asignado",
+      header: "Operador",
     },
-    // {
-    //   accessorKey: "estado",
-    //   header: "Estado",
-    //   cell: ({ cell }) => {
-    //     const operador: Operador = cell.row.original;
-    //     if (operador.estado == "activo") {
-    //       return (
-    //         <div className="bg-green-500 p-1 flex items-center justify-center rounded-md text-white">
-    //           <p>activo</p>
-    //         </div>
-    //       )
-    //     } else {
-    //       return (
-    //         <div className="bg-red-500 p-1 flex items-center justify-center rounded-md text-white">
-    //           <p>inactivo</p>
-    //         </div>
-    //       )
-    //     }
-    //   }
-    // },
+    {
+      accessorKey: "fecha_asignacion",
+      header: "Fecha de asignación",
+    },
+    {
+      accessorKey: "fecha_finalizacion",
+      header: "Fecha de finalización",
+    },
+    {
+      accessorKey: "estado",
+      header: "Estado",
+    },
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const operador = row.original
-        return ( 
+        const payment = row.original
+
+        return (
           <>
-            <ModalEditarOperador
-              trigger={
-                <Button variant={"outline"}>
-                  <BsPencilSquare />
-                </Button>
-              }
-              operador = {operador}
-              setData={setData}
-            />
 
           </>
         )
       },
     },
   ]
-
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -147,34 +137,16 @@ export function DataTableOperadores({ data, setData }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 gap-4">
+      <div className="flex items-center py-4">
         <Input
-          placeholder="Nombre Completo..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder="Operador"
+          value={(table.getColumn("operador_asignado")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("operador_asignado")?.setFilterValue(event.target.value)
           }
-          className="w-[200px]"
+          className="max-w-sm"
         />
-        <Input
-          placeholder="Username"
-          value={(table.getColumn("username")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("username")?.setFilterValue(event.target.value)
-          }
-          className="w-[200px]"
-        />
-        <div className="ml-auto">
-          <ModalCrearOperador
-            setData={setData}
-            trigger={
-              <Button>
-                Agregar Operador
-                <PlusCircle />
-              </Button>
-            }
-          />
-        </div>
+        <ModalCrearCargaTrabajo />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -227,10 +199,10 @@ export function DataTableOperadores({ data, setData }) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
+        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
