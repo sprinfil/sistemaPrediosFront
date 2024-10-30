@@ -49,9 +49,16 @@ export async function editarOperador(
   try {
     setLoading(true);
     const response = await axiosClient.put('/users/' + operadorId, values);
-    // setData(prev => {
-    //   return [response?.data, ...prev];
-    // })
+    setData(prev => {
+      return prev.map(operador => {
+        if(operador?.id == operadorId){
+          return response?.data?.data
+        }else{
+          return operador;
+        }
+      })
+    })
+    // console.log(response?.data?.data)
   }
   catch (e) {
     throw e;

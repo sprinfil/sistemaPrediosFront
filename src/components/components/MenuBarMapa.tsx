@@ -8,19 +8,17 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar"
+import { ModalImportarPrediosGeoJson } from './ModalImportarPrediosGeoJson'
+import { Button } from '../ui/button'
+import { Card } from '../ui/card'
 
 
 export const MenuBarMapa = () => {
   return (
-    <Menubar>
-      <MenubarMenu>
-        <MenubarTrigger>Opciones</MenubarTrigger>
-        <MenubarContent>
-          <MenubarItem>Importar Predios GeoJson</MenubarItem>
-          <MenubarItem>Importar Válvulas</MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
-    </Menubar>
-
+    <>
+      <Card>
+        <ModalImportarPrediosGeoJson />
+      </Card>
+    </>
   )
 }

@@ -66,7 +66,8 @@ export function DataTableOperadores({ data, setData }) {
       cell: ({ row }) => {
         const data = row.original?.roles;
         let roles = "";
-        data?.map((rol) => {
+        console.log(data)
+        data?.map((rol) => { 
           roles += rol.name + ' ';
         })
         return (
@@ -99,7 +100,6 @@ export function DataTableOperadores({ data, setData }) {
       enableHiding: false,
       cell: ({ row }) => {
         const operador = row.original
-        console.log(operador)
         return ( 
           <>
             <ModalEditarOperador
