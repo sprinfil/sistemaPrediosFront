@@ -13,10 +13,20 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { ComboBoxOperadores } from "./ComboBoxOperadores";
 import * as XLSX from "xlsx";
-import { useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+import { crearCargaTrabajo, formatearDatos } from "@/lib/PrediosCargaTrabajosService";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { Loader } from "./Loader";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 export function ModalCrearCargaTrabajo() {
+  const { toast } = useToast();
   const [fileData, setFileData] = useState([]);
+  const [selectedOperador, setSelectedOperador] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const cancelarButton = useRef();
+
+  const { user } = ZustandPrincipal();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -34,6 +44,8 @@ export function ModalCrearCargaTrabajo() {
     }
   };
 
+  useEffect(() => { }, [fileData])
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -45,11 +57,17 @@ export function ModalCrearCargaTrabajo() {
           <AlertDialogDescription>
             Importa un archivo de cargas de trabajo
           </AlertDialogDescription>
-          <div className="flex gap-4">
-            <ComboBoxOperadores />
-            <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+
+          <div className="flex gap-4 p-2">
+            <ComboBoxOperadores setOperador={setSelectedOperador} />
+            {
+              selectedOperador?.id != null ?
+                <>
+                  <input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                </> : <></>
+            }
           </div>
-          <div className="mt-4 overflow-auto max-h-[50vh]">
+          <div className="mt-4 overflow-auto max-h-[45vh]">
             {fileData.length > 0 ? (
               <table className="min-w-full border">
                 <thead>
@@ -74,11 +92,34 @@ export function ModalCrearCargaTrabajo() {
             )}
           </div>
           <div className="right-2 bottom-2 absolute flex gap-3">
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction>Continuar</AlertDialogAction>
+            <AlertDialogCancel ref={cancelarButton} onClick={() => {
+              setFileData([]);
+              setSelectedOperador(null);
+            }}>
+              Cancelar
+            </AlertDialogCancel>
+            <Button disabled={fileData.length == 0 || loading}
+              onClick={async () => {
+                try {
+                  await crearCargaTrabajo(fileData, selectedOperador, user?.id, setLoading);
+                  cancelarButton?.current?.click();
+                }
+                catch (e) {
+                  toast({
+                    title: 'Ocurrio un error',
+                    description: e?.response?.data?.data?.message,
+                    action: <ToastAction altText="Intenar de nuevo">Intenar de nuevo</ToastAction>,
+                  })
+                }
+              }}
+            >
+              {loading ? <><Loader /></> : <></>}
+              Continuar</Button>
           </div>
         </AlertDialogHeader>
       </AlertDialogContent>
     </AlertDialog>
   );
+
+
 }

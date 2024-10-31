@@ -18,33 +18,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { getOperadores } from "@/lib/OperadorService"
+import { Loader } from "./Loader"
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
-
-export function ComboBoxOperadores() {
+export function ComboBoxOperadores({setOperador}) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
+  const [frameworks, setFrameworks] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  getOperadores(setLoading, setFrameworks);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,35 +38,48 @@ export function ComboBoxOperadores() {
           className="w-[200px] justify-between"
         >
           {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+            ? frameworks.find((framework) => framework.id === value)?.name
+            : "Buscar operador"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Buscar Operador" />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
-            <CommandGroup>
-              {frameworks.map((framework) => (
-                <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {framework.label}
-                </CommandItem>
-              ))}
+            {
+              !loading && frameworks.length == 0 ? <><CommandEmpty>No se encontraron operadores.</CommandEmpty></> : <></>
+            }
+            <CommandGroup> 
+              {
+                loading ?
+                  <div className="w-full flex items-center justify-center">
+                    <Loader></Loader>
+                  </div>
+                  :
+                  <>
+                    {frameworks.map((framework) => (
+                      <CommandItem
+                        key={framework.id}
+                        value={framework.id}
+                        onSelect={(currentValue) => {
+                          setValue(framework.id == value ? "" : framework.id)
+                          setOpen(false)
+                          setOperador(framework.id == value ? {} : framework);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value === framework.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {framework.name}
+                      </CommandItem>
+                    ))}
+                  </>
+              }
+
             </CommandGroup>
           </CommandList>
         </Command>

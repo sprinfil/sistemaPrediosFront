@@ -10,10 +10,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { importarPredios } from "@/lib/PredioService";
+import { useRef, useState } from "react";
+import { Loader } from "./Loader";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 export function ModalImportarPrediosGeoJson() {
+  const { toast } = useToast();
   const [fileContent, setFileContent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const cancelarButton = useRef();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -22,8 +29,8 @@ export function ModalImportarPrediosGeoJson() {
       reader.onload = (e) => {
         try {
           const jsonData = JSON.parse(e.target.result);
-          // console.log("Datos del archivo JSON:", jsonData);
-          setFileContent(jsonData); 
+          console.log("Datos del archivo JSON:", jsonData);
+          setFileContent(jsonData);
         } catch (error) {
           console.error("Error al parsear el archivo JSON:", error);
         }
@@ -46,8 +53,28 @@ export function ModalImportarPrediosGeoJson() {
           <input type="file" accept=".json,.geojson" onChange={handleFileChange} />
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction>Continuar</AlertDialogAction>
+          <AlertDialogCancel
+            onClick={() => { setFileContent(null); }}
+            ref={cancelarButton}
+          >Cancelar</AlertDialogCancel>
+          <Button
+            disabled={fileContent == null || loading}
+            onClick={async () => {
+              try {
+                await importarPredios(setLoading, fileContent);
+                cancelarButton?.current?.click();
+              }
+              catch (e) {
+                toast({
+                  title: 'Ocurrio un error',
+                  description: e?.response?.data?.data?.message,
+                  action: <ToastAction altText="Intenar de nuevo">Intenar de nuevo</ToastAction>,
+                })
+              }
+            }}
+          >
+            {loading ? <><Loader /></> : <></>}
+            Aceptar e importar</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
