@@ -19,7 +19,10 @@ import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 import { Loader } from "./Loader";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
-export function ModalCrearCargaTrabajo() {
+
+
+
+export function ModalCrearCargaTrabajo({setData}) {
   const { toast } = useToast();
   const [fileData, setFileData] = useState([]);
   const [selectedOperador, setSelectedOperador] = useState(null);
@@ -101,7 +104,7 @@ export function ModalCrearCargaTrabajo() {
             <Button disabled={fileData.length == 0 || loading}
               onClick={async () => {
                 try {
-                  await crearCargaTrabajo(fileData, selectedOperador, user?.id, setLoading);
+                  await crearCargaTrabajo(fileData, selectedOperador, user?.id, setLoading, setData);
                   cancelarButton?.current?.click();
                 }
                 catch (e) {
