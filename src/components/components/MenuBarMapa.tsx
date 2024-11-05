@@ -11,6 +11,7 @@ import {
 import { ModalImportarPrediosGeoJson } from './ModalImportarPrediosGeoJson'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
+import { ModalImportarValvulas } from './ModalImportarValvulas'
 
 
 export const MenuBarMapa = () => {
@@ -18,6 +19,7 @@ export const MenuBarMapa = () => {
     <>
       <Card>
         <ModalImportarPrediosGeoJson />
+        <ModalImportarValvulas />
       </Card>
     </>
   )
