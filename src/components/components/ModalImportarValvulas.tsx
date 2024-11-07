@@ -47,7 +47,7 @@ export function ModalImportarValvulas() {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Importar Predios</AlertDialogTitle>
+          <AlertDialogTitle>Importar Valvulas</AlertDialogTitle>
           <AlertDialogDescription>
             Importar un archivo geojson para importar los predios
           </AlertDialogDescription>

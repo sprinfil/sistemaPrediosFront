@@ -7,6 +7,7 @@ import { NotFound } from './views/Layouts/NotFound';
 import { CargasTrabajos } from './views/CargasTrabajo/CargasTrabajos';
 import { Mapa } from './views/Mapa/Mapa';
 import { Operadores } from './views/Operadores/Operadores';
+import { MapaValvulas } from './views/Mapa/MapaValvulas';
 
 const router = createBrowserRouter([
     {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
             {
                 path: '/mapa',
                 element: <Mapa />
+            },
+            {
+                path: '/mapaValvulas',
+                element: <MapaValvulas />
             },
             {
                 path: '/operadores',

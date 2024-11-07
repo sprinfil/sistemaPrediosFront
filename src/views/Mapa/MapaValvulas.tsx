@@ -9,8 +9,9 @@ import { ModalVerPredio } from '@/components/components/ModalVerPredio';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ModalImportarPrediosGeoJson } from '@/components/components/ModalImportarPrediosGeoJson';
+import { ModalImportarValvulas } from '@/components/components/ModalImportarValvulas';
 
-export const Mapa = () => {
+export const MapaValvulas = () => {
   const [predios, setPredios] = useState([]);
   const [valvulas, setValvulas] = useState([]);
   const [loadingPredios, setLoadingPredios] = useState(false);
@@ -27,8 +28,8 @@ export const Mapa = () => {
   }, [loaded])
 
   const init = async () => {
-    await getPredios(setLoadingPredios, setPredios);
-    // await getValvulas(setLoadingPredios, setValvulas);
+    //await getPredios(setLoadingPredios, setPredios);
+    await getValvulas(setLoadingPredios, setValvulas);
     setLoaded(true);
   }
 
@@ -40,10 +41,10 @@ export const Mapa = () => {
 
   return (
     <div>
-      <p>Mapa Predios</p>
+      <p>Mapa Valvulas</p>
       <div className="mb-4">
         <Card className='mt-3'>
-          <ModalImportarPrediosGeoJson />
+          <ModalImportarValvulas />
         </Card>
         <ModalVerPredio predioId={selectedPredio} setPredioId={setSelectedPredio} trigger={<Button ref={triggerModalRef} className='hidden'></Button>} />
       </div>

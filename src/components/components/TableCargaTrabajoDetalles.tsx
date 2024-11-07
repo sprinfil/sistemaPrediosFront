@@ -70,7 +70,7 @@ export function TableCargaTrabajoDetalles({cargaTrabajo}) {
         </TableHeader>
         <TableBody>
           {cargaTrabajo?.detalles?.map((detalle) => (
-            <TableRow key={detalle?.id}>
+            <TableRow className={`${detalle?.asignado == 1 ? "bg-green-100 hover:bg-green-100" : ""}`} key={detalle?.id}>
               <TableCell>{detalle?.cuenta}</TableCell>
               <TableCell>{detalle?.usuario}</TableCell>
               <TableCell>{detalle?.orden}</TableCell>

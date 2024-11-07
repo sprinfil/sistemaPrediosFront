@@ -7,7 +7,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter
+  SidebarFooter,
+  SidebarMenuSub,
+  SidebarMenuSubItem
 } from "@/components/ui/sidebar"
 import { Calendar, ChevronUp, Home, icons, Inbox, } from "lucide-react"
 import {
@@ -22,6 +24,12 @@ import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
+import { IoIosArrowDown } from "react-icons/io";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 export function AppSidebar() {
   const navigate = useNavigate();
@@ -32,11 +40,11 @@ export function AppSidebar() {
       url: "/",
       icon: <IoHome />
     },
-    {
-      title: "Mapa",
-      url: "/mapa",
-      icon: <FaMapMarkedAlt />
-    },
+    // {
+    //   title: "Mapa",
+    //   url: "/mapa",
+    //   icon: <FaMapMarkedAlt />
+    // },
     {
       title: "Cargas de trabajo",
       url: "/cargasTrabajo",
@@ -52,6 +60,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
+
         <SidebarGroup>
           <SidebarGroupLabel>Sistema de Predios</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -66,9 +75,39 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <Collapsible className="group/collapsible">
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton><FaMapMarkedAlt /> Mapas <IoIosArrowDown className="ml-auto" /></SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+
+                      <a href="/mapa">
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton><FaMapMarkedAlt />Mapa Predios</SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      </a>
+                      <a href="/mapaValvulas">
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton><FaMapMarkedAlt />Mapa Valvulas</SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      </a>
+
+
+
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
             </SidebarMenu>
+
           </SidebarGroupContent>
         </SidebarGroup>
+
+
+
+
 
       </SidebarContent>
       <SidebarFooter>

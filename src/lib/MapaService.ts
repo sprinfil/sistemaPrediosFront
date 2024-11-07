@@ -93,16 +93,19 @@ export const initMapa = async (predios, valvulas, setSelectedPredio) => {
     });
   };
 
-  map.addListener("zoom_changed", () => {
-    const currentZoom = map.getZoom();
+  // map.addListener("zoom_changed", () => {
+  //   const currentZoom = map.getZoom();
 
-    if (currentZoom >= 15) {
+  //   if (currentZoom >= 15) {
 
-      addPolygons();
-      addMarkers();
-    } else {
-      polygons.forEach(polygon => polygon.setMap(null));
-      markers.forEach(marker => marker.setMap(null));
-    }
-  });
+  //     addPolygons();
+  //     addMarkers();
+  //   } else {
+  //     polygons.forEach(polygon => polygon.setMap(null));
+  //     markers.forEach(marker => marker.setMap(null));
+  //   }
+  // });
+
+  addPolygons();
+  addMarkers();
 };
