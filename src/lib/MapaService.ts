@@ -15,7 +15,7 @@ export const parseCoordinates = (polygonData) => {
 };
 
 
-export const initMapa = async (predios, valvulas) => {
+export const initMapa = async (predios, valvulas, setSelectedPredio) => {
 
   const loader = new Loader({
     apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
@@ -40,14 +40,32 @@ export const initMapa = async (predios, valvulas) => {
     polygons = [];
 
     predios.forEach((predio) => {
+
+      let color = 'lightblue';
+
+      if (predio?.numero_asignaciones == 1) {
+        color = 'green';
+      }
+      if (predio?.numero_asignaciones == 2) {
+        color = 'orange';
+      }
+      if (predio?.numero_asignaciones >= 3) {
+        color = 'red';
+      }
+
       const polygon = new window.google.maps.Polygon({
         paths: parseCoordinates(predio),
         map: map,
-        fillColor: 'lightblue',
+        fillColor: color,
         fillOpacity: 0.4,
-        strokeColor: 'blue',
+        strokeColor: 'black',
         strokeOpacity: 0.8,
         strokeWeight: 2,
+      });
+
+      polygon.addListener("click", () => {
+        // alert(`Polígono clickeado: ${predio.id}`);
+        setSelectedPredio(predio?.id);
       });
 
       polygons.push(polygon);
@@ -75,16 +93,14 @@ export const initMapa = async (predios, valvulas) => {
     });
   };
 
-  // Escuchar el evento de cambio de zoom
   map.addListener("zoom_changed", () => {
     const currentZoom = map.getZoom();
 
     if (currentZoom >= 15) {
-      // Añadir polígonos y markers solo si el zoom es mayor o igual a 15
+
       addPolygons();
       addMarkers();
     } else {
-      // Remover polígonos y markers del mapa si el zoom es menor a 15
       polygons.forEach(polygon => polygon.setMap(null));
       markers.forEach(marker => marker.setMap(null));
     }

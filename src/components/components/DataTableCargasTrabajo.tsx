@@ -106,11 +106,10 @@ export function DataTableCargasTrabajo() {
         const fechaFinalizacion = data?.fecha_finalizacion;
         let fechaFormateada = '';
         if (fechaFinalizacion != null) {
-          fechaFormateada = dayjs(fechaAsignacion).format('D [de] MMMM [del] YYYY');
+          fechaFormateada = dayjs(fechaFinalizacion).format('D [de] MMMM [del] YYYY');
         } else {
           fechaFormateada = "NO FINALIZADA"
         }
-
         return (
           <div>{fechaFormateada}</div>
         );
