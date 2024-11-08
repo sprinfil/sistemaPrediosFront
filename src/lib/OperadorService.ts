@@ -51,9 +51,36 @@ export async function editarOperador(
     const response = await axiosClient.put('/users/' + operadorId, values);
     setData(prev => {
       return prev.map(operador => {
-        if(operador?.id == operadorId){
+        if (operador?.id == operadorId) {
           return response?.data?.data
-        }else{
+        } else {
+          return operador;
+        }
+      })
+    })
+    // console.log(response?.data?.data)
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+}
+
+export async function operadorCambiarEstatus(
+  operadorId: number,
+  setLoading: Function,
+  values: Object,
+  setData: Function
+) {
+  try {
+    setLoading(true);
+    const response = await axiosClient.patch('/users/' + operadorId, values);
+    setData(prev => {
+      return prev.map(operador => {
+        if (operador?.id == operadorId) {
+          return response?.data?.data
+        } else {
           return operador;
         }
       })

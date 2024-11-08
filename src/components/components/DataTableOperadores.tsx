@@ -38,6 +38,7 @@ import {
 import { CiCirclePlus } from "react-icons/ci";
 import { ModalCrearOperador } from "./ModalCrearOperador"
 import { ModalEditarOperador } from "./ModalEditarOperador";
+import { ModalDesactivarOperador } from "./ModalDesactivarOperador";
 
 
 export type Operador = {
@@ -66,8 +67,7 @@ export function DataTableOperadores({ data, setData }) {
       cell: ({ row }) => {
         const data = row.original?.roles;
         let roles = "";
-        console.log(data)
-        data?.map((rol) => { 
+        data?.map((rol) => {
           roles += rol.name + ' ';
         })
         return (
@@ -75,6 +75,10 @@ export function DataTableOperadores({ data, setData }) {
         )
       }
     },
+    // {
+    //   accessorKey: "status",
+    //   header: "Nombre de Usuario"
+    // },
     // {
     //   accessorKey: "estado",
     //   header: "Estado",
@@ -100,17 +104,22 @@ export function DataTableOperadores({ data, setData }) {
       enableHiding: false,
       cell: ({ row }) => {
         const operador = row.original
-        return ( 
+        return (
           <>
-            <ModalEditarOperador
-              trigger={
-                <Button variant={"outline"}>
-                  <BsPencilSquare />
-                </Button>
-              }
-              operador = {operador}
-              setData={setData}
-            />
+            <div className="flex gap-2 items-center">
+              <ModalEditarOperador
+                trigger={
+                  <Button variant={"outline"}>
+                    Editar <BsPencilSquare />
+                  </Button>
+                }
+                operador={operador}
+                setData={setData}
+              />
+
+              <ModalDesactivarOperador operadorId={operador?.id} setData={setData} status={operador?.status}/>
+
+            </div>
 
           </>
         )

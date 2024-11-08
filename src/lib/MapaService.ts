@@ -15,19 +15,23 @@ export const parseCoordinates = (polygonData) => {
 };
 
 
-export const initMapa = async (predios, valvulas, setSelectedPredio) => {
+export const initMapa = async (predios, valvulas, setSelectedPredio, existingMap = null, setMap, setCoordinates, setPolygons) => {
 
   const loader = new Loader({
     apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     version: 'weekly',
   });
-
-  await loader.load();
-
-  const map = new window.google.maps.Map(document.getElementById("map"), {
-    center: center,
-    zoom: 14,
-  });
+  let map;
+  if (!existingMap) {
+    await loader.load();
+    map = new window.google.maps.Map(document.getElementById("map"), {
+      center: center,
+      zoom: 14,
+    });
+    setMap(map);
+  } else {
+    map = existingMap;
+  }
 
   // Variables para guardar polígonos y marcadores
   let polygons = [];
@@ -35,11 +39,12 @@ export const initMapa = async (predios, valvulas, setSelectedPredio) => {
 
   // Función para agregar polígonos de predios al mapa
   const addPolygons = () => {
+    console.log("piuntar")
     // Limpiar polígonos previos si existen
     polygons.forEach(polygon => polygon.setMap(null));
     polygons = [];
 
-    predios.forEach((predio) => {
+    predios?.forEach((predio) => {
 
       let color = 'lightblue';
 
@@ -70,6 +75,9 @@ export const initMapa = async (predios, valvulas, setSelectedPredio) => {
 
       polygons.push(polygon);
     });
+    setPolygons(prev => {
+      return [...prev, ...polygons];
+    });
   };
 
   // Función para agregar markers de válvulas al mapa
@@ -96,16 +104,35 @@ export const initMapa = async (predios, valvulas, setSelectedPredio) => {
   // map.addListener("zoom_changed", () => {
   //   const currentZoom = map.getZoom();
 
-  //   if (currentZoom >= 15) {
+  //   if (currentZoom >= 20) {
 
   //     addPolygons();
   //     addMarkers();
+
   //   } else {
   //     polygons.forEach(polygon => polygon.setMap(null));
   //     markers.forEach(marker => marker.setMap(null));
   //   }
   // });
+  // Agregar evento de click al mapa
+
+  map.addListener("click", (event) => {
+
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    setCoordinates(
+      {
+        localizacion: {
+          latitude: lat,
+          longitude: lng,
+          distance: 500
+        }
+      }
+    )
+
+    // alert(`Coordenadas: Latitud ${lat}, Longitud ${lng}`);
+  });
 
   addPolygons();
-  addMarkers();
+  // addMarkers();
 };

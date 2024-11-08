@@ -143,7 +143,6 @@ export function DataTableCargasTrabajo() {
       header: "Progreso",
       cell: ({ row }) => {
         const progreso = row.original.numero_detalles_asignados;
-        console.log(row.original)
         const pendientes = row.original.numero_detalles;
 
         return (

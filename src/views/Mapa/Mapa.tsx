@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { initMapa, parseCoordinates } from '@/lib/MapaService';
 import { mapContainerStyle, center } from '@/lib/MapaService';
 import { MenuBarMapa } from '@/components/components/MenuBarMapa';
-import { getPredios } from '@/lib/PredioService';
+import { getPredios, getPrediosByDistance } from '@/lib/PredioService';
 import { Loader } from '@/components/components/Loader';
 import { getValvulas } from '@/lib/ValvulasService';
 import { ModalVerPredio } from '@/components/components/ModalVerPredio';
@@ -17,17 +17,31 @@ export const Mapa = () => {
   const [loaded, setLoaded] = useState(false);
   const triggerModalRef = useRef();
   const [selectedPredio, setSelectedPredio] = useState(null);
+  const [map, setMap] = useState(null);
+  const [polygons, setPolygons] = useState([]);
+  const [coordinates, setCoorinates] = useState
+    (
+      {
+        localizacion: {
+          latitude: 0,
+          longitude: 0,
+          distance: 500
+        }
+      }
+    )
 
   useEffect(() => {
     init();
-  }, []);
+  }, [coordinates]);
 
   useEffect(() => {
-    initMapa(predios, valvulas, setSelectedPredio);
-  }, [loaded])
+    if (!loadingPredios) {
+      initMapa(predios, valvulas, setSelectedPredio, map, setMap, setCoorinates, setPolygons);
+    }
+  }, [loadingPredios])
 
   const init = async () => {
-    await getPredios(setLoadingPredios, setPredios);
+    await getPrediosByDistance(setLoadingPredios, setPredios, coordinates);
     // await getValvulas(setLoadingPredios, setValvulas);
     setLoaded(true);
   }
@@ -44,6 +58,10 @@ export const Mapa = () => {
       <div className="mb-4">
         <Card className='mt-3'>
           <ModalImportarPrediosGeoJson />
+          <Button onClick={() => {
+            polygons.forEach(polygon => polygon.setMap(null));
+
+          }}>Limpiar</Button>
         </Card>
         <ModalVerPredio predioId={selectedPredio} setPredioId={setSelectedPredio} trigger={<Button ref={triggerModalRef} className='hidden'></Button>} />
       </div>
