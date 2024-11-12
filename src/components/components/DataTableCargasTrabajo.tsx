@@ -14,6 +14,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal, PlusCircle } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -49,7 +58,7 @@ import { ModalConcluirCargaTrabajo } from "./ModalConcluirCargaTrabajo"
 
 export function DataTableCargasTrabajo() {
   const [data, setData] = React.useState([]);
-
+  const [estadoFiltro, setEstadoFiltro] = React.useState("cualquiera");
   const columns = [
     {
       id: "select",
@@ -78,8 +87,19 @@ export function DataTableCargasTrabajo() {
       header: "Nombre",
     },
     {
-      accessorKey: "operador_asignado.name",
+      id: 'Operador',
       header: "Operador",
+      accessorKey: "operador_asignado.name",
+      // cell: ({row}) => {
+      //   const operador = row.original?.operador_asignado.name;
+      //   return (
+      //     <p>{operador}</p>
+      //   )
+      // },
+      filterFn: (row, columnId, filterValue) => {
+        const operador = row.getValue(columnId);
+        return operador ? operador.toLowerCase().includes(filterValue.toLowerCase()) : false;
+      }
     },
     {
       accessorKey: "fecha_asignacion",
@@ -116,7 +136,8 @@ export function DataTableCargasTrabajo() {
       }
     },
     {
-      accessorKey: "estado",
+      accessorKey: "status",
+      id: "estado",
       header: "Estado",
       cell: ({ row }) => {
         const status = row?.original?.status;
@@ -137,7 +158,11 @@ export function DataTableCargasTrabajo() {
         return (
           <div className={styles}>{text}</div>
         )
-      }
+      },
+      filterFn: (row, columnId, filterValue) => {
+        const status = row.getValue(columnId);
+        return filterValue === "" || status == Number(filterValue);
+      },
     },
     {
       header: "Progreso",
@@ -209,15 +234,37 @@ export function DataTableCargasTrabajo() {
           </div>
           :
           <>
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-4 gap-3">
               <Input
                 placeholder="Operador"
-                value={(table.getColumn("operador_asignado")?.getFilterValue() as string) ?? ""}
+                value={(table.getColumn("Operador")?.getFilterValue() as string) ?? ""}
                 onChange={(event) =>
-                  table.getColumn("operador_asignado")?.setFilterValue(event.target.value)
+                  table.getColumn("Operador")?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
               />
+
+              <Select
+                value={estadoFiltro}
+                onValueChange={(value) => {
+                  setEstadoFiltro(value);
+                  table.getColumn("estado")?.setFilterValue(value === "cualquiera" ? "" : value);
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Estado</SelectLabel>
+                    <SelectItem value="cualquiera">Cualquiera</SelectItem>
+                    <SelectItem value="0">En Proceso</SelectItem>
+                    <SelectItem value="1">Concluida</SelectItem>
+                    <SelectItem value="2">Cancelada</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+
               <ModalCrearCargaTrabajo setData={setData} />
             </div>
             <div className="rounded-md border">
