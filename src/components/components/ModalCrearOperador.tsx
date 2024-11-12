@@ -109,7 +109,6 @@ export function ModalCrearOperador({ trigger, setData }) {
           mensaje += `${data[key][0]}\n`;
         }
       }
-
       toast({
         title: 'Ocurrio un error',
         description: mensaje,
@@ -228,7 +227,6 @@ export function ModalCrearOperador({ trigger, setData }) {
 
                 </div>
               </div>
-
 
               <div className="flex gap-3 ml-auto items-center">
                 <AlertDialogCancel ref={cancelarButton}>Cancelar</AlertDialogCancel>

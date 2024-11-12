@@ -30,9 +30,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 
 export function AppSidebar() {
   const navigate = useNavigate();
+  const { user } = ZustandPrincipal();
 
   const items = [
     {
@@ -50,39 +52,61 @@ export function AppSidebar() {
       url: "/cargasTrabajo",
       icon: <FaClipboardList />
     },
-    {
-      title: "Operadores",
-      url: "/operadores",
-      icon: <FaUserTie />
-    },
+    // {
+    //   title: "Operadores",
+    //   url: "/operadores",
+    //   icon: <FaUserTie />
+    // },
   ]
 
   return (
     <Sidebar>
       <SidebarContent>
-
         <SidebarGroup>
-          <SidebarGroupLabel>Sistema de Predios</SidebarGroupLabel>
+          <SidebarGroupLabel>Sapa ops</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      {item.icon}
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+
+              {
+                user?.roles?.some(role => role.name === "master") ?
+                  <>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a href={'/operadores'}>
+                          <FaUserTie />
+                          <span>Operadores</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </>
+                  :
+                  <>
+
+                  </>
+              }
+
+
               <Collapsible className="group/collapsible">
+
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton><FaMapMarkedAlt /> Mapas <IoIosArrowDown className="ml-auto" /></SidebarMenuButton>
                   </CollapsibleTrigger>
+
                   <CollapsibleContent>
                     <SidebarMenuSub>
-
                       <a href="/mapa">
                         <SidebarMenuSubItem>
                           <SidebarMenuButton><FaMapMarkedAlt />Mapa Predios</SidebarMenuButton>
@@ -93,13 +117,13 @@ export function AppSidebar() {
                           <SidebarMenuButton><FaMapMarkedAlt />Mapa Valvulas</SidebarMenuButton>
                         </SidebarMenuSubItem>
                       </a>
-
-
-
                     </SidebarMenuSub>
                   </CollapsibleContent>
+
                 </SidebarMenuItem>
               </Collapsible>
+
+
             </SidebarMenu>
 
           </SidebarGroupContent>

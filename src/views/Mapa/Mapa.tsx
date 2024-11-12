@@ -60,7 +60,6 @@ export const Mapa = () => {
           <ModalImportarPrediosGeoJson />
           <Button onClick={() => {
             polygons.forEach(polygon => polygon.setMap(null));
-
           }}>Limpiar</Button>
         </Card>
         <ModalVerPredio predioId={selectedPredio} setPredioId={setSelectedPredio} trigger={<Button ref={triggerModalRef} className='hidden'></Button>} />
