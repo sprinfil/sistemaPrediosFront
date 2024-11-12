@@ -8,7 +8,7 @@ export const DashBoard = () => {
 
   return (
     <div className=''>
-      <p>Bienvenido {user?.name}</p>
+      <p>Bienvenido {user?.name} ({user?.username})</p>
     </div>
   )
 }
