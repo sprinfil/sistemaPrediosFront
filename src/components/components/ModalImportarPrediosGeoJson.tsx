@@ -42,7 +42,7 @@ export function ModalImportarPrediosGeoJson() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className="border-none">Importar Predios</Button>
+        {/* <Button variant="outline" className="border-none">Importar Predios</Button> */}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

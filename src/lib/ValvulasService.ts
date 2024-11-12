@@ -26,3 +26,17 @@ export const getValvulas = async (setLoading: Function, setData: Function) => {
     setLoading(false);
   }
 }
+
+export const getValvulaById = async (setLoading: Function, setValvula: Function, valvulaId: number) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get('/valvulas/' + valvulaId);
+    setValvula(response?.data?.data);
+  }
+  catch (e) {
+    throw e;
+  }
+  finally {
+    setLoading(false);
+  }
+}

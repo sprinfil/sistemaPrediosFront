@@ -26,8 +26,10 @@ import 'dayjs/locale/es';
 dayjs.locale('es');
 
 export function ModalVerDetallesAsignacion({ asignacion }) {
-  const lat = 19.432608;
-  const lng = -99.133209;
+
+  // console.log(asignacion?.localizacion?.coordinates[0])
+  const lat = asignacion?.localizacion?.coordinates[0]
+  const lng = asignacion?.localizacion?.coordinates[1]
   const zoom = 18;
   const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
 
@@ -73,7 +75,7 @@ export function ModalVerDetallesAsignacion({ asignacion }) {
                     <TableCell>{asignacion?.detalle_carga_trabajo?.carga_trabajo?.asignado_por?.name}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>Fecha de asignación</TableCell>
+                    <TableCell>Fecha Creación</TableCell>
                     <TableCell>{dayjs(asignacion?.created_at).format('D [de] MMMM [del] YYYY')}</TableCell>
                   </TableRow>
                 </TableBody>
