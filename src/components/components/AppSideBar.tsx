@@ -12,6 +12,7 @@ import {
   SidebarMenuSubItem
 } from "@/components/ui/sidebar"
 import { Calendar, ChevronUp, Home, icons, Inbox, } from "lucide-react"
+import { MdOutlineExitToApp } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -140,7 +141,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <FaUser /> Username
+                  <FaUser /> {user?.name} ({user?.username})
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -148,14 +149,17 @@ export function AppSidebar() {
                 side="top"
                 className="w-[--radix-popper-anchor-width]"
               >
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <span>Account</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
+
                 <DropdownMenuItem onClick={() => {
                   localStorage.setItem("TOKEN", "");
                   navigate("/login");
                 }}>
-                  <span>Sign out</span>
+                  <div className="h-[40px] flex gap-2 items-center text-red-500 cursor-pointer">
+                    <MdOutlineExitToApp />
+                    Sign out</div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
