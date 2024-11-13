@@ -54,6 +54,7 @@ import { Loader } from "./Loader"
 import { ModalEditarCargaDeTrabajo, ModalVerCargaDeTrabajo } from "./ModalEditarCargaDeTrabajo"
 import { ModalCancelarCargaTrabajo } from "./ModalCancelarCargaTrabajo"
 import { ModalConcluirCargaTrabajo } from "./ModalConcluirCargaTrabajo"
+import { ModalEnProgresoCargaTrabajo } from "./ModalEnProgresoCargaTrabajo"
 
 
 export function DataTableCargasTrabajo() {
@@ -148,7 +149,7 @@ export function DataTableCargasTrabajo() {
           text = "EN PROCESO"
         }
         if (status == 1) {
-          styles = "p-2 bg-orange-500 rounded-md flex items-center justify-center text-white"
+          styles = "p-2 bg-green-500 rounded-md flex items-center justify-center text-white"
           text = "CONCLUIDA"
         }
         if (status == 2) {
@@ -188,6 +189,7 @@ export function DataTableCargasTrabajo() {
             <ModalEditarCargaDeTrabajo setData={setData} cargaTrabajoId={data?.id} />
             <ModalCancelarCargaTrabajo cargaTrabajo={data} setData={setData} />
             <ModalConcluirCargaTrabajo cargaTrabajo={data} setData={setData} />
+            <ModalEnProgresoCargaTrabajo cargaTrabajo={data} setData={setData} />
           </div>
         )
       },

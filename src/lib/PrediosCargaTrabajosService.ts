@@ -51,7 +51,12 @@ export const crearCargaTrabajo = async (fileInfo, operadorSeleccionado, asignedB
       });
 
     setData(prev => {
-      return [response?.data?.data, ...prev];
+      let data =
+      {
+        ...response?.data?.data,
+        numero_detalles: predioCargaTrabajoDetalles?.length,
+      }
+      return [data, ...prev];
     })
 
   } catch (e) {
