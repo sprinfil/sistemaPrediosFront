@@ -28,8 +28,8 @@ dayjs.locale('es');
 export function ModalVerDetallesAsignacion({ asignacion }) {
 
   // console.log(asignacion?.localizacion?.coordinates[0])
-  const lat = asignacion?.localizacion?.coordinates[0]
-  const lng = asignacion?.localizacion?.coordinates[1]
+  const lat = asignacion?.localizacion?.coordinates[1]
+  const lng = asignacion?.localizacion?.coordinates[0]
   const zoom = 18;
   const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
 
