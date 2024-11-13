@@ -149,7 +149,7 @@ export function DataTableCargasTrabajo() {
           text = "EN PROCESO"
         }
         if (status == 1) {
-          styles = "p-2 bg-orange-500 rounded-md flex items-center justify-center text-white"
+          styles = "p-2 bg-green-500 rounded-md flex items-center justify-center text-white"
           text = "CONCLUIDA"
         }
         if (status == 2) {

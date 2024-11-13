@@ -22,7 +22,7 @@ import { ToastAction } from "@radix-ui/react-toast";
 
 
 
-export function ModalCrearCargaTrabajo({setData}) {
+export function ModalCrearCargaTrabajo({ setData }) {
   const { toast } = useToast();
   const [fileData, setFileData] = useState([]);
   const [selectedOperador, setSelectedOperador] = useState(null);
@@ -41,8 +41,26 @@ export function ModalCrearCargaTrabajo({setData}) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        console.log(jsonData)
-        setFileData(jsonData);
+
+        // Filtrar y modificar la primera columna según las reglas
+        const modifiedData = jsonData
+          .filter(row => {
+            const firstColValue = row[Object.keys(row)[0]];
+            // Filtra solo los registros donde el primer valor es numérico y longitud de al menos 7
+            return typeof firstColValue === "number" && firstColValue.toString().length >= 7;
+          })
+          .map(row => {
+            const firstColKey = Object.keys(row)[0];
+            const firstColValue = row[firstColKey].toString();
+            // Si la longitud es 7, agrega un 0 al principio
+            if (firstColValue.length === 7) {
+              row[firstColKey] = "0" + firstColValue;
+            }
+            return row;
+          });
+
+        console.log(modifiedData);
+        setFileData(modifiedData);
       };
       reader.readAsArrayBuffer(file);
     }

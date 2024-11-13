@@ -56,7 +56,7 @@ export function ModalEditarCargaDeTrabajo({ setData, cargaTrabajoId }) {
                 {
                   cargaTrabajo?.status == 1 ?
                     <>
-                      <div className="p-2 bg-orange-500 rounded-md flex items-center justify-center text-white w-[400px]">
+                      <div className="p-2 bg-green-500 rounded-md flex items-center justify-center text-white w-full">
                         <p>CONCLUIDA</p>
                       </div>
                     </> : <></>
@@ -64,7 +64,7 @@ export function ModalEditarCargaDeTrabajo({ setData, cargaTrabajoId }) {
                 {
                   cargaTrabajo?.status == 2 ?
                     <>
-                      <div className="p-2 bg-red-500 rounded-md flex items-center justify-center text-white w-[400px]">
+                      <div className="p-2 bg-red-500 rounded-md flex items-center justify-center text-white w-full">
                         <p>CANCELADA</p>
                       </div>
                     </> : <></>
