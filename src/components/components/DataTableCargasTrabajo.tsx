@@ -54,6 +54,7 @@ import { Loader } from "./Loader"
 import { ModalEditarCargaDeTrabajo, ModalVerCargaDeTrabajo } from "./ModalEditarCargaDeTrabajo"
 import { ModalCancelarCargaTrabajo } from "./ModalCancelarCargaTrabajo"
 import { ModalConcluirCargaTrabajo } from "./ModalConcluirCargaTrabajo"
+import { ModalEnProgresoCargaTrabajo } from "./ModalEnProgresoCargaTrabajo"
 
 
 export function DataTableCargasTrabajo() {
@@ -188,6 +189,7 @@ export function DataTableCargasTrabajo() {
             <ModalEditarCargaDeTrabajo setData={setData} cargaTrabajoId={data?.id} />
             <ModalCancelarCargaTrabajo cargaTrabajo={data} setData={setData} />
             <ModalConcluirCargaTrabajo cargaTrabajo={data} setData={setData} />
+            <ModalEnProgresoCargaTrabajo cargaTrabajo={data} setData={setData} />
           </div>
         )
       },

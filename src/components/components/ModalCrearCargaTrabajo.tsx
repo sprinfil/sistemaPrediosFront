@@ -41,6 +41,7 @@ export function ModalCrearCargaTrabajo({setData}) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        console.log(jsonData)
         setFileData(jsonData);
       };
       reader.readAsArrayBuffer(file);
