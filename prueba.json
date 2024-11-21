@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "fecha": "20/11/2024",
+            "operador": {
+                "id": 1,
+                "nombre": "jeremy"
+            },
+            "bitacoras": [
+                {
+                    "id": 1,
+                    "posicion_captura": [],
+                    "valvula": {
+                        "nombre": "V01",
+                        "posicion": []
+                    }
+                },
+                {
+                    "id": 2,
+                    "posicion_captura": [],
+                    "valvula": {
+                        "nombre": "V02",
+                        "posicion": []
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -49,8 +49,13 @@ export function AppSidebar() {
     //   icon: <FaMapMarkedAlt />
     // },
     {
-      title: "Cargas de trabajo",
+      title: "Cargas de trabajo (predios)",
       url: "/cargasTrabajo",
+      icon: <FaClipboardList />
+    },
+    {
+      title: "Recorridos (Cajas de Válvulas)",
+      url: "/recorridos",
       icon: <FaClipboardList />
     },
     // {
@@ -80,23 +85,6 @@ export function AppSidebar() {
                 )
               })}
 
-              {
-                user?.roles?.some(role => role.name === "master") ?
-                  <>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <a href={'/operadores'}>
-                          <FaUserTie />
-                          <span>Operadores</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </>
-                  :
-                  <>
-
-                  </>
-              }
 
 
               <Collapsible className="group/collapsible">
@@ -123,6 +111,24 @@ export function AppSidebar() {
 
                 </SidebarMenuItem>
               </Collapsible>
+
+              {
+                user?.roles?.some(role => role.name === "master") ?
+                  <>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <a href={'/operadores'}>
+                          <FaUserTie />
+                          <span>Operadores</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </>
+                  :
+                  <>
+
+                  </>
+              }
 
 
             </SidebarMenu>
