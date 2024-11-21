@@ -23,7 +23,7 @@ export const crearCargaTrabajo = async (fileInfo, operadorSeleccionado, asignedB
     const predioCargaTrabajoDetalles: any[] = [];
 
     fileInfo?.map((row, index) => {
-      if (index != 0) {
+     
         let campos: any[] = [];
         Object.values(row).map((value, i) => {
           campos.push(value);
@@ -40,7 +40,7 @@ export const crearCargaTrabajo = async (fileInfo, operadorSeleccionado, asignedB
           no_medidor: campos[5] == " " ? 0 : campos[5],
         }
         predioCargaTrabajoDetalles.push(cargaTrabajoDetalleTemp);
-      }
+      
     })
 
     // console.log(nombre);
