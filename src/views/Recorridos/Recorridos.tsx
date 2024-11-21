@@ -8,6 +8,7 @@ export const Recorridos = () => {
   const [map, setMap] = useState(null);
   const [valvulasMarkers, setValvulasMarkers] = useState([]);
   const [recorrdioLine, setRecorridoLine] = useState(null);
+  const [capturasMarkers, setCapturasMarkers] = useState([]);
 
   useEffect(() => {
     initMapaRecorridos(map, setMap);
@@ -18,7 +19,15 @@ export const Recorridos = () => {
       <p className='ml-1'>Recorridos (Cajas de Válvulas)</p>
       <DoubleContainer>
         <Seccion1>
-          <DataTableRecorridos map={map} setValvulasMarkers={setValvulasMarkers} valvulasMarkers={valvulasMarkers} recorrdioLine={recorrdioLine} setRecorridoLine={setRecorridoLine}/>
+          <DataTableRecorridos 
+          map={map} 
+          setValvulasMarkers={setValvulasMarkers} 
+          valvulasMarkers={valvulasMarkers} 
+          recorrdioLine={recorrdioLine} 
+          setRecorridoLine={setRecorridoLine} 
+          capturasMarkers={capturasMarkers}
+          setCapturasMarkers={setCapturasMarkers}
+          />
         </Seccion1>
         <Seccion2>
           <div id="map" style={StylesRecorridosMap}></div>

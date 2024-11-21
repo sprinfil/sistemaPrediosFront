@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/table"
 import { getBitacorasByOperador } from "@/lib/ValvulasService"
 import { showRecorrido } from "@/lib/MapaService"
+import { Loader } from "./Loader"
 
 export type Payment = {
   id: string
@@ -48,7 +49,7 @@ export type Payment = {
 
 
 
-export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,recorrdioLine,setRecorridoLine }) {
+export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine, capturasMarkers, setCapturasMarkers }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -90,7 +91,7 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
             <Button
               onClick={() => {
                 try {
-                  showRecorrido(map, data?.bitacoras, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine);
+                  showRecorrido(map, data?.bitacoras, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine, capturasMarkers, setCapturasMarkers);
                 } catch (e) {
 
                 }
@@ -175,7 +176,10 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {
+                    loading ? <div className="w-full flex items-center justify-center"><Loader /> </div> : <>No results.</>
+                  }
+
                 </TableCell>
               </TableRow>
             )}
