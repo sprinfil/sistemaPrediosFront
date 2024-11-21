@@ -1,10 +1,18 @@
 import { useEffect } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
+import valvulaCaja from '../assets/cajaValvula.png'
 
 export const mapContainerStyle = {
   width: "100%",
   height: "75vh",
 };
+
+export const StylesRecorridosMap = {
+  width: "100%",
+  height: "92vh",
+};
+
+
 export const center = {
   lat: 24.1426,
   lng: -110.3128,
@@ -141,7 +149,9 @@ export const initMapaValvulas = async (valvulas, existingMap = null, setMap, set
     apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
     version: 'weekly',
   });
+
   let map;
+
   if (!existingMap) {
     await loader.load();
     map = new window.google.maps.Map(document.getElementById("map"), {
@@ -152,6 +162,7 @@ export const initMapaValvulas = async (valvulas, existingMap = null, setMap, set
   } else {
     map = existingMap;
   }
+
   let markers = [];
 
   const addMarkers = () => {
@@ -168,6 +179,10 @@ export const initMapaValvulas = async (valvulas, existingMap = null, setMap, set
       const marker = new window.google.maps.Marker({
         position: position,
         map: map,
+        icon: {
+          url: valvulaCaja, // URL del ícono
+          scaledSize: new window.google.maps.Size(60, 60), // Tamaño del ícono
+        },
       });
 
       marker.addListener("click", () => {
@@ -212,3 +227,91 @@ export const initMapaValvulas = async (valvulas, existingMap = null, setMap, set
   addMarkers();
 };
 
+export const initMapaRecorridos = async (existingMap = null, setMap: Function) => {
+
+  const loader = new Loader({
+    apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+    version: 'weekly',
+  });
+
+  let map;
+
+  if (!existingMap) {
+    await loader.load();
+    map = new window.google.maps.Map(document.getElementById("map"), {
+      center: center,
+      zoom: 14,
+    });
+    setMap(map);
+  } else {
+    map = existingMap;
+  }
+}
+
+export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulasMarkers, recorridoLine, setRecorridoLine) => {
+  if (map) {
+    setValvulasMarkers([]);
+    let markers = valvulasMarkers;
+    recorridoLine?.setMap(null);
+
+    // console.log(bitacoras)
+
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+
+    if (bitacoras.length > 0) {
+      const firstPosition = {
+        lat: bitacoras[0].valvula.posicion.coordinates[1],
+        lng: bitacoras[0].valvula.posicion.coordinates[0],
+      };
+      map.setCenter(firstPosition);
+      map.setZoom(17);
+    }
+    const pathCoordinates = [];
+
+    bitacoras.forEach((bitacora, index) => {
+      const position = {
+        lat: bitacora.valvula.posicion.coordinates[1],
+        lng: bitacora.valvula.posicion.coordinates[0],
+      };
+
+      pathCoordinates.push(position);
+
+      const marker = new window.google.maps.Marker({
+        position: position,
+        map: map,
+        icon: {
+          url: valvulaCaja, // URL del ícono
+          scaledSize: new window.google.maps.Size(60, 60), // Tamaño del ícono
+        },
+        label: {
+          text: `${index + 1}`, // Número del marcador
+          color: "yellow", // Color del texto
+          fontSize: "35px", // Tamaño del texto
+          fontWeight: "bold", // Peso del texto
+        },
+      });
+
+      marker.addListener("click", () => {
+        // setSelectedValvulaId(valvula?.id)
+      });
+
+      markers.push(marker);
+    });
+
+    const recorridoPath = new window.google.maps.Polyline({
+      path: pathCoordinates, // Coordenadas para conectar
+      geodesic: true, // Hace que la línea siga el contorno del mapa
+      strokeColor: "#FF0000", // Color de la línea
+      strokeOpacity: 1.0, // Opacidad de la línea
+      strokeWeight: 2, // Grosor de la línea
+    });
+    recorridoPath.setMap(map);
+    setRecorridoLine(recorridoPath);
+
+    setValvulasMarkers(markers);
+
+  } else {
+    alert('No hay mapa');
+  }
+}
