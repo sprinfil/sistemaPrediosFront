@@ -41,13 +41,13 @@ export function ModalCrearCargaTrabajo({ setData }) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
+        console.log(jsonData)
         // Filtrar y modificar la primera columna según las reglas
         const modifiedData = jsonData
           .filter(row => {
             const firstColValue = row[Object.keys(row)[0]];
             // Filtra solo los registros donde el primer valor es numérico y longitud de al menos 7
-            return typeof firstColValue === "number" && firstColValue.toString().length >= 7;
+            return firstColValue.toString().length >= 7;
           })
           .map(row => {
             const firstColKey = Object.keys(row)[0];
