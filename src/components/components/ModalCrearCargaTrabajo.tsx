@@ -93,11 +93,15 @@ export function ModalCrearCargaTrabajo({ setData }) {
             }
           </div>
           <div className="mt-4 overflow-auto max-h-[45vh]">
-            
+
             <p>
-              {Object.keys(jsonData[0]).slice(0, 1).map((key) => (
-                <th key={key} className="border px-2 py-1 text-left">{key}</th>
-              ))}
+              {Array.isArray(jsonData) && jsonData[0] ? (
+                Object.keys(jsonData[0]).slice(0, 1).map((key) => (
+                  <th key={key} className="border px-2 py-1 text-left">{key}</th>
+                ))
+              ) : (
+                <p></p>
+              )}
             </p>
 
 
@@ -128,6 +132,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
             <AlertDialogCancel ref={cancelarButton} onClick={() => {
               setFileData([]);
               setSelectedOperador(null);
+              setJsonData([]);
             }}>
               Cancelar
             </AlertDialogCancel>
