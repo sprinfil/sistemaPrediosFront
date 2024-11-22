@@ -124,7 +124,7 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
       </AlertDialogTrigger>
       <AlertDialogContent className="min-w-[70%]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Crear Nuevo Operador</AlertDialogTitle>
+          <AlertDialogTitle>Ver Operador</AlertDialogTitle>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="gap-4 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
               <div className="flex gap-4 w-full">

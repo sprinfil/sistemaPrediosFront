@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
 import valvulaCaja from '../assets/cajaValvula.png'
+import celularImg from '../assets/celular.png';
 
 export const mapContainerStyle = {
   width: "100%",
@@ -248,16 +249,23 @@ export const initMapaRecorridos = async (existingMap = null, setMap: Function) =
   }
 }
 
-export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulasMarkers, recorridoLine, setRecorridoLine) => {
+export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulasMarkers, recorridoLine, setRecorridoLine, capturasMarkers, setCapturasMarkers) => {
   if (map) {
+
+
     setValvulasMarkers([]);
+    setCapturasMarkers([]);
     let markers = valvulasMarkers;
+    let capturasMarkersTemp = capturasMarkers;
     recorridoLine?.setMap(null);
 
     // console.log(bitacoras)
 
     markers.forEach(marker => marker.setMap(null));
+    capturasMarkersTemp.forEach(marker => marker.setMap(null));
+
     markers = [];
+    capturasMarkersTemp = [];
 
     if (bitacoras.length > 0) {
       const firstPosition = {
@@ -270,34 +278,80 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
     const pathCoordinates = [];
 
     bitacoras.forEach((bitacora, index) => {
+
+
       const position = {
-        lat: bitacora.valvula.posicion.coordinates[1],
-        lng: bitacora.valvula.posicion.coordinates[0],
+        lat: bitacora?.valvula?.posicion?.coordinates[1],
+        lng: bitacora?.valvula?.posicion?.coordinates[0],
       };
 
+      const capturaPosition = {
+        lat: bitacora?.posicion_captura?.coordinates[0],
+        lng: bitacora?.posicion_captura?.coordinates[1],
+      }
+
       pathCoordinates.push(position);
+
+
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `
+          <div style="min-width: 200px">
+            <h3>Información de la Válvula</h3>
+            <p><strong>Nombre:</strong> ${bitacora?.valvula?.nombre || "N/A"}</p>
+            <p><strong>Ubicación:</strong> (${position.lat}, ${position.lng})</p>
+          </div>
+        `,
+      });
+
+
 
       const marker = new window.google.maps.Marker({
         position: position,
         map: map,
         icon: {
-          url: valvulaCaja, // URL del ícono
-          scaledSize: new window.google.maps.Size(60, 60), // Tamaño del ícono
+          url: valvulaCaja,
+          scaledSize: new window.google.maps.Size(70, 70),
         },
         label: {
-          text: `${index + 1}`, // Número del marcador
-          color: "yellow", // Color del texto
-          fontSize: "35px", // Tamaño del texto
-          fontWeight: "bold", // Peso del texto
+          text: `${index + 1}`,
+          color: "yellow",
+          fontSize: "35px",
+          fontWeight: "bold",
+        },
+      });
+
+      const markerCaptura = new window.google.maps.Marker({
+        position: capturaPosition,
+        map: map,
+        icon: {
+          url: celularImg, // URL del ícono
+          scaledSize: new window.google.maps.Size(60, 60),
+        },
+        label: {
+          text: `${index + 1}`,
+          color: "yellow",
+          fontSize: "35px",
+          fontWeight: "bold",
         },
       });
 
       marker.addListener("click", () => {
+        infoWindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
+      });
+
+
+      markerCaptura.addListener("click", () => {
         // setSelectedValvulaId(valvula?.id)
       });
 
       markers.push(marker);
+      capturasMarkersTemp.push(markerCaptura);
     });
+
 
     const recorridoPath = new window.google.maps.Polyline({
       path: pathCoordinates, // Coordenadas para conectar
@@ -306,10 +360,13 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
       strokeOpacity: 1.0, // Opacidad de la línea
       strokeWeight: 2, // Grosor de la línea
     });
-    recorridoPath.setMap(map);
-    setRecorridoLine(recorridoPath);
 
+
+    recorridoPath.setMap(map);
+
+    setRecorridoLine(recorridoPath);
     setValvulasMarkers(markers);
+    setCapturasMarkers(capturasMarkersTemp);
 
   } else {
     alert('No hay mapa');

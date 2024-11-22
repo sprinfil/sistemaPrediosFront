@@ -19,6 +19,7 @@ import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 import { Loader } from "./Loader";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
+import { json } from "react-router-dom";
 
 
 
@@ -27,6 +28,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
   const [fileData, setFileData] = useState([]);
   const [selectedOperador, setSelectedOperador] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [jsonData, setJsonData] = useState();
   const cancelarButton = useRef();
 
   const { user } = ZustandPrincipal();
@@ -41,6 +43,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        setJsonData(jsonData);
         console.log(jsonData)
         // Filtrar y modificar la primera columna según las reglas
         const modifiedData = jsonData
@@ -90,11 +93,23 @@ export function ModalCrearCargaTrabajo({ setData }) {
             }
           </div>
           <div className="mt-4 overflow-auto max-h-[45vh]">
+
+            <p>
+              {Array.isArray(jsonData) && jsonData[0] ? (
+                Object.keys(jsonData[0]).slice(0, 1).map((key) => (
+                  <th key={key} className="border px-2 py-1 text-left">{key}</th>
+                ))
+              ) : (
+                <p></p>
+              )}
+            </p>
+
+
             {fileData.length > 0 ? (
               <table className="min-w-full border">
                 <thead>
                   <tr>
-                    {Object.keys(fileData[0]).map((key) => (
+                    {Object.values(jsonData[0]).map((key) => (
                       <th key={key} className="border px-2 py-1 text-left">{key}</th>
                     ))}
                   </tr>
@@ -117,6 +132,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
             <AlertDialogCancel ref={cancelarButton} onClick={() => {
               setFileData([]);
               setSelectedOperador(null);
+              setJsonData([]);
             }}>
               Cancelar
             </AlertDialogCancel>

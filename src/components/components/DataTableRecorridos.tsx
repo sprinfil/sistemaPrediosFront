@@ -36,8 +36,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { getBitacorasByOperador } from "@/lib/ValvulasService"
+import { getBitacorasByOperador, getPage } from "@/lib/ValvulasService"
 import { showRecorrido } from "@/lib/MapaService"
+import { Loader } from "./Loader"
 
 export type Payment = {
   id: string
@@ -48,7 +49,7 @@ export type Payment = {
 
 
 
-export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,recorrdioLine,setRecorridoLine }) {
+export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine, capturasMarkers, setCapturasMarkers }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -58,8 +59,9 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
   const [rowSelection, setRowSelection] = React.useState({})
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [links, setLinks] = React.useState({});
 
-  getBitacorasByOperador(setLoading, setData);
+  getBitacorasByOperador(setLoading, setData, setLinks);
 
   const columns: ColumnDef<Payment>[] = [
     {
@@ -90,7 +92,10 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
             <Button
               onClick={() => {
                 try {
-                  showRecorrido(map, data?.bitacoras, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine);
+                  showRecorrido(map, data?.bitacoras, setValvulasMarkers, valvulasMarkers, recorrdioLine, setRecorridoLine, capturasMarkers, setCapturasMarkers);
+                  setRowSelection({
+                    [row.id]: true, // Solo selecciona la fila actual
+                  });
                 } catch (e) {
 
                 }
@@ -175,7 +180,10 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {
+                    loading ? <div className="w-full flex items-center justify-center"><Loader /> </div> : <>No results.</>
+                  }
+
                 </TableCell>
               </TableRow>
             )}
@@ -187,16 +195,30 @@ export function DataTableRecorridos({ map, setValvulasMarkers, valvulasMarkers,r
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={async () => {
+              try {
+                await getPage(setLoading, setData, setLinks, links?.prev_page_url);
+              }
+              catch (e) {
+
+              }
+            }}
+            disabled={links?.prev_page_url == null}
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={async () => {
+              try {
+                await getPage(setLoading, setData, setLinks, links?.next_page_url);
+              }
+              catch (e) {
+
+              }
+            }}
+            disabled={links?.next_page_url == null}
           >
             Next
           </Button>
