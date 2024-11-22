@@ -286,8 +286,8 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
       };
 
       const capturaPosition = {
-        lat: bitacora?.posicion_captura?.coordinates[0],
-        lng: bitacora?.posicion_captura?.coordinates[1],
+        lat: bitacora?.posicion_captura?.coordinates[1],
+        lng: bitacora?.posicion_captura?.coordinates[0],
       }
 
       pathCoordinates.push(position);
