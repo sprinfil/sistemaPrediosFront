@@ -42,12 +42,13 @@ export const getValvulaById = async (setLoading: Function, setValvula: Function,
   }
 }
 
-export const getBitacorasByOperador = async (setLoading: Function, setData: Function) => {
+export const getBitacorasByOperador = async (setLoading: Function, setData: Function, setLinks:Function) => {
   const getData = async () => {
     try {
       setLoading(true);
       const response = await axiosClient.get("/valvulas/bitacoras/by-operador")
       setData(response?.data?.data);
+      setLinks(response?.data?.pagination)
     }
     catch (e) {
       throw e;
@@ -59,4 +60,19 @@ export const getBitacorasByOperador = async (setLoading: Function, setData: Func
   useEffect(() => {
     getData();
   }, [])
+}
+
+export const getPage = async (setLoading: Function, setData: Function, setLinks:Function, link:String) => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get(link)
+      setData(response?.data?.data);
+      setLinks(response?.data?.pagination)
+    }
+    catch (e) {
+      throw e;
+    }
+    finally {
+      setLoading(false);
+    }
 }

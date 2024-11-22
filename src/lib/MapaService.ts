@@ -251,6 +251,8 @@ export const initMapaRecorridos = async (existingMap = null, setMap: Function) =
 
 export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulasMarkers, recorridoLine, setRecorridoLine, capturasMarkers, setCapturasMarkers) => {
   if (map) {
+
+
     setValvulasMarkers([]);
     setCapturasMarkers([]);
     let markers = valvulasMarkers;
@@ -291,18 +293,30 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
       pathCoordinates.push(position);
 
 
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `
+          <div style="min-width: 200px">
+            <h3>Información de la Válvula</h3>
+            <p><strong>Nombre:</strong> ${bitacora?.valvula?.nombre || "N/A"}</p>
+            <p><strong>Ubicación:</strong> (${position.lat}, ${position.lng})</p>
+          </div>
+        `,
+      });
+
+
+
       const marker = new window.google.maps.Marker({
         position: position,
         map: map,
         icon: {
-          url: valvulaCaja, // URL del ícono
-          scaledSize: new window.google.maps.Size(60, 60), // Tamaño del ícono
+          url: valvulaCaja,
+          scaledSize: new window.google.maps.Size(70, 70),
         },
         label: {
-          text: `${index + 1}`, // Número del marcador
-          color: "yellow", // Color del texto
-          fontSize: "35px", // Tamaño del texto
-          fontWeight: "bold", // Peso del texto
+          text: `${index + 1}`,
+          color: "yellow",
+          fontSize: "35px",
+          fontWeight: "bold",
         },
       });
 
@@ -311,21 +325,25 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
         map: map,
         icon: {
           url: celularImg, // URL del ícono
-          scaledSize: new window.google.maps.Size(60, 60), // Tamaño del ícono
+          scaledSize: new window.google.maps.Size(60, 60),
         },
         label: {
-          text: `${index + 1}`, // Número del marcador
-          color: "yellow", // Color del texto
-          fontSize: "35px", // Tamaño del texto
-          fontWeight: "bold", // Peso del texto
+          text: `${index + 1}`,
+          color: "yellow",
+          fontSize: "35px",
+          fontWeight: "bold",
         },
       });
 
       marker.addListener("click", () => {
-        // setSelectedValvulaId(valvula?.id)
+        infoWindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
       });
 
-      
+
       markerCaptura.addListener("click", () => {
         // setSelectedValvulaId(valvula?.id)
       });
