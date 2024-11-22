@@ -64,6 +64,7 @@ export const getBitacorasByOperador = async (setLoading: Function, setData: Func
 
 export const getPage = async (setLoading: Function, setData: Function, setLinks:Function, link:String) => {
     try {
+      setData([]);
       setLoading(true);
       const response = await axiosClient.get(link)
       setData(response?.data?.data);
