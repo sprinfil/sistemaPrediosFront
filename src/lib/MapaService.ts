@@ -2,6 +2,11 @@ import { useEffect } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
 import valvulaCaja from '../assets/cajaValvula.png'
 import celularImg from '../assets/celular.png';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es'; // Carga la localización en español
+import localeData from 'dayjs/plugin/localeData';
+dayjs.extend(localeData);
+dayjs.locale('es');
 
 export const mapContainerStyle = {
   width: "100%",
@@ -303,6 +308,16 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
         `,
       });
 
+      const infoWindowCaptura = new window.google.maps.InfoWindow({
+        content: `
+          <div style="min-width: 200px">
+            <h3>Información de Captura</h3>
+            <p><strong>Fecha:</strong> ${dayjs(bitacora?.created_at).format('D [de] MMMM [del] YYYY')}</p>
+               <p><strong>Hora:</strong> ${dayjs(bitacora?.created_at).format('h:mm A')}</p>
+          </div>
+        `,
+      });
+
 
 
       const marker = new window.google.maps.Marker({
@@ -346,6 +361,11 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
 
       markerCaptura.addListener("click", () => {
         // setSelectedValvulaId(valvula?.id)
+        infoWindowCaptura.open({
+          anchor: markerCaptura,
+          map,
+          shouldFocus: false,
+        });
       });
 
       markers.push(marker);
