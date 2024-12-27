@@ -49,7 +49,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
         const modifiedData = jsonData
           .filter(row => {
             const firstColValue = row[Object.keys(row)[0]];
-            // Filtra solo los registros donde el primer valor es numérico y longitud de al menos 7
+            // Filtra solo los registros donde la longitud de al menos 7
             return firstColValue.toString().length >= 7;
           })
           .map(row => {
