@@ -100,6 +100,7 @@ export function ModalCrearOperador({ trigger, setData }) {
         // role: ''
       });
       cancelarButton?.current?.click();
+      setSelectedRoles([]);
     }
     catch (e) {
       let data = e?.response?.data?.data
