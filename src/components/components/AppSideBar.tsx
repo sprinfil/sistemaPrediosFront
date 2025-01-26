@@ -20,12 +20,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { FaUser } from "react-icons/fa";
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
+import { GiValve } from "react-icons/gi";
 import {
   Collapsible,
   CollapsibleContent,
@@ -59,6 +60,11 @@ export function AppSidebar() {
       icon: <FaClipboardList />
     },
     // {
+    //   title: "Padrón de tomas",
+    //   url: "/padronTomas",
+    //   icon: <GiValve />
+    // },
+    // {
     //   title: "Operadores",
     //   url: "/operadores",
     //   icon: <FaUserTie />
@@ -76,10 +82,14 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url}>
+                      {/* <a href={item.url}>
                         {item.icon}
                         <span>{item.title}</span>
-                      </a>
+                      </a> */}
+                      <div onClick={() => navigate(item.url)} className="cursor-pointer">
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -96,16 +106,12 @@ export function AppSidebar() {
 
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      <a href="/mapa">
-                        <SidebarMenuSubItem>
-                          <SidebarMenuButton><FaMapMarkedAlt />Mapa Predios</SidebarMenuButton>
-                        </SidebarMenuSubItem>
-                      </a>
-                      <a href="/mapaValvulas">
-                        <SidebarMenuSubItem>
-                          <SidebarMenuButton><FaMapMarkedAlt />Mapa Valvulas</SidebarMenuButton>
-                        </SidebarMenuSubItem>
-                      </a>
+                      <SidebarMenuSubItem onClick={() => navigate("/mapa")}>
+                        <SidebarMenuButton><FaMapMarkedAlt />Mapa Predios</SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem onClick={() => navigate("/mapaValvulas")}>
+                        <SidebarMenuButton><FaMapMarkedAlt />Mapa Valvulas</SidebarMenuButton>
+                      </SidebarMenuSubItem>
                     </SidebarMenuSub>
                   </CollapsibleContent>
 
@@ -115,12 +121,12 @@ export function AppSidebar() {
               {
                 user?.roles?.some(role => role.name === "master") ?
                   <>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild>
-                        <a href={'/operadores'}>
+                    <SidebarMenuItem onClick={() => navigate("/operadores")} >
+                      <SidebarMenuButton asChild  >
+                        <div>
                           <FaUserTie />
                           <span>Operadores</span>
-                        </a>
+                        </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </>
