@@ -59,11 +59,11 @@ export function AppSidebar() {
       url: "/recorridos",
       icon: <FaClipboardList />
     },
-    {
-      title: "Padrón de tomas",
-      url: "/padronTomas",
-      icon: <GiValve />
-    },
+    // {
+    //   title: "Padrón de tomas",
+    //   url: "/padronTomas",
+    //   icon: <GiValve />
+    // },
     // {
     //   title: "Operadores",
     //   url: "/operadores",
