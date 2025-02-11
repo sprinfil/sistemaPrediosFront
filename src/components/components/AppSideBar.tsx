@@ -11,7 +11,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem
 } from "@/components/ui/sidebar"
-import { Calendar, ChevronUp, Home, icons, Inbox, } from "lucide-react"
+import { Calendar, ChevronUp, Home, icons, Inbox, LineChartIcon, } from "lucide-react"
 import { MdOutlineExitToApp } from "react-icons/md";
 import {
   DropdownMenu,
@@ -59,6 +59,11 @@ export function AppSidebar() {
       url: "/recorridos",
       icon: <FaClipboardList />
     },
+    {
+      title: "Reportes",
+      url: "/reporte",
+      icon: <LineChartIcon/>
+    },
     // {
     //   title: "Padrón de tomas",
     //   url: "/padronTomas",
@@ -94,8 +99,6 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 )
               })}
-
-
 
               <Collapsible className="group/collapsible">
 

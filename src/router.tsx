@@ -10,6 +10,7 @@ import { Operadores } from './views/Operadores/Operadores';
 import { MapaValvulas } from './views/Mapa/MapaValvulas';
 import { Recorridos } from './views/Recorridos/Recorridos';
 import { PadronTomas } from './views/PadronTomas/PadronTomas';
+import { Reportes } from './views/Reportes/Reportes';
 
 const router = createBrowserRouter([
     {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
             {
                 path: '/padronTomas',
                 element: <PadronTomas />
+            },
+            {
+                path: '/reporte',
+                element: <Reportes/>
             },
         ]
     },
