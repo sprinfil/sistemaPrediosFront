@@ -11,6 +11,7 @@ import { Loader } from "./Loader";
 import dayjs from "dayjs";
 import { getUsuariosVisitas } from "@/lib/Reportes";
 import { DataTableVisitasUsuario } from "./DataTableVisitasUsuario";
+import { PopoverReporteValvula } from "./PopoverReporteValvula";
 
 const FormSchema = z.object({
   dob: z.date({
@@ -21,6 +22,8 @@ const FormSchema = z.object({
 export function DatosFechaVisitasUsuario() {
     const [loading, setLoading] = useState(false);
     const [data,setData]=useState([]);
+    const [dataValvula,setDataValvula]= useState([]);
+    const [dvalvula,setDvalvula]= useState(null);
     const { toast } = useToast();
 
     const formSchema = z.object({
@@ -49,11 +52,12 @@ export function DatosFechaVisitasUsuario() {
       try {
           const fechaInicioConHora = `${values.fechaInicio} 08:00:00`;
           const fechaFinConHora = `${values.fechaFin} 17:00:00`;
+          console.log("id del seleccionado", dvalvula?.id)
           await getUsuariosVisitas(setLoading, {
-            id_valvula: 496,
+            id_valvula: dvalvula?.id,
             date_from: fechaInicioConHora,
             date_to: fechaFinConHora,
-        }, setData);
+          }, setData);
       } catch (e) {
         toast({
           title: "Error",
@@ -65,7 +69,10 @@ export function DatosFechaVisitasUsuario() {
     }
 
     return (
-      <Form {...form}>
+        <>
+        <div className="w-full flex gap-4">
+        <PopoverReporteValvula dataValvula={dataValvula} setDataValvula={setDataValvula} dvalvula={dvalvula} setDvalvula={setDvalvula}/>
+        <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="w-full flex gap-4">
             <FormField
@@ -73,34 +80,36 @@ export function DatosFechaVisitasUsuario() {
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col ml-1">
-                  <FormLabel className="ml-[25%] text-sm font-medium text-gray-700">Fecha inicial</FormLabel>
+                  <FormLabel className="mt-2 ml-auto mr-auto text-sm font-medium text-gray-700">Fecha inicial</FormLabel>
                     <FormControl>
                         <input type="date" {...field} className="input" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
-                )}/>
+            )}/>
             <FormField
               name="fechaFin"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col ml-11">
-                  <FormLabel className="ml-[25%]  text-sm font-medium text-gray-700 items-center">Fecha final</FormLabel>
+                  <FormLabel className="mt-2 ml-auto mr-auto  text-sm font-medium text-gray-700 items-center">Fecha final</FormLabel>
                     <FormControl>
                       <input type="date" {...field} className="input" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
-                )}/>
-            <div>
-              <Button className="w-50 mt-2 ml-5" type="submit" disabled={loading} >
+            )}/>
+            <div className="w-50 mt-auto mb-auto ml-5">
+              <Button type="submit" disabled={loading} >
                 {loading && <Loader />}
                   Buscar <SearchIcon/>
               </Button>
             </div>
           </div>
         </form>
+        </Form>
+        </div>
         <DataTableVisitasUsuario data={data} setData={setData}/>
-      </Form>
+        </>      
     )
 }
