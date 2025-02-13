@@ -75,3 +75,16 @@ export const getPrediosByDistance = async (setLoading: Function, setData: Functi
     setLoading(false);
   }
 }
+
+export const getCargasTrabajoSinRelaciones = async (setLoading: Function, setCargasTrabajo: Function) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get("/getAllPrediosCargaTrabajoWithoutRelationShip");
+    setCargasTrabajo(response?.data?.data);
+  } catch (e) {
+    throw e;
+  }
+  finally {
+    setLoading(false)
+  }
+}
