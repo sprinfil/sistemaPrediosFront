@@ -26,19 +26,16 @@ export function DatosFechaVisitasUsuario() {
     const [dvalvula,setDvalvula]= useState(null);
     const { toast } = useToast();
 
-    const formSchema = z.object({
-      fechaInicio: z.string().nonempty("La fecha inicial es obligatoria"),
-      fechaFin: z
-        .string()
-        .nonempty("La fecha final es obligatoria")
-        // .refine(
-        //   (value, context) => {
-        //     const fechaInicio = dayjs(context?.parent?.fechaInicio).startOf("day").hour(8);
-        //     const fechaFin = dayjs(value).startOf("day").hour(15);
-        //     return fechaInicio.isAfter(fechaInicio) || fechaFin.isSame(fechaInicio);
-        //   },
-        //   { message: "La fecha final debe ser mayor que la inicial" }
-        // ),
+    const formSchema = z
+      .object({
+        fechaInicio: z.string().nonempty("La fecha inicial es obligatoria"),
+        fechaFin: z.string().nonempty("La fecha final es obligatoria"),
+      })
+      .refine((data) => {
+        return new Date(data.fechaFin) > new Date(data.fechaInicio);
+      }, {
+        message: "La fecha final debe ser mayor que la fecha inicial",
+        path: ["fechaFin"],
     });
   
     const form = useForm<z.infer<typeof formSchema>>({
