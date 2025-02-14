@@ -10,7 +10,17 @@ import { getSearch } from "@/lib/Reportes";
   
 export const PopoverReporteValvula= ({ dataValvula,setDataValvula, dvalvula,setDvalvula }) => {
     const [loadingi, setLoadingi] = useState(false);
-    const { toast } = useToast();  
+    const [searchTerm, setSearchTerm] = useState("");
+    
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        if (searchTerm.trim() !== "") {
+          getSearch(setLoadingi, { nombre: searchTerm }, setDataValvula);
+        }
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
+
     return (
       <Popover>
         <PopoverTrigger className="ml-1">
@@ -22,9 +32,10 @@ export const PopoverReporteValvula= ({ dataValvula,setDataValvula, dvalvula,setD
           <div className="min-h-[200px]">
             <Input
               placeholder="Nombre de la valvula "
-              onChange={(e) => {
-                getSearch(setLoadingi, {nombre: e.target.value},setDataValvula);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              // onChange={(e) => {
+              //   getSearch(setLoadingi, {nombre: e.target.value},setDataValvula);
+              // }}
             />
             <div className="h-[200px] overflow-auto w-full  mt-2">
               {dataValvula?.map((dvalvula, index) => {
