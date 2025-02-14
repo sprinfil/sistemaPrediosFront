@@ -28,14 +28,14 @@ export function DatosFechaReporteTiempo() {
       fechaFin: z
         .string()
         .nonempty("La fecha final es obligatoria")
-        .refine(
-          (value, context) => {
-            const fechaInicio = dayjs(context?.parent?.fechaInicio).startOf("day").hour(8);
-            const fechaFin = dayjs(value).startOf("day").hour(15);
-            return fechaFin.isAfter(fechaInicio);
-          },
-          { message: "La fecha final debe ser mayor que la inicial" }
-        ),
+        // .refine(
+        //   (value, context) => {
+        //     const fechaInicio = dayjs(context?.parent?.fechaInicio).startOf("day").hour(8);
+        //     const fechaFin = dayjs(value).startOf("day").hour(15);
+        //     return fechaFin.isAfter(fechaInicio);
+        //   },
+        //   { message: "La fecha final debe ser mayor que la inicial" }
+        // ),
     });
   
     const form = useForm<z.infer<typeof formSchema>>({

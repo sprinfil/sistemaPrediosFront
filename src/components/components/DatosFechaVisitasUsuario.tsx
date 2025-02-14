@@ -31,14 +31,14 @@ export function DatosFechaVisitasUsuario() {
       fechaFin: z
         .string()
         .nonempty("La fecha final es obligatoria")
-        .refine(
-          (value, context) => {
-            const fechaInicio = dayjs(context?.parent?.fechaInicio).startOf("day").hour(8);
-            const fechaFin = dayjs(value).startOf("day").hour(15);
-            return fechaFin.isAfter(fechaInicio);
-          },
-          { message: "La fecha final debe ser mayor que la inicial" }
-        ),
+        // .refine(
+        //   (value, context) => {
+        //     const fechaInicio = dayjs(context?.parent?.fechaInicio).startOf("day").hour(8);
+        //     const fechaFin = dayjs(value).startOf("day").hour(15);
+        //     return fechaInicio.isAfter(fechaInicio) || fechaFin.isSame(fechaInicio);
+        //   },
+        //   { message: "La fecha final debe ser mayor que la inicial" }
+        // ),
     });
   
     const form = useForm<z.infer<typeof formSchema>>({
@@ -50,13 +50,13 @@ export function DatosFechaVisitasUsuario() {
     });
     async function onSubmit(values: z.infer<typeof formSchema>) {
       try {
-          const fechaInicioConHora = `${values.fechaInicio} 08:00:00`;
-          const fechaFinConHora = `${values.fechaFin} 17:00:00`;
-          console.log("id del seleccionado", dvalvula?.id)
+          // const fechaInicioConHora = `${values.fechaInicio} 08:00:00`;
+          // const fechaFinConHora = `${values.fechaFin} 17:00:00`;
+          // console.log("id del seleccionado", dvalvula?.id)
           await getUsuariosVisitas(setLoading, {
             id_valvula: dvalvula?.id,
-            date_from: fechaInicioConHora,
-            date_to: fechaFinConHora,
+            date_from: values.fechaInicio,
+            date_to: values.fechaFin,
           }, setData);
       } catch (e) {
         toast({
