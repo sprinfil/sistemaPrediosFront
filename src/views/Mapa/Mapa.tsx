@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { initMapa, parseCoordinates } from "@/lib/MapaService";
+import { initMapa, LibrosMapa, parseCoordinates, } from "@/lib/MapaService";
 import { mapContainerStyle, center } from "@/lib/MapaService";
 import { MenuBarMapa } from "@/components/components/MenuBarMapa";
 import {
   getCargasTrabajoSinRelaciones,
   getPredios,
   getPrediosByDistance,
+  PrediosCargaTrabajo,
 } from "@/lib/PredioService";
 import { Loader } from "@/components/components/Loader";
 import { getValvulas } from "@/lib/ValvulasService";
@@ -19,8 +20,10 @@ export const Mapa = () => {
   const [cargasTrabajo, setCargasTrabajo] = useState([]);
   const [loadingCargasTrabajo, setLoadingCargasTrabajo] = useState(false);
   const [predios, setPredios] = useState([]);
+  const [cargas, setCargas] = useState([]);
   const [valvulas, setValvulas] = useState([]);
   const [loadingPredios, setLoadingPredios] = useState(false);
+  const [loadingCarga, setLoadingCarga] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const triggerModalRef = useRef();
   const [selectedPredio, setSelectedPredio] = useState(null);
@@ -68,6 +71,27 @@ export const Mapa = () => {
     getCargasTrabajoSinRelaciones(setLoadingCargasTrabajo, setCargasTrabajo);
   }, []);
 
+
+  const handleCargaTrabajoSelected =  (selectedCargaTrabajo:any) => {
+    try {
+      PrediosCargaTrabajo(setLoadingCarga, selectedCargaTrabajo.id, setCargas);
+    } catch (error) {
+      console.error("Error al cargar las cargas de trabajo:", error);
+    }
+  };
+
+
+  useEffect(() =>
+  {
+    handleMapapoligon();
+  },[cargas])
+
+  const handleMapapoligon = () => {
+    LibrosMapa(cargas, setSelectedPredio, map, setPolygons);
+    // console.log("cargas 2", cargas); 
+    // console.log("selectedPredio 2", selectedPredio);
+    // console.log("poligonos 2", polygons);
+  };
   return (
     <div>
       <p>Mapa Predios</p>
@@ -87,6 +111,7 @@ export const Mapa = () => {
             loading={loadingCargasTrabajo}
             items={cargasTrabajo}
             accessName={"nombre_carga"}
+            onItemSelected={handleCargaTrabajoSelected}
           />
         </Card>
         <ModalVerPredio

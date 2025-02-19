@@ -17,7 +17,8 @@ export const ComboBoxSplConceptos = ({
   placeholder,
   loading,
   items,
-  accessName
+  accessName,
+  onItemSelected,
 }) => {
   const [openList, setOpenList] = useState(false);
   const listRef = useRef();
@@ -96,6 +97,15 @@ export const ComboBoxSplConceptos = ({
     setItem ? setItem(selectedItem) : "";
   }, [selectedItem]);
 
+  const handleItemClick = (item: Item) => {
+    setSelectedItem((prev) => (prev?.id === item.id ? null : item));
+    setOpenList(false);
+    // Ejecutar el callback si existe
+    if (onItemSelected) {
+      onItemSelected(item);
+    }
+  };
+
   return (
     <>
       {/* Boton inicial */}
@@ -150,16 +160,17 @@ export const ComboBoxSplConceptos = ({
                 {filteredItems?.length > 0 ? (
                   filteredItems?.map((item, index) => (
                     <div
-                      onClick={() => {
-                        setSelectedItem((prev) => {
-                          if (prev?.id == item?.id) {
-                            return null;
-                          } else {
-                            return item;
-                          }
-                        });
-                        setOpenList(false);
-                      }}
+                      // onClick={() => {
+                      //   setSelectedItem((prev) => {
+                      //     if (prev?.id == item?.id) {
+                      //       return null;
+                      //     } else {
+                      //       return item; 
+                      //     }
+                      //   });
+                      //   setOpenList(false);
+                      // }}
+                      onClick={() => handleItemClick(item)}
                       key={index}
                       className={`${
                         selectedItem?.id == item?.id ? "bg-muted" : ""
