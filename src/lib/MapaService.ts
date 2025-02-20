@@ -403,13 +403,13 @@ export const LibrosMapa = async (predios, setSelectedPredio, map, setPolygons) =
     polygons = [];
     predios?.forEach((predio) => {
       let color = 'lightblue';
-      if (predio?.numero_asignaciones == 1) {
+      if (predio?.asignaciones_count == 1) {
         color = 'green';
       }
-      if (predio?.numero_asignaciones == 2) {
+      if (predio?.asignaciones_count == 2) {
         color = 'orange';
       }
-      if (predio?.numero_asignaciones >= 3) {
+      if (predio?.asignaciones_count >= 3) {
         color = 'red';
       }
       const polygon = new window.google.maps.Polygon({
