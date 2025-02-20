@@ -1,4 +1,5 @@
 import axiosClient from "@/axios-client"
+import { Polygon } from "@react-google-maps/api";
 import axios from "axios";
 
 export const importarPredios = async (setLoading: Function, values: Object) => {
@@ -75,3 +76,32 @@ export const getPrediosByDistance = async (setLoading: Function, setData: Functi
     setLoading(false);
   }
 }
+
+export const getCargasTrabajoSinRelaciones = async (setLoading: Function, setCargasTrabajo: Function) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get("/getAllPrediosCargaTrabajoWithoutRelationShip");
+    setCargasTrabajo(response?.data?.data);
+  } catch (e) {
+    throw e;
+  }
+  finally {
+    setLoading(false)
+  }
+}
+
+//predios por libro
+export const PrediosCargaTrabajo = async (setLoading: Function, id: number, setData: Function) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get("/predios-carga-trabajos/"+id+"/predios");
+    setData(response?.data?.data);
+  }
+  catch (e) {
+    throw e;
+  }
+  finally {
+    setLoading(false);
+  }
+}
+

@@ -392,3 +392,58 @@ export const showRecorrido = async (map, bitacoras, setValvulasMarkers, valvulas
     alert('No hay mapa');
   }
 }
+
+export const LibrosMapa = async (predios, setSelectedPredio, map, setPolygons) => {
+  // Variables para guardar polígonos y marcadores
+  let polygons = [];
+  // Función para agregar polígonos de predios al mapa
+  const addPolygons = () => {
+    // Limpiar polígonos previos si existen
+    polygons.forEach(polygon => polygon.setMap(null));
+    polygons = [];
+    predios?.forEach((predio) => {
+      let color = 'lightblue';
+      if (predio?.asignaciones_count == 1) {
+        color = 'green';
+      }
+      if (predio?.asignaciones_count == 2) {
+        color = 'orange';
+      }
+      if (predio?.asignaciones_count >= 3) {
+        color = 'red';
+      }
+      const polygon = new window.google.maps.Polygon({
+        paths: parseCoordinates(predio),
+        map: map,
+        fillColor: color,
+        fillOpacity: 0.4,
+        strokeColor: 'black',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+      });
+
+      polygon.addListener("click", () => {
+        setSelectedPredio(predio?.id);
+      });
+      polygons.push(polygon);
+    });
+    setPolygons(prev => {
+      return [...prev, ...polygons];
+    });
+  };
+
+  map.addListener("click", (event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    // setCoordinates(
+    //   {
+    //     localizacion: {
+    //       latitude: lat,
+    //       longitude: lng,
+    //       distance: 500
+    //     }
+    //   }
+    // )
+  });
+  addPolygons();
+};
