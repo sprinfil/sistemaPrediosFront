@@ -43,3 +43,29 @@ export const getSearch = async (setLoading: Function, values: Object, setData: F
     setLoading(false);
   }
 };
+
+export const getReportsVisitas = async (setLoading: Function, values: Object, setData: Function) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get("/reports/1", { params: { ...values } });
+    setData(response?.data?.data);
+  } catch (e) {
+    console.log(e)
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const getReportsRecorridos = async (setLoading: Function, values: Object, setData: Function) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.get("/reports/2", { params: { ...values } });
+    setData(response?.data?.data);
+  } catch (e) {
+    console.log(e)
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+};
