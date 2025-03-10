@@ -11,6 +11,8 @@ import { MapaValvulas } from './views/Mapa/MapaValvulas';
 import { Recorridos } from './views/Recorridos/Recorridos';
 import { PadronTomas } from './views/PadronTomas/PadronTomas';
 import { Reportes } from './views/Reportes/Reportes';
+import { Solicitud } from './views/TiempoExtra/Solicitud';
+import { HorasExtra } from './views/TiempoExtra/HorasExtras';
 
 const router = createBrowserRouter([
     {
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
             {
                 path: '/reporte',
                 element: <Reportes/>
+            },
+            {
+                path: '/solicitud',
+                element: <Solicitud/>
+            },
+            {
+                path: '/horasextra',
+                element: <HorasExtra/>
             },
         ]
     },
