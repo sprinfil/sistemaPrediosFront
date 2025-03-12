@@ -24,8 +24,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { IoHome } from "react-icons/io5";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoDocumentLockOutline, IoDocumentText, IoHome, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
+import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
 import {
   Collapsible,
@@ -33,6 +33,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { BsClipboardFill } from "react-icons/bs";
 
 export function AppSidebar() {
   const navigate = useNavigate();
@@ -138,6 +139,23 @@ export function AppSidebar() {
 
                   </>
               }
+              <SidebarMenuItem onClick={() => navigate("/solicitud")} >
+                <SidebarMenuButton asChild  >
+                  <div>
+                    <IoDocumentText/>
+                    <span>Solicitudes</span>
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem onClick={() => navigate("/horasextra")} >
+                <SidebarMenuButton asChild  >
+                  <div>
+                    <IoTimeSharp/>
+                    <span>Horas extra</span>
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
 
             </SidebarMenu>
