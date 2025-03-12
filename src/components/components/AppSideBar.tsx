@@ -13,14 +13,14 @@ import {
   SidebarHeader
 } from "@/components/ui/sidebar"
 import { Calendar, ChevronDown, ChevronsUpDown, ChevronUp, Home, icons, Inbox, LineChartIcon, } from "lucide-react"
-import { MdOutlineExitToApp } from "react-icons/md";
+import { MdEngineering, MdOutlineExitToApp } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { FaUser } from "react-icons/fa";
+import { FaShare, FaUser, FaUsers } from "react-icons/fa";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
@@ -28,6 +28,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { IoDocumentLockOutline, IoDocumentText, IoHome, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
+import { HiMiniSquare3Stack3D } from "react-icons/hi2";
 import {
   Popover,
   PopoverContent,
@@ -55,6 +56,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { GearIcon } from "@radix-ui/react-icons";
+import { FaGear } from "react-icons/fa6";
 
 export function AppSidebar() {
   const navigate = useNavigate();
@@ -120,6 +123,14 @@ export function AppSidebar() {
       url: "/horasextra",
       icon: <IoTimeSharp />
     },
+    {
+      title: "Configuración",
+      icon: <FaGear  />,
+      options: [
+        { title: "Empleados", url: "/", icon: <FaUsers /> },
+        { title: "Áreas", url: "/", icon: <HiMiniSquare3Stack3D /> },
+      ],
+    },
   ]
 
   useEffect(() => {
@@ -145,6 +156,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <div className="p-4 w-full ">
+        <p className="text-sm text-muted-foreground">Módulo</p>
         <Select
           defaultValue={modulo}
           onValueChange={(value) => {
