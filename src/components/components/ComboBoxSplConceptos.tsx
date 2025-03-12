@@ -42,6 +42,8 @@ export const ComboBoxSplConceptos = ({
   //   fetch();
   // }, []);
 
+  useEffect(() => { setFilteredItems(items) }, [items]);
+
   useEffect(() => {
     if (!openList) {
       setSearch("");
@@ -172,9 +174,8 @@ export const ComboBoxSplConceptos = ({
                       // }}
                       onClick={() => handleItemClick(item)}
                       key={index}
-                      className={`${
-                        selectedItem?.id == item?.id ? "bg-muted" : ""
-                      } my-2 px-10 dark:text-white text-black black:text-white rounded-md h-[40px] w-full py-3 transition-all hover:bg-muted cursor-pointer select-none flex items-center`}
+                      className={`${selectedItem?.id == item?.id ? "bg-muted" : ""
+                        } my-2 px-10 dark:text-white text-black black:text-white rounded-md h-[40px] w-full py-3 transition-all hover:bg-muted cursor-pointer select-none flex items-center`}
                     >
                       {selectedItem?.id == item?.id && (
                         <CheckIcon className="mr-2" />
