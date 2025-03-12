@@ -6,7 +6,7 @@ import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
 export const Solicitud = () => {
     return (
         <Tabs defaultValue="vistaCrear" className="w-full">
-          <TabsList className="grid w-[25%] grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="vistaCrear">Crear</TabsTrigger>
             <TabsTrigger value="vistaActualizar">Actualizar</TabsTrigger>
           </TabsList>
