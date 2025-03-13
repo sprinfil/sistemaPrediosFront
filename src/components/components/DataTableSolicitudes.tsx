@@ -35,8 +35,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-const data: Payment[] = [
+import { icons } from "@/constants/icons"
+const data = [
   {
     id: "m5gr84i9",
     amount: 316,
@@ -69,81 +69,36 @@ const data: Payment[] = [
   },
 ]
 
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
 
-export const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
+/*
+    $table->unsignedBigInteger('id_he_empleado_trabajador');
+    $table->unsignedBigInteger('id_user_solicitante');
+    $table->text('descripcion');
+    $table->BigInteger('prima_dominical')->nullable();
+    $table->BigInteger('dias_festivos')->nullable();
+    $table->BigInteger('faltas')->nullable();
+    $table->BigInteger('horas');
+    $table->time('hora_inicio');
+    $table->time('hora_fin');
+    $table->unsignedBigInteger('id_user_revisor')->nullable();
+    $table->unsignedBigInteger('id_user_autorizo')->nullable();
+    $table->date('fecha');
+    $table->string('estapa');
+    $table->string('estado');
+    $table->string('motivo')->nullable();
+*/
 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
+/*
+  empleado
+  solicito
+  descripcion
+  horas
+  fecha
+  etapa
+  estado
+  motivo
+  area
+*/
 
 export function DataTableSolicitudes() {
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -153,6 +108,103 @@ export function DataTableSolicitudes() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const columns = [
+    {
+      accessorKey: "status",
+      header: "Empleado",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Empleado</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Solicito",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Solicito</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Descripcion",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Descripcion</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Horas",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>horas</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Fecha",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Fecha</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Etapa",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Etapa</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Estado",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Estado</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Motivo de cancelación",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Motivo de cancelación</div>
+        </>)
+      },
+    },
+
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const payment = row.original
+
+        return (
+          <>
+            <Button>{icons.ver("")}</Button>
+          </>
+        )
+      },
+    },
+  ]
+
 
   const table = useReactTable({
     data,
@@ -175,7 +227,7 @@ export function DataTableSolicitudes() {
 
   return (
     <div className="ml-1 mr-1">
-      <div className="flex items-center py-4">
+      {/* <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
@@ -184,7 +236,7 @@ export function DataTableSolicitudes() {
           }
           className="max-w-sm"
         />
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -236,10 +288,6 @@ export function DataTableSolicitudes() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -247,7 +295,7 @@ export function DataTableSolicitudes() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Anterior
           </Button>
           <Button
             variant="outline"
@@ -255,7 +303,7 @@ export function DataTableSolicitudes() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Siguiente
           </Button>
         </div>
       </div>
