@@ -1,5 +1,8 @@
+import { DataTableSolicitud } from "@/components/components/DataTableSolicitud"
+import { DataTableSolicitudesEmpleado } from "@/components/components/DataTableSolicitudesEmpleado"
 import { DatosCrearSolicitud } from "@/components/components/DatosCrearSolicitud"
 import { DatosGuardarSolicitud } from "@/components/components/DatosGuardarSolicitud"
+import { Button } from "@/components/ui/button"
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card"
 import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
 import { useState } from "react"
@@ -26,7 +29,13 @@ export const Solicitud = () => {
                 <CardHeader>
                     <CardTitle>Solicitudes</CardTitle>
                 </CardHeader>
-                <DatosGuardarSolicitud/>
+                <DataTableSolicitudesEmpleado/>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Descripción</CardTitle>
+                </CardHeader>
+                <DataTableSolicitud/>
             </Card>
           </TabsContent>
         </Tabs>
