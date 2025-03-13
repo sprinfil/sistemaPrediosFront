@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import dayjs from "dayjs";
 dayjs.locale("es");
   
-export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, horasEmpleados,setHorasEmpleados }) => {
+export const PopoverHorasExtrasGrupo= ({ dataEmpleados,setDataEmpleados, horasEmpleados,setHorasEmpleados }) => {
     const [loadingi, setLoadingi] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     
@@ -23,13 +23,13 @@ export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, hora
       <Popover>
         <PopoverTrigger className="ml-1">
           <Button variant={"outline"} onClick={() => setHorasEmpleados(null)}>
-            {horasEmpleados?.nombre ?? "Empleados"} <FaMagnifyingGlass/>
+            {horasEmpleados?.nombre ?? "Grupo"} <FaMagnifyingGlass/>
           </Button>
         </PopoverTrigger>
         <PopoverContent className=" min-w-[500px]">
           <div className="min-h-[200px]">
             <Input
-              placeholder="Nombre del empleados"
+              placeholder="Nombre del Grupo"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <div className="h-[200px] overflow-auto w-full  mt-2">
