@@ -31,7 +31,7 @@ export const DatosCrearSolicitud = ({dataEmpleados,setDataEmpleados, horasEmplea
             </div>
             <div className="mb-5">
                 <div className="flex space-x-8">
-                    <div>
+                    <div className="grid gap-1.5">
                         <Label>Horas</Label>
                         <Input type="number" id="hora" placeholder="0" className="w-50"/>
                     </div>
@@ -47,7 +47,7 @@ export const DatosCrearSolicitud = ({dataEmpleados,setDataEmpleados, horasEmplea
                     </div>
                 </div>
             </div>
-            <div>
+            <div className="grid gap-1.5">
                 <Label>Descripción</Label>
                 <Textarea placeholder="Descripción..." />
             </div>
