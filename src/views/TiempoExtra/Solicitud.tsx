@@ -1,8 +1,7 @@
 import { DataTableSolicitud } from "@/components/components/DataTableSolicitud"
 import { DataTableSolicitudesEmpleado } from "@/components/components/DataTableSolicitudesEmpleado"
 import { DatosCrearSolicitud } from "@/components/components/DatosCrearSolicitud"
-import { DatosGuardarSolicitud } from "@/components/components/DatosGuardarSolicitud"
-import { Button } from "@/components/ui/button"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card"
 import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
 import { useState } from "react"
@@ -10,7 +9,6 @@ import { useState } from "react"
 export const Solicitud = () => {
     const [dataEmpleados,setDataEmpleados]=useState([]);
     const [empleados,setEmpleados]=useState([]);
-    const [isOpen, setIsOpen] = useState(false)
     
     return (
         <Tabs defaultValue="vistaCrear" className="w-full">
@@ -30,8 +28,18 @@ export const Solicitud = () => {
             <Card className="mb-5">
                 <CardHeader>
                     <CardTitle>Solicitudes</CardTitle>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink className='cursor-pointer'>Empleados </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbItem>
+                            <BreadcrumbPage></BreadcrumbPage>
+                        </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
                 </CardHeader>
-                <DataTableSolicitudesEmpleado isOpen={isOpen} setIsOpen={setIsOpen}/>
+                <DataTableSolicitudesEmpleado />
             </Card>
             <Card>
                 <CardHeader>

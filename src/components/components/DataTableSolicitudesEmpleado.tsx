@@ -37,7 +37,7 @@ export type Payment = {
   nombre: string
 }
 
-export function DataTableSolicitudesEmpleado({isOpen, setIsOpen}) {
+export function DataTableSolicitudesEmpleado() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -60,7 +60,7 @@ export function DataTableSolicitudesEmpleado({isOpen, setIsOpen}) {
       cell: ({ row }) => {
         return (
           <div className="flex w-full gap-2">
-            <Button variant={"outline"} onClick={setIsOpen}>
+            <Button variant={"outline"}>
               Editar <BsPencilSquare />
             </Button>
           </div>

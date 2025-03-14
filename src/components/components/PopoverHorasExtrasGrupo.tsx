@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import dayjs from "dayjs";
+import { icons } from "@/constants/icons";
 dayjs.locale("es");
   
 export const PopoverHorasExtrasGrupo= ({ dataEmpleados,setDataEmpleados, horasEmpleados,setHorasEmpleados }) => {
@@ -23,7 +24,7 @@ export const PopoverHorasExtrasGrupo= ({ dataEmpleados,setDataEmpleados, horasEm
       <Popover>
         <PopoverTrigger className="ml-1">
           <Button variant={"outline"} onClick={() => setHorasEmpleados(null)}>
-            {horasEmpleados?.nombre ?? "Grupo"} <FaMagnifyingGlass/>
+            {horasEmpleados?.nombre ?? "Grupo"} {icons.buscar("")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className=" min-w-[500px]">
