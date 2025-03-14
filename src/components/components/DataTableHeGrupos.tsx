@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,23 +12,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
+import { Button } from "@/components/ui/button";
 
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,96 +24,78 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { icons } from "@/constants/icons"
-import { BsFileExcel } from "react-icons/bs"
-import { FaFileExcel } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
-const data = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-]
+} from "@/components/ui/table";
+import { icons } from "@/constants/icons";
+import LoaderHorizontal from "./LoaderHorizontal";
+import { useNavigate } from "react-router-dom";
+import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
+import { deleteData } from "@/lib/CatalogoService";
+import { toast } from "@/hooks/use-toast";
 
-
-export function DataTableHeGrupos() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export function DataTableHeGrupos({
+  data = [],
+  loading,
+  setData,
+  setLoading,
+  setAccion,
+  setSelectedData,
+  API_ENDPOINT,
+}) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
-  const navigate = useNavigate();
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const navigate = useNavigate();
   const columns = [
     {
-      accessorKey: "status",
+      accessorKey: "name",
       header: "Nombre",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Empleado</div>
-        </>)
-      },
     },
-
     {
-      accessorKey: "status",
-      header: "Area",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Empleado</div>
-        </>)
-      },
+      accessorKey: "description",
+      header: "Descripcion",
     },
     {
       id: "actions",
-      enableHiding: false,
+      header: "",
       cell: ({ row }) => {
-        const payment = row.original
-
         return (
-          <>
-            <div className="flex gap-2 items-center">
-              <Button
-                onClick={() => { navigate("") }}
-              >{icons.ver("")}</Button>
-            </div>
-          </>
-        )
+          <div className="flex items-center gap-2 justify-end">
+            <Button
+              disabled={loading}
+              onClick={() => {
+                setSelectedData(row?.original);
+                setAccion("ver");
+              }}
+            >
+              {icons.ver("")}
+            </Button>
+            <ModalEliminarReutilizable
+              trigger={
+                <Button disabled={loading}>
+                  {icons.eliminar("text-red-500")}
+                </Button>
+              }
+              onConfirm={async () => {
+                await deleteData(
+                  setLoading,
+                  API_ENDPOINT + "/" + row.original.id,
+                  toast
+                );
+                setData((prev) => {
+                  return prev?.filter((data) => data?.id !== row.original.id);
+                });
+              }}
+              message={"¿Eliminar Registro?"}
+            />
+          </div>
+        );
       },
     },
-  ]
-
-
+  ];
   const table = useReactTable({
     data,
     columns,
@@ -143,29 +113,29 @@ export function DataTableHeGrupos() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
-    <div className="ml-1 mr-1 ">
-      <div className="flex items-center py-4 gap-3">
+    <div className="w-full">
+      <div className="flex items-center py-4">
         <Input
           placeholder="Nombre"
-          value={(table.getColumn("nombre")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("nombre")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Input
-          placeholder="Area"
-          value={(table.getColumn("area")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("area")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Button className="ml-auto">
-          Agregar grupo {icons.agregar("")}
+
+        <Button
+          variant="outline"
+          className="ml-auto"
+          onClick={() => {
+            setAccion("crear");
+            setSelectedData({});
+          }}
+        >
+          Nuevo {icons.agregar("")}
         </Button>
       </div>
       <div className="rounded-md border">
@@ -179,16 +149,23 @@ export function DataTableHeGrupos() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
+            {loading && (
+              <TableRow className="border-none h-0 p-0">
+                <TableCell className="p-0" colSpan={columns.length}>
+                  <LoaderHorizontal styles={"w-full"} />
+                </TableCell>
+              </TableRow>
+            )}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -211,7 +188,7 @@ export function DataTableHeGrupos() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -239,5 +216,5 @@ export function DataTableHeGrupos() {
         </div>
       </div>
     </div>
-  )
+  );
 }
