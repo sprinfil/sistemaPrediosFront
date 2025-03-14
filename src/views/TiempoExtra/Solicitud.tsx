@@ -10,6 +10,8 @@ import { useState } from "react"
 export const Solicitud = () => {
     const [dataEmpleados,setDataEmpleados]=useState([]);
     const [empleados,setEmpleados]=useState([]);
+    const [isOpen, setIsOpen] = useState(false)
+    
     return (
         <Tabs defaultValue="vistaCrear" className="w-full">
           <TabsList className="grid w-full grid-cols-6">
@@ -25,11 +27,11 @@ export const Solicitud = () => {
             </Card>
           </TabsContent>
           <TabsContent value="vistaActualizar">
-            <Card>
+            <Card className="mb-5">
                 <CardHeader>
                     <CardTitle>Solicitudes</CardTitle>
                 </CardHeader>
-                <DataTableSolicitudesEmpleado/>
+                <DataTableSolicitudesEmpleado isOpen={isOpen} setIsOpen={setIsOpen}/>
             </Card>
             <Card>
                 <CardHeader>

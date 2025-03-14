@@ -37,30 +37,7 @@ export type Payment = {
   nombre: string
 }
 
-export const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: "nombre",
-    header: "nombre",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("nombre")}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <div className="flex w-full gap-2">
-          <Button variant={"outline"}>
-            Editar <BsPencilSquare />
-          </Button>
-        </div>
-      )
-    },
-  },
-]
-
-export function DataTableSolicitudesEmpleado() {
+export function DataTableSolicitudesEmpleado({isOpen, setIsOpen}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -68,6 +45,29 @@ export function DataTableSolicitudesEmpleado() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const columns: ColumnDef<Payment>[] = [
+    {
+      accessorKey: "nombre",
+      header: "nombre",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("nombre")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex w-full gap-2">
+            <Button variant={"outline"} onClick={setIsOpen}>
+              Editar <BsPencilSquare />
+            </Button>
+          </div>
+        )
+      },
+    },
+  ]
 
   const table = useReactTable({
     data,
