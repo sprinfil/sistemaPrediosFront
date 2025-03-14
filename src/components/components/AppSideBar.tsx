@@ -125,10 +125,11 @@ export function AppSidebar() {
     },
     {
       title: "Configuración",
-      icon: <FaGear  />,
+      icon: <FaGear />,
       options: [
-        { title: "Empleados", url: "/", icon: <FaUsers /> },
-        { title: "Áreas", url: "/", icon: <HiMiniSquare3Stack3D /> },
+        { title: "Empleados", url: "/horasextra/empleados", icon: <FaUsers /> },
+        { title: "Áreas", url: "/horasextra/areas", icon: <HiMiniSquare3Stack3D /> },
+        { title: "Grupos", url: "/horasextra/grupos", icon: <FaUsers /> },
       ],
     },
   ]

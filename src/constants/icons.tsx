@@ -7,6 +7,7 @@ import { IoHomeOutline } from "react-icons/io5";
 import { FiPlusCircle } from "react-icons/fi";
 import { FaRegSave } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { BiImport } from "react-icons/bi";
 
 export const icons = {
   ver: (styles) => <EyeIcon className={styles} />,
@@ -20,4 +21,7 @@ export const icons = {
   home: (styles) => <IoHomeOutline className={styles} />,
   guardar: (styles) => <FaRegSave className={styles} />,
   buscar: (styles) => <FaMagnifyingGlass className={styles} />,
+
+  importar: (styles) => <BiImport className={styles} />,
+
 };
