@@ -13,71 +13,91 @@ import { PadronTomas } from './views/PadronTomas/PadronTomas';
 import { Reportes } from './views/Reportes/Reportes';
 import { Solicitud } from './views/TiempoExtra/Solicitud';
 import HorasExtras from './views/TiempoExtra/HorasExtras';
+import { HoraExtraVer } from './views/TiempoExtra/HoraExtraVer';
+import { Empleados } from './views/TiempoExtra/Empleados';
+import { Areas } from './views/TiempoExtra/Areas';
+import { Grupos } from './views/TiempoExtra/Grupos';
 
 const router = createBrowserRouter([
-    {
+  {
+    path: '/',
+    element: <DefaultLayout />,
+    children: [
+      {
         path: '/',
-        element: <DefaultLayout />,
-        children: [
-            {
-                path: '/',
-                element: <Navigate to="/dashboard" />
-            },
-            {
-                path: '/dashboard',
-                element: <DashBoard />
-            },
-            {
-                path: '/cargasTrabajo',
-                element: <CargasTrabajos />
-            },
-            {
-                path: '/mapa',
-                element: <Mapa />
-            },
-            {
-                path: '/mapaValvulas',
-                element: <MapaValvulas />
-            },
-            {
-                path: '/operadores',
-                element: <Operadores />
-            },
-            {
-                path: '/recorridos',
-                element: <Recorridos />
-            },
-            {
-                path: '/padronTomas',
-                element: <PadronTomas />
-            },
-            {
-                path: '/reporte',
-                element: <Reportes />
-            },
-            {
-                path: '/solicitud',
-                element: <Solicitud />
-            },
-            {
-                path: '/horasextra',
-                element: <HorasExtras />
-            },
-        ]
-    },
-    {
-        path: '/',
-        element: <GuestLayout />,
-        children: [
-            {
-                path: '/login',
-                element: <Login />
-            },
-        ]
-    },
-    {
-        path: '*',
-        element: <NotFound />
-    },
+        element: <Navigate to="/dashboard" />
+      },
+      {
+        path: '/dashboard',
+        element: <DashBoard />
+      },
+      {
+        path: '/cargasTrabajo',
+        element: <CargasTrabajos />
+      },
+      {
+        path: '/mapa',
+        element: <Mapa />
+      },
+      {
+        path: '/mapaValvulas',
+        element: <MapaValvulas />
+      },
+      {
+        path: '/operadores',
+        element: <Operadores />
+      },
+      {
+        path: '/recorridos',
+        element: <Recorridos />
+      },
+      {
+        path: '/padronTomas',
+        element: <PadronTomas />
+      },
+      {
+        path: '/reporte',
+        element: <Reportes />
+      },
+      {
+        path: '/solicitud',
+        element: <Solicitud />
+      },
+      {
+        path: '/horasextra',
+        element: <HorasExtras />
+      },
+      {
+        path: '/horasextra/verSolicitud',
+        element: <HoraExtraVer />
+      },
+      {
+        path: '/horasextra/empleados',
+        element: <Empleados />
+      },
+      {
+        path: '/horasextra/areas',
+        element: <Areas />
+      },
+      {
+        path: '/horasextra/grupos',
+        element: <Grupos />
+      },
+    ]
+  },
+  {
+    path: '/',
+    element: <GuestLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <Login />
+      },
+    ]
+  },
+  {
+    path: '*',
+    element: <NotFound />
+  },
 ])
 export default router;

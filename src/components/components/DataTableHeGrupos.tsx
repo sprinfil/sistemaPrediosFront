@@ -75,37 +75,7 @@ const data = [
 ]
 
 
-/*
-    $table->unsignedBigInteger('id_he_empleado_trabajador');
-    $table->unsignedBigInteger('id_user_solicitante');
-    $table->text('descripcion');
-    $table->BigInteger('prima_dominical')->nullable();
-    $table->BigInteger('dias_festivos')->nullable();
-    $table->BigInteger('faltas')->nullable();
-    $table->BigInteger('horas');
-    $table->time('hora_inicio');
-    $table->time('hora_fin');
-    $table->unsignedBigInteger('id_user_revisor')->nullable();
-    $table->unsignedBigInteger('id_user_autorizo')->nullable();
-    $table->date('fecha');
-    $table->string('estapa');
-    $table->string('estado');
-    $table->string('motivo')->nullable();
-*/
-
-/*
-  empleado
-  solicito
-  descripcion
-  horas
-  fecha
-  etapa
-  estado
-  motivo
-  area
-*/
-
-export function DataTableSolicitudes() {
+export function DataTableHeGrupos() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -117,7 +87,7 @@ export function DataTableSolicitudes() {
   const columns = [
     {
       accessorKey: "status",
-      header: "Empleado",
+      header: "Nombre",
       cell: ({ row }) => {
         const data = row.original;
         return (<>
@@ -125,77 +95,17 @@ export function DataTableSolicitudes() {
         </>)
       },
     },
-    {
-      accessorKey: "status",
-      header: "Solicito",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Solicito</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Descripcion",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Descripcion</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Horas",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>horas</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Fecha",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Fecha</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Etapa",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Etapa</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Estado</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Motivo de cancelación",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Motivo de cancelación</div>
-        </>)
-      },
-    },
 
+    {
+      accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>Empleado</div>
+        </>)
+      },
+    },
     {
       id: "actions",
       enableHiding: false,
@@ -206,10 +116,8 @@ export function DataTableSolicitudes() {
           <>
             <div className="flex gap-2 items-center">
               <Button
-                onClick={() => { navigate("/horasextra/verSolicitud") }}
+                onClick={() => { navigate("") }}
               >{icons.ver("")}</Button>
-              <Button variant={"outline"}>{icons.confirmar("")}</Button>
-              <Button variant={"outline"}>{icons.cancelar("")}</Button>
             </div>
           </>
         )
@@ -238,10 +146,26 @@ export function DataTableSolicitudes() {
   })
 
   return (
-    <div className="ml-1 mr-1">
+    <div className="ml-1 mr-1 ">
       <div className="flex items-center py-4 gap-3">
-        <Button variant={"outline"} className="ml-auto">Exportar
-          <PiMicrosoftExcelLogoDuotone />
+        <Input
+          placeholder="Nombre"
+          value={(table.getColumn("nombre")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("nombre")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Area"
+          value={(table.getColumn("area")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("area")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Button className="ml-auto">
+          Agregar grupo {icons.agregar("")}
         </Button>
       </div>
       <div className="rounded-md border">

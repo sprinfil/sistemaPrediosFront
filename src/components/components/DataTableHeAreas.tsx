@@ -16,8 +16,6 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
-
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -38,9 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { icons } from "@/constants/icons"
-import { BsFileExcel } from "react-icons/bs"
-import { FaFileExcel } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
+
 const data = [
   {
     id: "m5gr84i9",
@@ -75,127 +71,36 @@ const data = [
 ]
 
 
-/*
-    $table->unsignedBigInteger('id_he_empleado_trabajador');
-    $table->unsignedBigInteger('id_user_solicitante');
-    $table->text('descripcion');
-    $table->BigInteger('prima_dominical')->nullable();
-    $table->BigInteger('dias_festivos')->nullable();
-    $table->BigInteger('faltas')->nullable();
-    $table->BigInteger('horas');
-    $table->time('hora_inicio');
-    $table->time('hora_fin');
-    $table->unsignedBigInteger('id_user_revisor')->nullable();
-    $table->unsignedBigInteger('id_user_autorizo')->nullable();
-    $table->date('fecha');
-    $table->string('estapa');
-    $table->string('estado');
-    $table->string('motivo')->nullable();
-*/
-
-/*
-  empleado
-  solicito
-  descripcion
-  horas
-  fecha
-  etapa
-  estado
-  motivo
-  area
-*/
-
-export function DataTableSolicitudes() {
+export function DataTableHeAreas() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const navigate = useNavigate();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const columns = [
     {
       accessorKey: "status",
-      header: "Empleado",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Empleado</div>
-        </>)
-      },
+      header: "Clave",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("status")}</div>
+      ),
     },
     {
       accessorKey: "status",
-      header: "Solicito",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Solicito</div>
-        </>)
-      },
+      header: "Dirección",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("status")}</div>
+      ),
     },
     {
       accessorKey: "status",
-      header: "Descripcion",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Descripcion</div>
-        </>)
-      },
+      header: "Area padre",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("status")}</div>
+      ),
     },
-    {
-      accessorKey: "status",
-      header: "Horas",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>horas</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Fecha",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Fecha</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Etapa",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Etapa</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Estado</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Motivo de cancelación",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>Motivo de cancelación</div>
-        </>)
-      },
-    },
-
     {
       id: "actions",
       enableHiding: false,
@@ -204,19 +109,11 @@ export function DataTableSolicitudes() {
 
         return (
           <>
-            <div className="flex gap-2 items-center">
-              <Button
-                onClick={() => { navigate("/horasextra/verSolicitud") }}
-              >{icons.ver("")}</Button>
-              <Button variant={"outline"}>{icons.confirmar("")}</Button>
-              <Button variant={"outline"}>{icons.cancelar("")}</Button>
-            </div>
           </>
         )
       },
     },
   ]
-
 
   const table = useReactTable({
     data,
@@ -238,11 +135,23 @@ export function DataTableSolicitudes() {
   })
 
   return (
-    <div className="ml-1 mr-1">
-      <div className="flex items-center py-4 gap-3">
-        <Button variant={"outline"} className="ml-auto">Exportar
-          <PiMicrosoftExcelLogoDuotone />
+    <div className="w-full">
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Buscar ..."
+          value={(table.getColumn("nombre")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("nombre")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+
+        <Button
+          className="ml-auto"
+        >Importar
+          {icons.importar("")}
         </Button>
+
       </div>
       <div className="rounded-md border">
         <Table>
@@ -287,7 +196,7 @@ export function DataTableSolicitudes() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
