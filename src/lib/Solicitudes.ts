@@ -3,10 +3,8 @@ import axiosClient from "@/axios-client"
 export const getEmpleados = async (setLoading: Function, values: Object, setData: Function) => {
     try {
       setLoading(true);
-      const response = await axiosClient.get("/he-empleados/by-name", values);
-      setData(response?.data?.data); 
-      console.log("getEmpleados", response?.data?.data)
-      //console.log("empleados", values) 
+      const response = await axiosClient.get("/he-empleados/by-name", { params: { ...values } });
+      setData(response?.data?.data);
     } catch (e) {
       throw e;
     } finally {
@@ -17,10 +15,8 @@ export const getEmpleados = async (setLoading: Function, values: Object, setData
 export const getGrupos = async (setLoading: Function, values: Object, setData: Function) => {
   try {
     setLoading(true);
-    const response = await axiosClient.get("/he-grupos/by-name", values);
-    setData(response?.data?.data); 
-    //console.log("getGrupos", response?.data?.data)
-    //console.log("grupos", values) 
+    const response = await axiosClient.get("/he-grupos/by-name",{ params: { ...values } });
+    setData(response?.data?.data);
   } catch (e) {
     throw e;
   } finally {
@@ -31,7 +27,7 @@ export const getGrupos = async (setLoading: Function, values: Object, setData: F
 export const crearSolicitudEmpleados = async(setLoading:Function, values:Object, setData:Function) => {
   try {
     setLoading(true)
-    const response = await axiosClient.post("/he-solicitudes", values);
+    const response = await axiosClient.post("/he-solicitudes/", values);
     setData(response?.data?.data); 
   } catch (e) {
     throw e;
@@ -39,14 +35,36 @@ export const crearSolicitudEmpleados = async(setLoading:Function, values:Object,
     setLoading(false)
   }
 }
-export const crearSolicitudGrupos = async(setLoading:Function, values:Object, setData:Function) => {
+
+export const crearSolicitudGrupos = async(GrupoId:number, setLoading:Function, values:Object, setData:Function) => {
   try {
     setLoading(true)
-    const response = await axiosClient.post("/he-solicitudes/group/{id}", values); //agregar el id
+    const response = await axiosClient.post('/he-solicitudes/group/' + GrupoId, values);
     setData(response?.data?.data); 
   } catch (e) {
     throw e;
   } finally{
     setLoading(false)
+  }
+}
+
+export async function editarSolicitud( SolicitudId: number,setLoading: Function,values: Object,setData: Function) {
+  try {
+    setLoading(true);
+    const response = await axiosClient.put('/he-solicitudes/' + SolicitudId, values);
+    setData(prev => {
+      return prev.map(solicitud => {
+        if (solicitud?.id == SolicitudId) {
+          return response?.data?.data
+        } else {
+          return solicitud;
+        }
+      })
+    })
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
   }
 }

@@ -9,38 +9,38 @@ import { useState } from "react"
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion"
 import { DatosCrearSolicitudGrupos } from "@/components/components/DatosCrearSolicitudGrupos"
 
+
 export const Solicitud = () => {
-    
-    return (
-        <Tabs defaultValue="vistaCrear" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="vistaCrear">Crear</TabsTrigger>
-            <TabsTrigger value="vistaActualizar">Solicitudes</TabsTrigger>
-          </TabsList>
-          <TabsContent value="vistaCrear">
-            <Card className="mb-2">
-                <CardHeader>
-                    <CardTitle>Crear</CardTitle>
-                </CardHeader>
-                <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
-                  <AccordionItem value="item-1">
-                    <AccordionTrigger>Empleados</AccordionTrigger>
-                    <AccordionContent>
-                      <DatosCrearSolicitudEmpleados/>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-2">
-                    <AccordionTrigger>Grupos</AccordionTrigger>
-                    <AccordionContent>
-                      <DatosCrearSolicitudGrupos/>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-            </Card>
-          </TabsContent>
-          <TabsContent value="vistaActualizar">
-            <DatosSolicitudes/>
-          </TabsContent>
-        </Tabs>
-    )
+  return (
+    <Tabs defaultValue="vistaCrear" className="w-full">
+      <TabsList className="grid w-full grid-cols-6">
+        <TabsTrigger value="vistaCrear">Crear</TabsTrigger>
+        <TabsTrigger value="vistaActualizar">Solicitudes</TabsTrigger>
+      </TabsList>
+      <TabsContent value="vistaCrear">
+        <Card className="mb-2">
+          <CardHeader>
+            <CardTitle>Crear</CardTitle>
+          </CardHeader>
+          <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Empleados</AccordionTrigger>
+              <AccordionContent>
+                <DatosCrearSolicitudEmpleados/>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Grupos</AccordionTrigger>
+              <AccordionContent>
+                <DatosCrearSolicitudGrupos/>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </Card>
+      </TabsContent>
+      <TabsContent value="vistaActualizar">
+        <DatosSolicitudes/>
+      </TabsContent>
+    </Tabs>
+  )
 }

@@ -8,24 +8,28 @@ import { icons } from "@/constants/icons";
 import { getEmpleados } from "@/lib/Solicitudes";
 dayjs.locale("es");
   
-export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, horasEmpleados,setHorasEmpleados }) => {
+export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, empleados,setEmpleados }) => {
     const [loadingi, setLoadingi] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     
     useEffect(() => {
       const timeoutId = setTimeout(() => {
         if (searchTerm.trim() !== "") {
-          getEmpleados(setLoadingi, { nombre: searchTerm }, setDataEmpleados);
+            getEmpleados(setLoadingi, { nombre: searchTerm }, setDataEmpleados);
         }
       }, 500);
       return () => clearTimeout(timeoutId);
     }, [searchTerm]);
 
+    useEffect(()=>{
+        console.log("empleado",empleados)
+    },[empleados])
+
     return (
       <Popover>
         <PopoverTrigger className="ml-1">
-          <Button variant={"outline"} onClick={() => setHorasEmpleados(null)}>
-            {horasEmpleados?.nombre ?? "Empleados"} {icons.buscar("")}
+          <Button variant={"outline"} onClick={() => setEmpleados(null)}>
+            {empleados?.nombre ?? "Empleados"} {icons.buscar("")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className=" min-w-[500px]">
@@ -34,13 +38,14 @@ export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, hora
               placeholder="Nombre del empleados"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            
             <div className="h-[200px] overflow-auto w-full  mt-2">
-              {dataEmpleados?.map((horasEmpleados, index) => {
+              {dataEmpleados?.map((empleados, index) => {
                 return (
                 <>
                 <Button
                     onClick={() => {
-                        setHorasEmpleados(horasEmpleados);
+                        setEmpleados(empleados);
                         setDataEmpleados([]);
                     }}
                     variant={"outline"}
@@ -48,7 +53,7 @@ export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, hora
                     className="flex items-center gap-2 w-full justify-start my-1 font-normal"
                 >
                     <p key={index}>
-                        {horasEmpleados?.nombre ?? "--"}{" "}
+                        {empleados?.nombre ?? "--"}{" "}
                     </p>
                 </Button>
                 </>

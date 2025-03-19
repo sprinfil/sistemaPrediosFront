@@ -126,14 +126,14 @@ export function DataTableSolicitud() {
     },
     {
       accessorKey: "prima_dominical",
-      header: "prima_dominical",
+      header: "Prima Dominical",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("prima_dominical")}</div>
       ),
     },
     {
       accessorKey: "dias_festivos",
-      header: "dias_festivos",
+      header: "Días Festivos",
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue("dias_festivos")}</div>
       ),

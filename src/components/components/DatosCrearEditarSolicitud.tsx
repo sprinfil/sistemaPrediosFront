@@ -12,14 +12,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
-import { icons } from "@/constants/icons";
 
-
-export const DatosCrearSolicitudGrupos = ({}) => {
+export const DatosCrearEditarSolicitud = ({}) => {
     const [dataEmpleados,setDataEmpleados]=useState([]);
-    const [empleados,setEmpleados]=useState(null);
-    const [loading, setLoading] = useState(false);
-
+    const [empleados,setEmpleados]=useState([]);
 
     const formSchema = z.object({
         horas: z.string().min(1, {
@@ -64,6 +60,7 @@ export const DatosCrearSolicitudGrupos = ({}) => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+
         } catch (e) {
           toast({
             title: "Error",
@@ -78,7 +75,7 @@ export const DatosCrearSolicitudGrupos = ({}) => {
     <>
       <div className="ml-10 mr-10">
         <div className="w-full space-x-4 flex mb-5">
-          <PopoverHorasExtrasGrupo dataEmpleados={dataEmpleados} setDataEmpleados={setDataEmpleados} horasEmpleados={empleados} setHorasEmpleados={setEmpleados} />
+          <PopoverHorasExtrasEmpleado dataEmpleados={dataEmpleados} setDataEmpleados={setDataEmpleados} horasEmpleados={empleados} setHorasEmpleados={setEmpleados} />
         </div>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
@@ -170,7 +167,7 @@ export const DatosCrearSolicitudGrupos = ({}) => {
                     render={({ field }) => (
                     <FormItem>
                         <FormControl>
-                        <Checkbox />
+                        <Checkbox id="primadominical"/>
                         </FormControl>
                         <FormLabel className="ml-2">Prima dominical</FormLabel>
                         <FormMessage />
@@ -183,7 +180,7 @@ export const DatosCrearSolicitudGrupos = ({}) => {
                     render={({ field }) => (
                     <FormItem>
                         <FormControl>
-                        <Checkbox />
+                        <Checkbox id="diafestivo"/>
                         </FormControl>
                         <FormLabel className="ml-2">Día Festivo</FormLabel>
                         <FormMessage />
@@ -193,10 +190,7 @@ export const DatosCrearSolicitudGrupos = ({}) => {
             </form>
         </Form>
         <div className="w-full mt-5 mb-5 grid justify-end">
-            <Button type="submit" disabled={loading} >
-                {loading && <Loader/> }
-                Agregar {icons.agregar("")}
-            </Button>
+          <Button onClick={}>Agregar</Button>
         </div>
       </div>
     </>

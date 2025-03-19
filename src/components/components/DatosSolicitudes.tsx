@@ -60,11 +60,11 @@ const Filtros = ({ fetchData, params, setParams }) => {
                   <TableBody>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Clave
+                        Folio
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <Input
-                          placeholder="Clave"
+                          placeholder="Folio ..."
                           value={params?.clave}
                           onChange={(e) => {
                             setParams((prev) => {
@@ -79,30 +79,11 @@ const Filtros = ({ fetchData, params, setParams }) => {
                     </TableRow>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Localización
+                        Nombre
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <Input
-                          placeholder="Localización"
-                          value={params?.localizacion}
-                          onChange={(e) => {
-                            setParams((prev) => {
-                              return {
-                                ...prev,
-                                localizacion: e.target.value,
-                              };
-                            });
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={tableCellStyles}>
-                        Nombre del cliente
-                      </TableCell>
-                      <TableCell className={tableCellStyles}>
-                        <Input
-                          placeholder="Nombre del cliente"
+                          placeholder="Nombre ..."
                           value={params?.customer}
                           onChange={(e) => {
                             setParams((prev) => {
@@ -117,7 +98,7 @@ const Filtros = ({ fetchData, params, setParams }) => {
                     </TableRow>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Fecha de inicio
+                        Fecha
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <input

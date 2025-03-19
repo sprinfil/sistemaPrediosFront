@@ -12,10 +12,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
+import { icons } from "@/constants/icons";
+import { Loader } from "lucide-react"
 
 export const DatosCrearSolicitudEmpleados = ({}) => {
     const [dataEmpleados,setDataEmpleados]=useState([]);
-    const [empleados,setEmpleados]=useState([]);
+    const [empleados,setEmpleados]=useState(null);
+    const [loading, setLoading] = useState(false);
 
     const formSchema = z.object({
         horas: z.string().min(1, {
@@ -75,7 +78,7 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
     <>
       <div className="ml-10 mr-10">
         <div className="w-full space-x-4 flex mb-5">
-          <PopoverHorasExtrasEmpleado dataEmpleados={dataEmpleados} setDataEmpleados={setDataEmpleados} horasEmpleados={empleados} setHorasEmpleados={setEmpleados} />
+          <PopoverHorasExtrasEmpleado dataEmpleados={dataEmpleados} setDataEmpleados={setDataEmpleados} empleados={empleados} setEmpleados={setEmpleados} />
         </div>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
@@ -190,7 +193,10 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
             </form>
         </Form>
         <div className="w-full mt-5 mb-5 grid justify-end">
-          <Button onClick={}>Agregar</Button>
+            <Button type="submit" disabled={loading} >
+                {loading && <Loader/> }
+                Agregar {icons.agregar("")}
+            </Button>
         </div>
       </div>
     </>
