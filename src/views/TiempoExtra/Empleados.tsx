@@ -8,9 +8,18 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DataTableHeEmpleados } from '@/components/components/DataTableHeEmpleados'
+import { useEmpleados } from '@/lib/EmpleadosHook'
 
 
 export const Empleados = () => {
+
+  const {
+    empleados,
+    setEmpleados,
+    loadingEmpleados,
+    setLoadingEmpleados,
+    getEmpleados
+  } = useEmpleados();
   return (
     <>
       <Card>
@@ -19,7 +28,11 @@ export const Empleados = () => {
           <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTableHeEmpleados />
+          <DataTableHeEmpleados
+            data={empleados}
+            loading={loadingEmpleados}
+            updateData={getEmpleados}
+          />
         </CardContent>
 
       </Card>

@@ -35,12 +35,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { useLogicSolicitudes } from '@/lib/HorasExtraService';
 
 const HorasExtras = () => {
-  const fetchData = () => {
-
-  }
-  const [params, setParams] = useState({});
+  const {
+    fetch,
+    loadingData,
+    setLoadingData,
+    params,
+    setParams,
+    solicitudes,
+    setSolicitudes
+  } = useLogicSolicitudes();
 
   return (
     <div>
@@ -56,16 +62,20 @@ const HorasExtras = () => {
                 <BreadcrumbLink className='cursor-pointer'>Seleccionar solicitud</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-
             </BreadcrumbList>
           </Breadcrumb>
 
           <Filtros
-            fetchData={fetchData}
+            fetchData={fetch}
             params={params}
             setParams={setParams}
           />
-          <DataTableSolicitudes />
+          <DataTableSolicitudes
+            data={solicitudes}
+            loading={loadingData}
+            setData={setSolicitudes}
+            setLoading={setLoadingData}
+          />
         </CardContent>
       </Card>
     </div>
@@ -109,59 +119,20 @@ const Filtros = ({ fetchData, params, setParams }) => {
                     </TableRow>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Localización
+                        Empleado
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <Input
-                          placeholder="Localización"
-                          value={params?.localizacion}
+                          placeholder="Empleado"
+                          value={params?.empleado}
                           onChange={(e) => {
                             setParams((prev) => {
                               return {
                                 ...prev,
-                                localizacion: e.target.value,
+                                empleado: e.target.value,
                               };
                             });
                           }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={tableCellStyles}>
-                        Nombre del cliente
-                      </TableCell>
-                      <TableCell className={tableCellStyles}>
-                        <Input
-                          placeholder="Nombre del cliente"
-                          value={params?.customer}
-                          onChange={(e) => {
-                            setParams((prev) => {
-                              return {
-                                ...prev,
-                                customer: e.target.value,
-                              };
-                            });
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={tableCellStyles}>
-                        Fecha de inicio
-                      </TableCell>
-                      <TableCell className={tableCellStyles}>
-                        <input
-                          value={params?.start_date}
-                          onChange={(e) => {
-                            setParams((prev) => {
-                              return {
-                                ...prev,
-                                start_date: e.target.value,
-                              };
-                            });
-                          }}
-                          type="date"
-                          className="w-full border brder-border p-2 rounded-md"
                         />
                       </TableCell>
                     </TableRow>
