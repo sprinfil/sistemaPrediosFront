@@ -1,14 +1,15 @@
 import { DataTableSolicitud } from "@/components/components/DataTableSolicitud"
 import { DataTableSolicitudesEmpleado } from "@/components/components/DataTableSolicitudesEmpleado"
-import { DatosCrearSolicitud } from "@/components/components/DatosCrearSolicitud"
+import { DatosCrearSolicitudEmpleados } from "@/components/components/DatosCrearSolicitudEmpleados"
+import DatosSolicitudes from "@/components/components/DatosSolicitudes"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card"
 import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
 import { useState } from "react"
+import {Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion"
+import { DatosCrearSolicitudGrupos } from "@/components/components/DatosCrearSolicitudGrupos"
 
 export const Solicitud = () => {
-    const [dataEmpleados,setDataEmpleados]=useState([]);
-    const [empleados,setEmpleados]=useState([]);
     
     return (
         <Tabs defaultValue="vistaCrear" className="w-full">
@@ -21,32 +22,24 @@ export const Solicitud = () => {
                 <CardHeader>
                     <CardTitle>Crear</CardTitle>
                 </CardHeader>
-                <DatosCrearSolicitud dataEmpleados={dataEmpleados} setDataEmpleados={setDataEmpleados} horasEmpleados={empleados} setHorasEmpleados={setEmpleados}/>
+                <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger>Empleados</AccordionTrigger>
+                    <AccordionContent>
+                      <DatosCrearSolicitudEmpleados/>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-2">
+                    <AccordionTrigger>Grupos</AccordionTrigger>
+                    <AccordionContent>
+                      <DatosCrearSolicitudGrupos/>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
             </Card>
           </TabsContent>
           <TabsContent value="vistaActualizar">
-            <Card className="mb-5">
-                <CardHeader>
-                    <CardTitle>Solicitudes</CardTitle>
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink className='cursor-pointer'>Empleados </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem>
-                            <BreadcrumbPage></BreadcrumbPage>
-                        </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                </CardHeader>
-                <DataTableSolicitudesEmpleado />
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Descripción</CardTitle>
-                </CardHeader>
-                <DataTableSolicitud/>
-            </Card>
+            <DatosSolicitudes/>
           </TabsContent>
         </Tabs>
     )

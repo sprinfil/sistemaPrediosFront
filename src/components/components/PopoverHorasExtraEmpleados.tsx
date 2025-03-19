@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import dayjs from "dayjs";
 import { icons } from "@/constants/icons";
+import { getEmpleados } from "@/lib/Solicitudes";
 dayjs.locale("es");
   
 export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, horasEmpleados,setHorasEmpleados }) => {
@@ -14,7 +15,7 @@ export const PopoverHorasExtrasEmpleado= ({ dataEmpleados,setDataEmpleados, hora
     useEffect(() => {
       const timeoutId = setTimeout(() => {
         if (searchTerm.trim() !== "") {
-          //getSearch(setLoadingi, { nombre: searchTerm }, setDataValvula);
+          getEmpleados(setLoadingi, { nombre: searchTerm }, setDataEmpleados);
         }
       }, 500);
       return () => clearTimeout(timeoutId);
