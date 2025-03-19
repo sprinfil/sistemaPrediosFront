@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,23 +12,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button"
-import { PiMicrosoftExcelLogoDuotone } from "react-icons/pi";
+import { Button } from "@/components/ui/button";
 
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,92 +24,60 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { icons } from "@/constants/icons"
-import { BsFileExcel } from "react-icons/bs"
-import { FaFileExcel } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
-const data = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-]
+} from "@/components/ui/table";
+import { icons } from "@/constants/icons";
+import LoaderHorizontal from "./LoaderHorizontal";
+import { useNavigate } from "react-router-dom";
+import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
+import { deleteData } from "@/lib/CatalogoService";
+import { toast } from "@/hooks/use-toast";
+import { formatearFecha } from "@/lib/ToolService";
 
-
-/*
-    $table->unsignedBigInteger('id_he_empleado_trabajador');
-    $table->unsignedBigInteger('id_user_solicitante');
-    $table->text('descripcion');
-    $table->BigInteger('prima_dominical')->nullable();
-    $table->BigInteger('dias_festivos')->nullable();
-    $table->BigInteger('faltas')->nullable();
-    $table->BigInteger('horas');
-    $table->time('hora_inicio');
-    $table->time('hora_fin');
-    $table->unsignedBigInteger('id_user_revisor')->nullable();
-    $table->unsignedBigInteger('id_user_autorizo')->nullable();
-    $table->date('fecha');
-    $table->string('estapa');
-    $table->string('estado');
-    $table->string('motivo')->nullable();
-*/
-
-/*
-  empleado
-  solicito
-  descripcion
-  horas
-  fecha
-  etapa
-  estado
-  motivo
-  area
-*/
-
-export function DataTableSolicitudes() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export function DataTableSolicitudes({
+  data = [],
+  loading,
+  setData,
+  setLoading,
+  setAccion,
+  setSelectedData,
+  API_ENDPOINT,
+}) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
-  const navigate = useNavigate();
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const navigate = useNavigate();
   const columns = [
+    {
+      accessorKey: "status",
+      header: "Clave",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.clave}</div>
+        </>)
+      },
+    },
     {
       accessorKey: "status",
       header: "Empleado",
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Empleado</div>
+          <div>{data?.empleados_trabajador?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.empleados_trabajador?.areas?.nombre}</div>
         </>)
       },
     },
@@ -131,7 +87,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Solicito</div>
+          <div>{data?.user_solicitante?.name}</div>
         </>)
       },
     },
@@ -141,7 +97,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Descripcion</div>
+          <div>{data?.descripcion}</div>
         </>)
       },
     },
@@ -151,7 +107,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>horas</div>
+          <div>{data?.horas}</div>
         </>)
       },
     },
@@ -161,7 +117,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Fecha</div>
+          <div>{formatearFecha(data?.fecha)}</div>
         </>)
       },
     },
@@ -171,7 +127,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Etapa</div>
+          <div>{data?.etapa}</div>
         </>)
       },
     },
@@ -181,7 +137,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Estado</div>
+          <div>{data?.estado}</div>
         </>)
       },
     },
@@ -191,7 +147,7 @@ export function DataTableSolicitudes() {
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>Motivo de cancelación</div>
+          <div>{data?.motivo}</div>
         </>)
       },
     },
@@ -206,7 +162,7 @@ export function DataTableSolicitudes() {
           <>
             <div className="flex gap-2 items-center">
               <Button
-                onClick={() => { navigate("/horasextra/verSolicitud") }}
+                onClick={() => { navigate("/horasextra/verSolicitud/" + row.original?.id) }}
               >{icons.ver("")}</Button>
               <Button variant={"outline"}>{icons.confirmar("")}</Button>
               <Button variant={"outline"}>{icons.cancelar("")}</Button>
@@ -216,8 +172,6 @@ export function DataTableSolicitudes() {
       },
     },
   ]
-
-
   const table = useReactTable({
     data,
     columns,
@@ -235,14 +189,30 @@ export function DataTableSolicitudes() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
-    <div className="ml-1 mr-1">
-      <div className="flex items-center py-4 gap-3">
-        <Button variant={"outline"} className="ml-auto">Exportar
-          <PiMicrosoftExcelLogoDuotone />
-        </Button>
+    <div className="w-full">
+      <div className="flex items-center py-4">
+        {/* <Input
+          placeholder="Nombre comercial"
+          value={(table.getColumn("nombre_comercial")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("nombre_comercial")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+
+        <Button
+          variant="outline"
+          className="ml-auto"
+          onClick={() => {
+            setAccion("crear");
+            setSelectedData({});
+          }}
+        >
+          Nuevo {icons.agregar("")}
+        </Button> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -259,12 +229,19 @@ export function DataTableSolicitudes() {
                           header.getContext()
                         )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
+            {loading && (
+              <TableRow className="border-none h-0 p-0">
+                <TableCell className="p-0" colSpan={columns.length}>
+                  <LoaderHorizontal styles={"w-full"} />
+                </TableCell>
+              </TableRow>
+            )}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -287,7 +264,7 @@ export function DataTableSolicitudes() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -315,5 +292,5 @@ export function DataTableSolicitudes() {
         </div>
       </div>
     </div>
-  )
+  );
 }

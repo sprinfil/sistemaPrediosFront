@@ -51,12 +51,19 @@ export function DataTableHeGrupos({
   const navigate = useNavigate();
   const columns = [
     {
-      accessorKey: "name",
+      accessorKey: "nombre",
       header: "Nombre",
     },
     {
-      accessorKey: "description",
-      header: "Descripcion",
+      accessorKey: "area",
+      header: "Area",
+      cell: ({ row }) => {
+        return (
+          <>
+            <div>{row?.original?.areas?.nombre}</div>
+          </>
+        )
+      }
     },
     {
       id: "actions",
@@ -76,7 +83,7 @@ export function DataTableHeGrupos({
             <ModalEliminarReutilizable
               trigger={
                 <Button disabled={loading}>
-                  {icons.eliminar("text-red-500")}
+                  {icons.eliminar("")}
                 </Button>
               }
               onConfirm={async () => {
@@ -149,9 +156,9 @@ export function DataTableHeGrupos({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}

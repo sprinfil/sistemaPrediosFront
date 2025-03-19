@@ -45,6 +45,49 @@ export const fetchData = async (setLoading: Function, toast: any, params: any, e
     return response?.data;
   } catch (e) {
     catchErrors(e, toast);
+    throw e;
+  }
+  finally {
+    setLoading(false);
+  }
+}
+
+export const putData = async (setLoading: Function, toast: any, params: any, endpoint: any) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.put(endpoint, params);
+    return response?.data;
+  } catch (e) {
+    catchErrors(e, toast);
+    throw e;
+  }
+  finally {
+    setLoading(false);
+  }
+}
+
+export const postData = async (setLoading: Function, toast: any, params: any, endpoint: any) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.post(endpoint, params);
+    return response?.data;
+  } catch (e) {
+    catchErrors(e, toast);
+    throw e;
+  }
+  finally {
+    setLoading(false);
+  }
+}
+
+export const deleteData = async (setLoading: Function, toast: any, endpoint: any) => {
+  try {
+    setLoading(true);
+    const response = await axiosClient.delete(endpoint);
+    return response?.data;
+  } catch (e) {
+    catchErrors(e, toast);
+    throw e;
   }
   finally {
     setLoading(false);
@@ -54,3 +97,10 @@ export const fetchData = async (setLoading: Function, toast: any, params: any, e
 export const formatearFecha = (fecha) => {
   return dayjs(fecha).format("DD [de] MMMM [del] YYYY")
 }
+
+export const useLog = (data) => {
+  if (import.meta.env.ACTIVE_LOGS == true) {
+    console.log(data);
+  }
+}
+

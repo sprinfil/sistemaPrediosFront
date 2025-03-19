@@ -9,9 +9,19 @@ import {
 } from "@/components/ui/card"
 import { DataTableHeEmpleados } from '@/components/components/DataTableHeEmpleados'
 import { DataTableHeAreas } from '@/components/components/DataTableHeAreas'
+import { useAreas } from '@/lib/AreasHook'
 
 
 export const Areas = () => {
+
+  const {
+    areas,
+    loadingAreas,
+    setAreas,
+    setLoadingAreas,
+    fetchAreas
+  } = useAreas();
+
   return (
     <>
       <Card>
@@ -20,7 +30,11 @@ export const Areas = () => {
           <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTableHeAreas />
+          <DataTableHeAreas
+            data={areas}
+            loading={loadingAreas}
+            fetchAreas={fetchAreas}
+          />
         </CardContent>
 
       </Card>

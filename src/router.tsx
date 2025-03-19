@@ -68,7 +68,7 @@ const router = createBrowserRouter([
         element: <HorasExtras />
       },
       {
-        path: '/horasextra/verSolicitud',
+        path: '/horasextra/verSolicitud/:solicitudId',
         element: <HoraExtraVer />
       },
       {
