@@ -1,158 +1,155 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {ColumnDef,ColumnFiltersState,SortingState,VisibilityState,flexRender,getCoreRowModel,getFilteredRowModel,
-  getPaginationRowModel,getSortedRowModel,useReactTable,} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
-import { BsPencilSquare } from "react-icons/bs"
-import { useState } from "react"
+import * as React from "react";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    clave:"151545",
-    nombre:"el mike",
-    descripcion: "cosa loca",
-    horas: 2,
-    hora_inicio: 11.5,
-    hora_fin: 13.5,
-    fecha: "13/12/2025",
-    prima_dominical:"Si",
-    dias_festivos:"No",
-  },
-  {
-    id: "3u1reuv4",
-    clave:"323234",
-    nombre:"estuvo",
-    descripcion: "cosa 2",
-    horas: 3,
-    hora_inicio: 9.5,
-    hora_fin: 12.5,
-    fecha: "14/12/2025",
-    prima_dominical:"No",
-    dias_festivos:"Si",
-  },
-  {
-    id: "derv1ws0",
-    clave:"u49892e",
-    nombre:"aqui",
-    descripcion: "cosa 3",
-    horas: 1,
-    hora_inicio: 9.5,
-    hora_fin: 10.5,
-    fecha: "15/12/2025",
-    prima_dominical:"Si",
-    dias_festivos:"No",
-  },
-  {
-    id: "5kma53ae",
-    clave:"cjndic",
-    nombre:"que pedo",
-    descripcion: "cosa 4",
-    horas: 2,
-    hora_inicio: 8.5,
-    hora_fin: 10.5,
-    fecha: "16/12/2025",
-    prima_dominical:"No",
-    dias_festivos:"Si",
-  },
-  {
-    id: "kcmod",
-    clave:"como estas",
-    nombre:"el mike",
-    descripcion: "cosa 5",
-    horas: 5,
-    hora_inicio: 11.5,
-    hora_fin: 16.5,
-    fecha: "17/12/2025",
-    prima_dominical:"Si",
-    dias_festivos:"No",
-  },
-]
+import { Button } from "@/components/ui/button";
 
-export type Payment = {
-  id: string
-  clave:string
-  nombre:string
-  descripcion: string
-  horas: number
-  hora_inicio: number
-  hora_fin:number
-  fecha:string
-  prima_dominical:string
-  dias_festivos:string
-}
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { icons } from "@/constants/icons";
+import LoaderHorizontal from "./LoaderHorizontal";
+import { useNavigate } from "react-router-dom";
+import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
+import { deleteData } from "@/lib/CatalogoService";
+import { toast } from "@/hooks/use-toast";
+import { formatearFecha } from "@/lib/ToolService";
 
-export function DataTableSolicitud() {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+export function DataTableSolicitud({
+  data = [],
+  loading,
+  setData,
+  setLoading,
+  setAccion,
+  setSelectedData,
+  API_ENDPOINT,
+}) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const navigate = useNavigate();
+  const columns = [
+    {
+      accessorKey: "status",
+      header: "Clave",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.clave}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Empleado",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.empleados_trabajador?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.empleados_trabajador?.areas?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Descripcion",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.descripcion}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Fecha",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{formatearFecha(data?.fecha)}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Etapa",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.etapa}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Estado",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.estado}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Motivo de cancelación",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.motivo}</div>
+        </>)
+      },
+    },
 
-  const columns: ColumnDef<Payment>[] = [
-    {
-      accessorKey: "clave",
-      header: "Folio",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("clave")}</div>
-      ),
-    },
-    {
-      accessorKey: "nombre",
-      header: "Nombre",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("nombre")}</div>
-      ),
-    },
-    {
-      accessorKey: "descripcion",
-      header: "descripcion",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("descripcion")}</div>
-      ),
-    },
-    {
-      accessorKey: "fecha",
-      header: "fecha",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("fecha")}</div>
-      ),
-    },
-    {
-      accessorKey: "prima_dominical",
-      header: "Prima Dominical",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("prima_dominical")}</div>
-      ),
-    },
-    {
-      accessorKey: "dias_festivos",
-      header: "Días Festivos",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("dias_festivos")}</div>
-      ),
-    },
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
+        const payment = row.original
+
         return (
-          <div className="flex w-full gap-2">
-            <Button variant={"outline"}>
-              Editar <BsPencilSquare />
-            </Button>
-          </div>
+          <>
+            <div className="flex gap-2 items-center">
+              <Button
+                onClick={() => { navigate("/solicitud/solicitudes/" + row.original?.id) }}
+              >{icons.ver("")}</Button>
+            </div>
+          </>
         )
       },
     },
   ]
-
   const table = useReactTable({
     data,
     columns,
@@ -170,19 +167,30 @@ export function DataTableSolicitud() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
-    <div className="ml-10 mr-10 mb-5">
+    <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Folio..."
-          value={(table.getColumn("clave")?.getFilterValue() as string) ?? ""}
+        {/* <Input
+          placeholder="Nombre comercial"
+          value={(table.getColumn("nombre_comercial")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("clave")?.setFilterValue(event.target.value)
+            table.getColumn("nombre_comercial")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
+
+        <Button
+          variant="outline"
+          className="ml-auto"
+          onClick={() => {
+            setAccion("crear");
+            setSelectedData({});
+          }}
+        >
+          Nuevo {icons.agregar("")}
+        </Button> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -195,16 +203,23 @@ export function DataTableSolicitud() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
+            {loading && (
+              <TableRow className="border-none h-0 p-0">
+                <TableCell className="p-0" colSpan={columns.length}>
+                  <LoaderHorizontal styles={"w-full"} />
+                </TableCell>
+              </TableRow>
+            )}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -227,7 +242,7 @@ export function DataTableSolicitud() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -235,10 +250,6 @@ export function DataTableSolicitud() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -246,7 +257,7 @@ export function DataTableSolicitud() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Anterior
           </Button>
           <Button
             variant="outline"
@@ -254,10 +265,10 @@ export function DataTableSolicitud() {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            Siguiente
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

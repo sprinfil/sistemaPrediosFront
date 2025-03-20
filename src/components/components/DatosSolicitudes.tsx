@@ -1,18 +1,33 @@
+import { DataTableSolicitudes } from '@/components/components/DataTableSolicitudes'
 import React, { useState } from 'react'
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
-import {Table,TableBody,TableCaption,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
+import { FaRegBuilding } from "react-icons/fa";
+import {Table,TableBody,TableCaption,TableCell,TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
 import { icons } from '@/constants/icons';
-import {Breadcrumb,BreadcrumbItem,BreadcrumbLink,BreadcrumbList,BreadcrumbPage,BreadcrumbSeparator,} from "@/components/ui/breadcrumb"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { useLogicSolicitudes } from '@/lib/HorasExtraService';
 import { DataTableSolicitud } from './DataTableSolicitud';
 
 const DatosSolicitudes = () => {
-  const fetchData = () => {
-
-  }
-  const [params, setParams] = useState({});
+  const {fetch,loadingData,setLoadingData,params,setParams,solicitudes,setSolicitudes} = useLogicSolicitudes();
 
   return (
     <div>
@@ -25,17 +40,23 @@ const DatosSolicitudes = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage className='cursor-pointer'>Solicitud</BreadcrumbPage>
+                <BreadcrumbLink className='cursor-pointer'>Seleccionar solicitud</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
             </BreadcrumbList>
           </Breadcrumb>
+
           <Filtros
-            fetchData={fetchData}
+            fetchData={fetch}
             params={params}
             setParams={setParams}
           />
-          <DataTableSolicitud />
+          <DataTableSolicitud
+            data={solicitudes}
+            loading={loadingData}
+            setData={setSolicitudes}
+            setLoading={setLoadingData}
+          />
         </CardContent>
       </Card>
     </div>
@@ -60,11 +81,11 @@ const Filtros = ({ fetchData, params, setParams }) => {
                   <TableBody>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Folio
+                        Clave
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <Input
-                          placeholder="Folio ..."
+                          placeholder="Clave"
                           value={params?.clave}
                           onChange={(e) => {
                             setParams((prev) => {
@@ -79,40 +100,20 @@ const Filtros = ({ fetchData, params, setParams }) => {
                     </TableRow>
                     <TableRow>
                       <TableCell className={tableCellStyles}>
-                        Nombre
+                        Empleado
                       </TableCell>
                       <TableCell className={tableCellStyles}>
                         <Input
-                          placeholder="Nombre ..."
-                          value={params?.customer}
+                          placeholder="Empleado"
+                          value={params?.empleado}
                           onChange={(e) => {
                             setParams((prev) => {
                               return {
                                 ...prev,
-                                customer: e.target.value,
+                                empleado: e.target.value,
                               };
                             });
                           }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={tableCellStyles}>
-                        Fecha
-                      </TableCell>
-                      <TableCell className={tableCellStyles}>
-                        <input
-                          value={params?.start_date}
-                          onChange={(e) => {
-                            setParams((prev) => {
-                              return {
-                                ...prev,
-                                start_date: e.target.value,
-                              };
-                            });
-                          }}
-                          type="date"
-                          className="w-full border brder-border p-2 rounded-md"
                         />
                       </TableCell>
                     </TableRow>

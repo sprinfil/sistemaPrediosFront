@@ -17,6 +17,7 @@ import { HoraExtraVer } from './views/TiempoExtra/HoraExtraVer';
 import { Empleados } from './views/TiempoExtra/Empleados';
 import { Areas } from './views/TiempoExtra/Areas';
 import { Grupos } from './views/TiempoExtra/Grupos';
+import { EditarSolicitud } from './views/TiempoExtra/EditarSolicitud';
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: '/horasextra/verSolicitud/:solicitudId',
         element: <HoraExtraVer />
+      },
+      {
+        path: '/solicitud/solicitudes/:solicitudId',
+        element: <EditarSolicitud />
       },
       {
         path: '/horasextra/empleados',

@@ -68,3 +68,4 @@ export async function editarSolicitud( SolicitudId: number,setLoading: Function,
     setLoading(false);
   }
 }
+

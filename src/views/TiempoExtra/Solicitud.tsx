@@ -12,10 +12,10 @@ import { DatosCrearSolicitudGrupos } from "@/components/components/DatosCrearSol
 
 export const Solicitud = () => {
   return (
-    <Tabs defaultValue="vistaCrear" className="w-full">
+    <Tabs defaultValue="vistaActualizar" className="w-full">
       <TabsList className="grid w-full grid-cols-6">
-        <TabsTrigger value="vistaCrear">Crear</TabsTrigger>
         <TabsTrigger value="vistaActualizar">Solicitudes</TabsTrigger>
+        <TabsTrigger value="vistaCrear">Crear</TabsTrigger>
       </TabsList>
       <TabsContent value="vistaCrear">
         <Card className="mb-2">
