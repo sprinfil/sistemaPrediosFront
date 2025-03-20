@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { icons } from '@/constants/icons';
-import { useHoraExtraVerHook } from '@/lib/HoraExtraVerHook';
+import { useHoraExtraVerHook, useSolicitudVerHook } from '@/lib/HoraExtraVerHook';
 import { Skeleton } from '@/components/ui/skeleton';
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -17,6 +17,7 @@ import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessag
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
 import { Edit, Check, X, Save, ArrowLeft, Loader } from "lucide-react"
+import { editarSolicitud } from '@/lib/Solicitudes';
 
 export const EditarSolicitud = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export const EditarSolicitud = () => {
     setSolicitud,
     solicitud,
     loadingArea
-  } = useHoraExtraVerHook();
+  } = useSolicitudVerHook();
 
   const [loading, setLoading] = useState(false);
   const [cambiosPendientes, setCambiosPendientes] = useState(false);
@@ -34,17 +35,32 @@ export const EditarSolicitud = () => {
   const handleGuardarCambios = async () => {
     setLoading(true);
     try {
-      // Aquí iría tu lógica para guardar los cambios a la API
-      // await axios.put(`/api/solicitudes-horas-extras/${solicitudId}`, solicitud);
-      
-      toast({
-        title: "Cambios guardados",
-        description: "La solicitud ha sido actualizada correctamente",
-        action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
-      });
-      
-      setCambiosPendientes(false);
-      navigate(-1);
+        const idSolicitud = solicitud.id;
+        const formValues = form.getValues();
+
+        const requestData = {
+            hora_inicio: formValues.hora_inicio,
+            hora_fin: formValues.hora_fin,
+            fecha: formValues.fecha,
+            horas: Number(formValues.horas),
+            prima_dominical: formValues.prima_dominical ? 1 : null,
+            dias_festivos: formValues.dias_festivos ? 1 : null,
+            descripcion: formValues.descripcion,
+        };
+        console.log("", requestData)
+        // await editarSolicitud(
+        //     idSolicitud,
+        //     setLoading,
+        //     requestData,
+        //     setSolicitud
+        // );
+        toast({
+            title: "Cambios guardados",
+            description: "La solicitud ha sido actualizada correctamente",
+            action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
+        });
+        setCambiosPendientes(false);
+        navigate(-1);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -126,7 +142,6 @@ export const EditarSolicitud = () => {
   )
 }
 
-// Validaciones con Zod
 const formSchema = z.object({
   empleado: z.string().min(1, "El empleado es obligatorio"),
   hora_inicio: z.string().min(1, "La hora inicial es obligatoria"),
@@ -184,7 +199,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
     },
   });
   
-  // Guardar valores originales para poder restaurarlos si se cancela
   const [valoresOriginales, setValoresOriginales] = useState({
     hora_inicio: solicitud?.hora_inicio || "",
     hora_fin: solicitud?.hora_fin || "",
@@ -196,7 +210,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
   });
   
   useEffect(() => {
-    // Detectar cambios pendientes
     const currentValues = form.getValues();
     const hasCambiosPendientes = 
       currentValues.hora_inicio !== valoresOriginales.hora_inicio ||
@@ -206,11 +219,9 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
       currentValues.prima_dominical !== valoresOriginales.prima_dominical ||
       currentValues.dias_festivos !== valoresOriginales.dias_festivos ||
       currentValues.descripcion !== valoresOriginales.descripcion;
-    
     onCambiosPendientes(hasCambiosPendientes);
   }, [form.watch()]);
   
-  // Manejar edición de un campo
   const handleEditField = (field) => {
     setEditableFields({
       ...editableFields,
@@ -218,7 +229,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
     });
   };
   
-  // Manejar cancelación de edición
   const handleCancelEdit = (field) => {
     switch(field) {
       case 'horario':
@@ -244,18 +254,14 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
     });
   };
   
-  // Manejar aceptación de edición
   const handleAcceptEdit = (field) => {
-    // Validar campo específico
     form.trigger(field === 'horario' ? ['hora_inicio', 'hora_fin'] : field);
-    
     if (field === 'horario' && (form.formState.errors.hora_inicio || form.formState.errors.hora_fin)) {
-      return; // No cerrar edición si hay errores
+      return;
     } else if (form.formState.errors[field]) {
-      return; // No cerrar edición si hay errores
+      return; 
     }
     
-    // Actualizar valores originales
     if (field === 'horario') {
       setValoresOriginales({
         ...valoresOriginales,
@@ -281,7 +287,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
       [field]: false,
     });
     
-    // Actualizar el estado de la solicitud
     if (setSolicitud) {
       setSolicitud({
         ...solicitud,
@@ -289,8 +294,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
         hora_fin: form.getValues('hora_fin'),
         fecha: form.getValues('fecha'),
         horas: Number(form.getValues('horas')),
-        prima_dominical: form.getValues('prima_dominical'),
-        dias_festivos: form.getValues('dias_festivos'),
+        prima_dominical: form.getValues('prima_dominical') ? 1: null,
+        dias_festivos: form.getValues('dias_festivos') ? 1: null,
         descripcion: form.getValues('descripcion'),
       });
     }
@@ -319,8 +324,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
               )}
             />
           </div>
-          
-          {/* Horario */}
           <div className="w-full flex items-end space-x-4 mb-5 relative">
             <div className="w-full space-y-1.5">
               <FormField
@@ -363,8 +366,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 )}
               />
             </div>
-            
-            {/* Botones para editar horario */}
             <div className="absolute -right-12 top-8">
               {!editableFields.horario ? (
                 <Button 
@@ -394,8 +395,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
               )}
             </div>
           </div>
-          
-          {/* Fecha */}
           <div className="w-full mb-5 relative">
             <FormField
               control={form.control}
@@ -415,8 +414,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 </FormItem>
               )}
             />
-            
-            {/* Botones para editar fecha */}
             <div className="absolute -right-12 top-8">
               {!editableFields.fecha ? (
                 <Button 
@@ -446,8 +443,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
               )}
             </div>
           </div>
-          
-          {/* Horas y Checkboxes */}
           <div className="mb-5 relative">
             <div className="flex space-x-8">
               <div className="space-y-1.5">
@@ -507,8 +502,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 />
               </div>
             </div>
-            
-            {/* Botones para editar horas */}
             <div className="absolute -right-12 top-8">
               {!editableFields.horas ? (
                 <Button 
@@ -538,8 +531,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
               )}
             </div>
           </div>
-          
-          {/* Descripción */}
           <div className="relative">
             <FormField
               control={form.control}
@@ -563,8 +554,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 </FormItem>
               )}
             />
-            
-            {/* Botones para editar descripción */}
             <div className="absolute -right-12 top-8">
               {!editableFields.descripcion ? (
                 <Button 

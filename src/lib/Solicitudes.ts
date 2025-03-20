@@ -36,7 +36,7 @@ export const crearSolicitudEmpleados = async(setLoading:Function, values:Object,
   }
 }
 
-export const crearSolicitudGrupos = async(GrupoId:number, setLoading:Function, values:Object, setData:Function) => {
+export const crearSolicitudGrupos = async(GrupoId:any, setLoading:Function, values:Object, setData:Function) => {
   try {
     setLoading(true)
     const response = await axiosClient.post('/he-solicitudes/group/' + GrupoId, values);
@@ -48,10 +48,55 @@ export const crearSolicitudGrupos = async(GrupoId:number, setLoading:Function, v
   }
 }
 
-export async function editarSolicitud( SolicitudId: number,setLoading: Function,values: Object,setData: Function) {
+export async function editarSolicitud( SolicitudId: any,setLoading: Function,values: Object,setData: Function) {
   try {
     setLoading(true);
     const response = await axiosClient.put('/he-solicitudes/' + SolicitudId, values);
+    setData(prev => {
+      return prev.map(solicitud => {
+        if (solicitud?.id == SolicitudId) {
+          return response?.data?.data
+        } else {
+          return solicitud;
+        }
+      })
+    })
+    console.log(response?.data?.data)
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+}
+
+export async function SolicitudCambiarEstado(SolicitudId: number,setLoading: Function,values: Object,setData: Function)
+{
+  try {
+    setLoading(true);
+    const response = await axiosClient.patch('/he-solicitudes/change-status/' + SolicitudId, values);
+    setData(prev => {
+      return prev.map(solicitud => {
+        if (solicitud?.id == SolicitudId) {
+          return response?.data?.data
+        } else {
+          return solicitud;
+        }
+      })
+    })
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+}
+
+export async function SolicitudCambiarEtapa(SolicitudId: number,setLoading: Function,values: Object,setData: Function)
+{
+  try {
+    setLoading(true);
+    const response = await axiosClient.patch('/he-solicitudes/change-step/'+SolicitudId, values);
     setData(prev => {
       return prev.map(solicitud => {
         if (solicitud?.id == SolicitudId) {

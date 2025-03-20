@@ -3,7 +3,7 @@ import { PopoverHorasExtrasEmpleado } from "./PopoverHorasExtraEmpleados"
 import { Button } from "../ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "../ui/textarea"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -13,11 +13,13 @@ import { ToastAction } from "@radix-ui/react-toast"
 import { icons } from "@/constants/icons";
 import { Loader } from "lucide-react"
 import { crearSolicitudEmpleados } from "@/lib/Solicitudes"
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal"
 
 export const DatosCrearSolicitudEmpleados = ({}) => {
     const [dataEmpleados, setDataEmpleados] = useState<any[]>([]);
     const [empleados, setEmpleados] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const {user} = ZustandPrincipal();
 
     const isTimeAfter = (startTime: string, endTime: string) => {
         const [startHour, startMinute] = startTime.split(':').map(Number);
@@ -70,31 +72,39 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
         },
     });
 
+    const generateRandomLetters = (length: number): string => {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          result += letters.charAt(Math.floor(Math.random() * letters.length));
+        }
+        return result;
+    };
+
+    useEffect(() => {
+        //const empleadosIds = empleados.id;
+    }, [empleados]);
+
     async function onSubmit(values: FormValues) {
         setLoading(true);
         try {
-            if (!dataEmpleados || dataEmpleados.length === 0) {
-                throw new Error("Debe seleccionar al menos un empleado");
-            }
-            // const obtenerIdUsuarioActual = () => {
-            //     const { user } = useAuth();
-            //     return user?.id;
-            // };
-            // const idUsuarioActual = obtenerIdUsuarioActual(); 
-
-            const empleadosIds = dataEmpleados.map(empleado => empleado.id);
+            if (!empleados || empleados.length === 0) {
+                throw new Error("Debe seleccionar un empleado");
+            } 
+            const empleadosIds = empleados.id;
             const requestData = {
-                //id_user_solicitante:  idUsuarioActual,
+                id_user_solicitante:  user?.id,
+                clave: `${empleadosIds}${generateRandomLetters(3)}${values.horas}${generateRandomLetters(3)}`,
                 id_he_empleado_trabajador: empleadosIds,
-                description: values.descripcion,
-                prima_dominici: values.primadominical ? 1 : 0,
-                dias_fesivos: values.diafestivo ? 1 : 0,
+                descripcion: values.descripcion,
+                prima_dominical: values.primadominical ? 1 : null,
+                dias_festivos: values.diafestivo ? 1 : null,
                 horas: values.horas,
-                hora_inio: values.horainicial,
+                hora_inicio: values.horainicial,
                 hora_fin: values.horafinal,
                 fecha: values.fecha,
-                estapa: "Pendiente", 
-                estado: "Espera",
+                estapa: "Solicitar", 
+                estado: "Pendiente",
             };
             await crearSolicitudEmpleados(
                 setLoading,

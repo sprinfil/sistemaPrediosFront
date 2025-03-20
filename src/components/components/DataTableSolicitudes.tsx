@@ -41,6 +41,8 @@ export function DataTableSolicitudes({
   setAccion,
   setSelectedData,
   API_ENDPOINT,
+  CambioEstados,
+  CambioEtapa
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -164,8 +166,10 @@ export function DataTableSolicitudes({
               <Button
                 onClick={() => { navigate("/horasextra/verSolicitud/" + row.original?.id) }}
               >{icons.ver("")}</Button>
-              <Button variant={"outline"}>{icons.confirmar("")}</Button>
-              <Button variant={"outline"}>{icons.cancelar("")}</Button>
+              <Button onClick={()=>{CambioEtapa(row.original?.id, "Pago")}}
+              variant={"outline"}>{icons.confirmar("")}</Button>
+              <Button onClick={()=>{CambioEstados(row.original?.id, "Rechazado")}}
+              variant={"outline"}>{icons.cancelar("")}</Button>
             </div>
           </>
         )

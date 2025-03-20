@@ -45,7 +45,9 @@ const HorasExtras = () => {
     params,
     setParams,
     solicitudes,
-    setSolicitudes
+    setSolicitudes,
+    CambioEstados,
+    CambioEtapa
   } = useLogicSolicitudes();
 
   return (
@@ -75,6 +77,8 @@ const HorasExtras = () => {
             loading={loadingData}
             setData={setSolicitudes}
             setLoading={setLoadingData}
+            CambioEstados={CambioEstados}
+            CambioEtapa={CambioEtapa}
           />
         </CardContent>
       </Card>
