@@ -66,7 +66,7 @@ export const EditarSolicitud = () => {
                 dias_festivos: formValues.dias_festivos ? 1 : null,
                 descripcion: formValues.descripcion,
           };
-          console.log("", requestData)
+          console.log("", solicitud)
           await editarSolicitud(
               idSolicitud,
               setLoading, 

@@ -73,12 +73,38 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
-      header: "Area",
+      header: "Puesto",
       cell: ({ row }) => {
         const data = row.original;
         return (<>
-          <div>{data?.empleados_trabajador?.areas?.nombre}</div>
+          <div>{data?.empleados_trabajador?.puesto}</div>
         </>)
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Prima dominical",
+      cell: ({ row }) => {
+        const data = row.original;
+        const primaDominical = data.prima_dominical;
+        if (primaDominical !== null) {
+          return <div>SI</div>;
+        } else {
+          return <div>NO</div>;
+        }
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Dia festivo",
+      cell: ({ row }) => {
+        const data = row.original;
+        const dia = data?.dias_festivos
+        if (dia !== null) {
+          return <div>SI</div>;
+        } else {
+          return <div>NO</div>;
+        }
       },
     },
     {
