@@ -25,7 +25,9 @@ export const EditarSolicitud = () => {
       fetchArea,
       setSolicitud,
       solicitud,
-      loadingArea
+      loadingArea,
+      datoForm,
+      setDatosForm
     } = useSolicitudVerHook();
   
     const [loading, setLoading] = useState(false);
@@ -49,16 +51,20 @@ export const EditarSolicitud = () => {
       setLoading(true);
       try {
           const idSolicitud = solicitud.id;
-          const formValues = form.getValues();
+          const formValues = datoForm;
   
           const requestData = {
-              hora_inicio: formValues.hora_inicio,
-              hora_fin: formValues.hora_fin,
-              fecha: formValues.fecha,
-              horas: Number(formValues.horas),
-              prima_dominical: formValues.prima_dominical ? 1 : null,
-              dias_festivos: formValues.dias_festivos ? 1 : null,
-              descripcion: formValues.descripcion,
+                id_he_empleado_trabajador:solicitud.id_he_empleado_trabajador,
+                id_user_solicitante:solicitud.id_user_solicitante,
+                estapa:solicitud.etapa,
+                estado:solicitud.estado,
+                hora_inicio: formValues.hora_inicio,
+                hora_fin: formValues.hora_fin,
+                fecha: formValues.fecha,
+                horas: Number(formValues.horas),
+                prima_dominical: formValues.prima_dominical ? 1 : null,
+                dias_festivos: formValues.dias_festivos ? 1 : null,
+                descripcion: formValues.descripcion,
           };
           console.log("", requestData)
           await editarSolicitud(
@@ -130,6 +136,8 @@ export const EditarSolicitud = () => {
                       handleGuardarCambios={handleGuardarCambios}
                       loading={loading}
                       cambiosPendientes={cambiosPendientes}
+                      setDatosForm={setDatosForm}
+                      datoForm={datoForm}
                     />
                   </div>
                 </>
@@ -173,7 +181,7 @@ const formSchema = z.object({
   path: ["hora_fin"]
 });
 
-const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, handleGuardarCambios, loading, cambiosPendientes }) => {
+const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, handleGuardarCambios, loading, cambiosPendientes, datoForm,setDatosForm }) => {
   type FormValues = z.infer<typeof formSchema>;
   
   const [isEditing, setIsEditing] = useState(false);
@@ -213,14 +221,13 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
       currentValues.dias_festivos !== valoresOriginales.dias_festivos ||
       currentValues.descripcion !== valoresOriginales.descripcion;
     onCambiosPendientes(hasCambiosPendientes);
+    setDatosForm(currentValues);
   }, [form.watch()]);
   
   const handleToggleEdit = () => {
     if (isEditing) {
-      // Validar formulario antes de guardar
       form.trigger().then(isValid => {
         if (isValid) {
-          // Actualizar valores originales
           setValoresOriginales({
             hora_inicio: form.getValues('hora_inicio'),
             hora_fin: form.getValues('hora_fin'),
@@ -230,8 +237,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
             dias_festivos: form.getValues('dias_festivos'),
             descripcion: form.getValues('descripcion'),
           });
-          
-          // Actualizar el estado de la solicitud
           if (setSolicitud) {
             setSolicitud({
               ...solicitud,
@@ -254,7 +259,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
   };
   
   const handleCancelEdit = () => {
-    // Restaurar valores originales
     form.reset({
       ...form.getValues(),
       hora_inicio: valoresOriginales.hora_inicio,

@@ -34,6 +34,7 @@ export const useSolicitudVerHook = () => {
 
     const [loadingArea, setLoadingArea] = useState(false);
     const [solicitud, setSolicitud] = useState({});
+    const [datoForm,setDatosForm] = useState({});
 
     const fetchSolicitud = async () => {
         const response = await fetchData(setLoadingArea, toast, {}, "/he-solicitudes/" + solicitudId);
@@ -49,6 +50,8 @@ export const useSolicitudVerHook = () => {
         fetchSolicitud,
         solicitud,
         setSolicitud,
-        loadingArea
+        loadingArea,
+        datoForm,
+        setDatosForm
     }
 }
