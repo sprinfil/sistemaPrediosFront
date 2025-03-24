@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
 import {Breadcrumb,BreadcrumbItem,BreadcrumbLink,BreadcrumbList,BreadcrumbPage,BreadcrumbSeparator,} from "@/components/ui/breadcrumb"
 import { useNavigate, useParams } from 'react-router-dom';
-import { Label } from '@radix-ui/react-dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from '@/components/ui/textarea';
@@ -20,127 +19,134 @@ import { Edit, Check, X, Save, ArrowLeft, Loader } from "lucide-react"
 import { editarSolicitud } from '@/lib/Solicitudes';
 
 export const EditarSolicitud = () => {
-  const navigate = useNavigate();
-  const {
-    solicitudId,
-    fetchArea,
-    setSolicitud,
-    solicitud,
-    loadingArea
-  } = useSolicitudVerHook();
-
-  const [loading, setLoading] = useState(false);
-  const [cambiosPendientes, setCambiosPendientes] = useState(false);
-
-  const handleGuardarCambios = async () => {
-    setLoading(true);
-    try {
-        const idSolicitud = solicitud.id;
-        const formValues = form.getValues();
-
-        const requestData = {
-            hora_inicio: formValues.hora_inicio,
-            hora_fin: formValues.hora_fin,
-            fecha: formValues.fecha,
-            horas: Number(formValues.horas),
-            prima_dominical: formValues.prima_dominical ? 1 : null,
-            dias_festivos: formValues.dias_festivos ? 1 : null,
-            descripcion: formValues.descripcion,
-        };
-        console.log("", requestData)
-        // await editarSolicitud(
-        //     idSolicitud,
-        //     setLoading,
-        //     requestData,
-        //     setSolicitud
-        // );
+    const navigate = useNavigate();
+    const {
+      solicitudId,
+      fetchArea,
+      setSolicitud,
+      solicitud,
+      loadingArea,
+      datoForm,
+      setDatosForm
+    } = useSolicitudVerHook();
+  
+    const [loading, setLoading] = useState(false);
+    const [cambiosPendientes, setCambiosPendientes] = useState(false);
+  
+    const form = useForm({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        empleado: solicitud?.empleados_trabajador?.nombre || "",
+        hora_inicio: solicitud?.hora_inicio || "",
+        hora_fin: solicitud?.hora_fin || "",
+        fecha: solicitud?.fecha || "",
+        horas: solicitud?.horas?.toString() || "",
+        prima_dominical: solicitud?.prima_dominical || false,
+        dias_festivos: solicitud?.dias_festivos || false,
+        descripcion: solicitud?.descripcion || "",
+      },
+    });
+  
+    const handleGuardarCambios = async () => {
+      setLoading(true);
+      try {
+          const idSolicitud = solicitud.id;
+          const formValues = datoForm;
+  
+          const requestData = {
+                id_he_empleado_trabajador:solicitud.id_he_empleado_trabajador,
+                id_user_solicitante:solicitud.id_user_solicitante,
+                estapa:solicitud.etapa,
+                estado:solicitud.estado,
+                hora_inicio: formValues.hora_inicio,
+                hora_fin: formValues.hora_fin,
+                fecha: formValues.fecha,
+                horas: Number(formValues.horas),
+                prima_dominical: formValues.prima_dominical ? 1 : null,
+                dias_festivos: formValues.dias_festivos ? 1 : null,
+                descripcion: formValues.descripcion,
+          };
+          console.log("", solicitud)
+          await editarSolicitud(
+              idSolicitud,
+              setLoading, 
+              requestData,
+              setSolicitud
+          );
+          toast({
+              title: "Cambios guardados",
+              description: "La solicitud ha sido actualizada correctamente",
+              action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
+          });
+          setCambiosPendientes(false);
+          navigate(-1);
+      } catch (error: any) {
         toast({
-            title: "Cambios guardados",
-            description: "La solicitud ha sido actualizada correctamente",
-            action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
+          title: "Error",
+          description: error.message || "Ocurrió un error al actualizar la solicitud",
+          variant: "destructive",
+          action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
         });
-        setCambiosPendientes(false);
-        navigate(-1);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Ocurrió un error al actualizar la solicitud",
-        variant: "destructive",
-        action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <>
-      <Card className='h-full'>
-        <CardHeader>
-          <CardTitle>Editar solicitud</CardTitle>
-          <CardDescription>
-            Modifique los campos necesarios y guarde los cambios
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {
-            loadingArea ?
-              <div>
-                <Skeleton
-                  className='w-full h-[70vh]'
-                />
-              </div>
-              :
-              <>
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink className='cursor-pointer'
-                        onClick={() => {
-                          navigate(-1);
-                        }}
-                      >Seleccionar solicitud</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbLink className='cursor-pointer'>Solicitud</BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-
-                <div className='mt-3'>
-                  <DatosEditarSolicitud
-                    solicitud={solicitud}
-                    setSolicitud={setSolicitud}
-                    onCambiosPendientes={(hayCambios) => setCambiosPendientes(hayCambios)}
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <>
+        <Card className='h-full'>
+          <CardHeader>
+            <CardTitle>Editar solicitud</CardTitle>
+            <CardDescription>
+              Modifique los campos necesarios y guarde los cambios
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {
+              loadingArea ?
+                <div>
+                  <Skeleton
+                    className='w-full h-[70vh]'
                   />
                 </div>
-              </>
-          }
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Cancelar
-          </Button>
-          <Button 
-            onClick={handleGuardarCambios} 
-            disabled={!cambiosPendientes || loading}
-          >
-            {loading ? (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
-            )}
-            Guardar cambios
-          </Button>
-        </CardFooter>
-      </Card>
-    </>
-  )
-}
+                :
+                <>
+                  <Breadcrumb>
+                    <BreadcrumbList>
+                      <BreadcrumbItem>
+                        <BreadcrumbLink className='cursor-pointer'
+                          onClick={() => {
+                            navigate(-1);
+                          }}
+                        >Seleccionar solicitud</BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbLink className='cursor-pointer'>Solicitud</BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </BreadcrumbList>
+                  </Breadcrumb>
+  
+                  <div className='mt-3'>
+                    <DatosEditarSolicitud
+                      form={form}
+                      solicitud={solicitud}
+                      setSolicitud={setSolicitud}
+                      onCambiosPendientes={(hayCambios) => setCambiosPendientes(hayCambios)}
+                      handleGuardarCambios={handleGuardarCambios}
+                      loading={loading}
+                      cambiosPendientes={cambiosPendientes}
+                      setDatosForm={setDatosForm}
+                      datoForm={datoForm}
+                    />
+                  </div>
+                </>
+            }
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
 
 const formSchema = z.object({
   empleado: z.string().min(1, "El empleado es obligatorio"),
@@ -175,15 +181,10 @@ const formSchema = z.object({
   path: ["hora_fin"]
 });
 
-const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) => {
+const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, handleGuardarCambios, loading, cambiosPendientes, datoForm,setDatosForm }) => {
   type FormValues = z.infer<typeof formSchema>;
   
-  const [editableFields, setEditableFields] = useState({
-    horario: false,
-    fecha: false,
-    horas: false,
-    descripcion: false
-  });
+  const [isEditing, setIsEditing] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -220,89 +221,91 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
       currentValues.dias_festivos !== valoresOriginales.dias_festivos ||
       currentValues.descripcion !== valoresOriginales.descripcion;
     onCambiosPendientes(hasCambiosPendientes);
+    setDatosForm(currentValues);
   }, [form.watch()]);
   
-  const handleEditField = (field) => {
-    setEditableFields({
-      ...editableFields,
-      [field]: true,
-    });
-  };
-  
-  const handleCancelEdit = (field) => {
-    switch(field) {
-      case 'horario':
-        form.setValue('hora_inicio', valoresOriginales.hora_inicio);
-        form.setValue('hora_fin', valoresOriginales.hora_fin);
-        break;
-      case 'fecha':
-        form.setValue('fecha', valoresOriginales.fecha);
-        break;
-      case 'horas':
-        form.setValue('horas', valoresOriginales.horas);
-        form.setValue('prima_dominical', valoresOriginales.prima_dominical);
-        form.setValue('dias_festivos', valoresOriginales.dias_festivos);
-        break;
-      case 'descripcion':
-        form.setValue('descripcion', valoresOriginales.descripcion);
-        break;
-    }
-    
-    setEditableFields({
-      ...editableFields,
-      [field]: false,
-    });
-  };
-  
-  const handleAcceptEdit = (field) => {
-    form.trigger(field === 'horario' ? ['hora_inicio', 'hora_fin'] : field);
-    if (field === 'horario' && (form.formState.errors.hora_inicio || form.formState.errors.hora_fin)) {
-      return;
-    } else if (form.formState.errors[field]) {
-      return; 
-    }
-    
-    if (field === 'horario') {
-      setValoresOriginales({
-        ...valoresOriginales,
-        hora_inicio: form.getValues('hora_inicio'),
-        hora_fin: form.getValues('hora_fin'),
-      });
-    } else if (field === 'horas') {
-      setValoresOriginales({
-        ...valoresOriginales,
-        horas: form.getValues('horas'),
-        prima_dominical: form.getValues('prima_dominical'),
-        dias_festivos: form.getValues('dias_festivos'),
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      form.trigger().then(isValid => {
+        if (isValid) {
+          setValoresOriginales({
+            hora_inicio: form.getValues('hora_inicio'),
+            hora_fin: form.getValues('hora_fin'),
+            fecha: form.getValues('fecha'),
+            horas: form.getValues('horas'),
+            prima_dominical: form.getValues('prima_dominical'),
+            dias_festivos: form.getValues('dias_festivos'),
+            descripcion: form.getValues('descripcion'),
+          });
+          if (setSolicitud) {
+            setSolicitud({
+              ...solicitud,
+              hora_inicio: form.getValues('hora_inicio'),
+              hora_fin: form.getValues('hora_fin'),
+              fecha: form.getValues('fecha'),
+              horas: Number(form.getValues('horas')),
+              prima_dominical: form.getValues('prima_dominical') ? 1 : null,
+              dias_festivos: form.getValues('dias_festivos') ? 1 : null,
+              descripcion: form.getValues('descripcion'),
+            });
+          }
+          
+          setIsEditing(false);
+        }
       });
     } else {
-      setValoresOriginales({
-        ...valoresOriginales,
-        [field]: form.getValues(field),
-      });
+      setIsEditing(true);
     }
-    
-    setEditableFields({
-      ...editableFields,
-      [field]: false,
+  };
+  
+  const handleCancelEdit = () => {
+    form.reset({
+      ...form.getValues(),
+      hora_inicio: valoresOriginales.hora_inicio,
+      hora_fin: valoresOriginales.hora_fin,
+      fecha: valoresOriginales.fecha,
+      horas: valoresOriginales.horas,
+      prima_dominical: valoresOriginales.prima_dominical,
+      dias_festivos: valoresOriginales.dias_festivos,
+      descripcion: valoresOriginales.descripcion,
     });
     
-    if (setSolicitud) {
-      setSolicitud({
-        ...solicitud,
-        hora_inicio: form.getValues('hora_inicio'),
-        hora_fin: form.getValues('hora_fin'),
-        fecha: form.getValues('fecha'),
-        horas: Number(form.getValues('horas')),
-        prima_dominical: form.getValues('prima_dominical') ? 1: null,
-        dias_festivos: form.getValues('dias_festivos') ? 1: null,
-        descripcion: form.getValues('descripcion'),
-      });
-    }
+    setIsEditing(false);
   };
 
   return (
     <>
+      <div className="flex justify-end mb-4">
+        {!isEditing ? (
+          <Button 
+            onClick={handleToggleEdit}
+            variant="outline"
+          >
+            <Edit className="mr-2 h-4 w-4" /> Editar
+          </Button>
+        ) : (
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={handleCancelEdit}
+            >
+              <X className="mr-2 h-4 w-4" /> Cancelar
+            </Button>
+            <Button 
+              onClick={handleGuardarCambios}
+              disabled={!cambiosPendientes || loading}
+            >
+              {loading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              Guardar cambios
+            </Button>
+          </div>
+        )}
+      </div>
+      
       <Form {...form}>
         <form className="w-[95%] space-y-4">
           <div className="w-full mb-3">
@@ -324,7 +327,7 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
               )}
             />
           </div>
-          <div className="w-full flex items-end space-x-4 mb-5 relative">
+          <div className="w-full flex items-end space-x-4 mb-5">
             <div className="w-full space-y-1.5">
               <FormField
                 control={form.control}
@@ -336,8 +339,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                       <Input 
                         type="time"
                         {...field}
-                        disabled={!editableFields.horario}
-                        className={!editableFields.horario ? 'bg-gray-50' : ''}
+                        disabled={!isEditing}
+                        className={!isEditing ? 'bg-gray-50' : ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -357,8 +360,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                       <Input 
                         type="time"
                         {...field}
-                        disabled={!editableFields.horario}
-                        className={!editableFields.horario ? 'bg-gray-50' : ''}
+                        disabled={!isEditing}
+                        className={!isEditing ? 'bg-gray-50' : ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -366,36 +369,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 )}
               />
             </div>
-            <div className="absolute -right-12 top-8">
-              {!editableFields.horario ? (
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => handleEditField('horario')}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              ) : (
-                <div className="flex space-x-1">
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleCancelEdit('horario')}
-                  >
-                    <X className="h-4 w-4 text-red-500" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleAcceptEdit('horario')}
-                  >
-                    <Check className="h-4 w-4 text-green-500" />
-                  </Button>
-                </div>
-              )}
-            </div>
           </div>
-          <div className="w-full mb-5 relative">
+          <div className="w-full mb-5">
             <FormField
               control={form.control}
               name="fecha"
@@ -406,44 +381,16 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                     <Input 
                       type="date"
                       {...field}
-                      disabled={!editableFields.fecha}
-                      className={!editableFields.fecha ? 'bg-gray-50' : ''}
+                      disabled={!isEditing}
+                      className={!isEditing ? 'bg-gray-50' : ''}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="absolute -right-12 top-8">
-              {!editableFields.fecha ? (
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => handleEditField('fecha')}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              ) : (
-                <div className="flex space-x-1">
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleCancelEdit('fecha')}
-                  >
-                    <X className="h-4 w-4 text-red-500" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleAcceptEdit('fecha')}
-                  >
-                    <Check className="h-4 w-4 text-green-500" />
-                  </Button>
-                </div>
-              )}
-            </div>
           </div>
-          <div className="mb-5 relative">
+          <div className="mb-5">
             <div className="flex space-x-8">
               <div className="space-y-1.5">
                 <FormField
@@ -457,8 +404,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                           type="number"
                           placeholder="0"
                           {...field}
-                          disabled={!editableFields.horas}
-                          className={!editableFields.horas ? 'bg-gray-50 w-32' : 'w-32'}
+                          disabled={!isEditing}
+                          className={!isEditing ? 'bg-gray-50 w-32' : 'w-32'}
                         />
                       </FormControl>
                       <FormMessage />
@@ -476,7 +423,7 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                         <Checkbox 
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!editableFields.horas}
+                          disabled={!isEditing}
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Prima dominical</FormLabel>
@@ -493,7 +440,7 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                         <Checkbox 
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!editableFields.horas}
+                          disabled={!isEditing}
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Día festivo</FormLabel>
@@ -502,36 +449,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 />
               </div>
             </div>
-            <div className="absolute -right-12 top-8">
-              {!editableFields.horas ? (
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => handleEditField('horas')}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              ) : (
-                <div className="flex space-x-1">
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleCancelEdit('horas')}
-                  >
-                    <X className="h-4 w-4 text-red-500" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleAcceptEdit('horas')}
-                  >
-                    <Check className="h-4 w-4 text-green-500" />
-                  </Button>
-                </div>
-              )}
-            </div>
           </div>
-          <div className="relative">
+          <div>
             <FormField
               control={form.control}
               name="descripcion"
@@ -542,8 +461,8 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                     <Textarea 
                       placeholder="Descripción..." 
                       {...field}
-                      disabled={!editableFields.descripcion}
-                      className={!editableFields.descripcion ? 'bg-gray-50 resize-none' : 'resize-none'}
+                      disabled={!isEditing}
+                      className={!isEditing ? 'bg-gray-50 resize-none' : 'resize-none'}
                       maxLength={500}
                     />
                   </FormControl>
@@ -554,34 +473,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes }) 
                 </FormItem>
               )}
             />
-            <div className="absolute -right-12 top-8">
-              {!editableFields.descripcion ? (
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => handleEditField('descripcion')}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              ) : (
-                <div className="flex space-x-1">
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleCancelEdit('descripcion')}
-                  >
-                    <X className="h-4 w-4 text-red-500" />
-                  </Button>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleAcceptEdit('descripcion')}
-                  >
-                    <Check className="h-4 w-4 text-green-500" />
-                  </Button>
-                </div>
-              )}
-            </div>
           </div>
         </form>
       </Form>
