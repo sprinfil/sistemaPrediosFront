@@ -52,15 +52,7 @@ export async function editarSolicitud( SolicitudId: any,setLoading: Function,val
   try {
     setLoading(true);
     const response = await axiosClient.put('/he-solicitudes/' + SolicitudId, values);
-    setData(prev => {
-      return prev.map(solicitud => {
-        if (solicitud?.id == SolicitudId) {
-          return response?.data?.data
-        } else {
-          return solicitud;
-        }
-      })
-    })
+    setData(response?.data?.data); 
     console.log(response?.data?.data)
   }
   catch (e) {
