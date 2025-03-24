@@ -103,7 +103,7 @@ const DatosCrearSolicitud = ({ dataEmpleados,
         </Button>
 
       </div>
-      <div className="">
+      <div className=" pointer-events-none">
         <div className="w-full mb-3">
           <p className='mb-2'>Empleado</p>
           <Input
