@@ -165,7 +165,7 @@ export function AppSidebar() {
           }}
         >
           <SelectTrigger className="rounded-md h-[7vh] bg-[#FAFAFA] border-none">
-            <SelectValue placeholder="Select a fruit" />
+            <SelectValue placeholder="Selecciona un módulo" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
