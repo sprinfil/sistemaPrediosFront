@@ -278,7 +278,7 @@ export function DataTableSolicitudes({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -295,7 +295,7 @@ export function DataTableSolicitudes({
           >
             Siguiente
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

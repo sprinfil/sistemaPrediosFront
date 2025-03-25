@@ -1,8 +1,17 @@
 import { DataTableSolicitudes } from '@/components/components/DataTableSolicitudes'
 import React, { useState } from 'react'
-import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
 import { FaRegBuilding } from "react-icons/fa";
-import {Table,TableBody,TableCaption,TableCell,TableHead,
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+import {
+  Table, TableBody, TableCaption, TableCell, TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -25,9 +34,20 @@ import {
 } from "@/components/ui/breadcrumb"
 import { useLogicSolicitudes } from '@/lib/HorasExtraService';
 import { DataTableSolicitud } from './DataTableSolicitud';
+import { PaginationSpl } from './PaginationSpl';
 
 const DatosSolicitudes = () => {
-  const {fetch,loadingData,setLoadingData,params,setParams,solicitudes,setSolicitudes} = useLogicSolicitudes();
+  const { fetch,
+    loadingData,
+    setLoadingData,
+    params,
+    setParams,
+    solicitudes,
+    setSolicitudes,
+    meta,
+    setMeta,
+    toast
+  } = useLogicSolicitudes();
 
   return (
     <div>
@@ -56,6 +76,14 @@ const DatosSolicitudes = () => {
             loading={loadingData}
             setData={setSolicitudes}
             setLoading={setLoadingData}
+          />
+          <PaginationSpl
+            meta={meta}
+            setMeta={setMeta}
+            setData={setSolicitudes}
+            setLoading={setLoadingData}
+            toast={toast}
+            params={params}
           />
         </CardContent>
       </Card>
@@ -98,7 +126,7 @@ const Filtros = ({ fetchData, params, setParams }) => {
                         />
                       </TableCell>
                     </TableRow>
-                    <TableRow>
+                    {/* <TableRow>
                       <TableCell className={tableCellStyles}>
                         Empleado
                       </TableCell>
@@ -115,6 +143,43 @@ const Filtros = ({ fetchData, params, setParams }) => {
                             });
                           }}
                         />
+                      </TableCell>
+                    </TableRow> */}
+                    <TableRow>
+                      <TableCell className={tableCellStyles}>
+                        Etapa
+                      </TableCell>
+                      <TableCell className={tableCellStyles}>
+                        <Select
+                          value={params?.etapa}
+                          onValueChange={(value) => {
+                            if (value == "ninguno") {
+                              setParams(prev => {
+                                return {
+                                  ...prev,
+                                  etapa: ""
+                                }
+                              })
+                            } else {
+                              setParams(prev => {
+                                return {
+                                  ...prev,
+                                  etapa: value
+                                }
+                              })
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Etapa" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ninguno">Ninguno</SelectItem>
+                            <SelectItem value="solicitar">Solicitar</SelectItem>
+                            <SelectItem value="Pago">Pago</SelectItem>
+                          </SelectContent>
+                        </Select>
+
                       </TableCell>
                     </TableRow>
                   </TableBody>

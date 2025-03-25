@@ -26,6 +26,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 import { icons } from '@/constants/icons';
 import {
   Breadcrumb,
@@ -36,6 +44,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { useLogicSolicitudes } from '@/lib/HorasExtraService';
+import { PaginationSpl } from '@/components/components/PaginationSpl';
 
 const HorasExtras = () => {
   const {
@@ -47,7 +56,10 @@ const HorasExtras = () => {
     solicitudes,
     setSolicitudes,
     CambioEstados,
-    CambioEtapa
+    CambioEtapa,
+    meta,
+    setMeta,
+    toast
   } = useLogicSolicitudes();
 
   return (
@@ -72,6 +84,7 @@ const HorasExtras = () => {
             params={params}
             setParams={setParams}
           />
+          
           <DataTableSolicitudes
             data={solicitudes}
             loading={loadingData}
@@ -80,6 +93,17 @@ const HorasExtras = () => {
             CambioEstados={CambioEstados}
             CambioEtapa={CambioEtapa}
           />
+
+          <PaginationSpl
+            meta={meta}
+            setMeta={setMeta}
+            setData={setSolicitudes}
+            setLoading={setLoadingData}
+            toast={toast}
+            params={params}
+          />
+
+
         </CardContent>
       </Card>
     </div>
@@ -121,7 +145,7 @@ const Filtros = ({ fetchData, params, setParams }) => {
                         />
                       </TableCell>
                     </TableRow>
-                    <TableRow>
+                    {/* <TableRow>
                       <TableCell className={tableCellStyles}>
                         Empleado
                       </TableCell>
@@ -138,6 +162,43 @@ const Filtros = ({ fetchData, params, setParams }) => {
                             });
                           }}
                         />
+                      </TableCell>
+                    </TableRow> */}
+                    <TableRow>
+                      <TableCell className={tableCellStyles}>
+                        Etapa
+                      </TableCell>
+                      <TableCell className={tableCellStyles}>
+                        <Select
+                          value={params?.etapa}
+                          onValueChange={(value) => {
+                            if (value == "ninguno") {
+                              setParams(prev => {
+                                return {
+                                  ...prev,
+                                  etapa: ""
+                                }
+                              })
+                            } else {
+                              setParams(prev => {
+                                return {
+                                  ...prev,
+                                  etapa: value
+                                }
+                              })
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Etapa" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ninguno">Ninguno</SelectItem>
+                            <SelectItem value="solicitar">Solicitar</SelectItem>
+                            <SelectItem value="Pago">Pago</SelectItem>
+                          </SelectContent>
+                        </Select>
+
                       </TableCell>
                     </TableRow>
                   </TableBody>
