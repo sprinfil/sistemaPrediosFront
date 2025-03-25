@@ -13,10 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import { Button } from "@/components/ui/button";
-
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -28,18 +25,17 @@ import {
 import { icons } from "@/constants/icons";
 import LoaderHorizontal from "./LoaderHorizontal";
 import { useNavigate } from "react-router-dom";
-import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
-import { deleteData } from "@/lib/CatalogoService";
-import { toast } from "@/hooks/use-toast";
 
-export function DataTableHeGrupos({
+export function DataTableHeGruposEmpleados({
   data = [],
   loading,
   setData,
   setLoading,
-  setAccion,
   setSelectedData,
+  updateData,
   API_ENDPOINT,
+  empleadosSeleccionados,
+  setEmpleadosSeleccionados,
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -49,55 +45,54 @@ export function DataTableHeGrupos({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const navigate = useNavigate();
+
   const columns = [
     {
-      accessorKey: "nombre",
-      header: "Nombre",
-    },
+        accessorKey: "nombre",
+        header: "Nombre",
+        cell: ({ row }) => {
+            const data = row?.original;
+            return (<>
+              <div>{data?.nombre}</div>
+            </>)
+        }
+      },
     {
-      accessorKey: "area",
-      header: "Area",
+        accessorKey: "plaza",
+        header: "Plaza",
+        cell: ({ row }) => {
+            return (<>
+              <div>{row?.original?.plaza}</div>
+            </>)
+        }
+      },
+    {
+      accessorKey: "puesto",
+      header: "Puesto",
       cell: ({ row }) => {
-        return (
-          <>
-            <div>{row?.original?.areas?.nombre}</div>
-          </>
-        )
+        return (<>
+            <div>{row?.original?.puesto}</div>
+        </>)
       }
     },
     {
       id: "actions",
       header: "",
       cell: ({ row }) => {
+        const data = row?.original
         return (
           <div className="flex items-center gap-2 justify-end">
             <Button
               disabled={loading}
+              variant={"outline"}
+              className=""
               onClick={() => {
-                setSelectedData(row?.original);
-                setAccion("ver");
+                const updatedEmpleadosSeleccionados = empleadosSeleccionados.filter((empleado) => empleado !== data?.id);
+                setEmpleadosSeleccionados(prev=>{return prev.filter((empleado) => empleado !== data?.id)});
               }}
             >
-              {icons.ver("")}
+              {icons.eliminar("")}
             </Button>
-            <ModalEliminarReutilizable
-              trigger={
-                <Button disabled={loading}>
-                  {icons.eliminar("")}
-                </Button>
-              }
-              onConfirm={async () => {
-                await deleteData(
-                  setLoading,
-                  API_ENDPOINT + "/" + row.original.id,
-                  toast
-                );
-                setData((prev) => {
-                  return prev?.filter((data) => data?.id !== row.original.id);
-                });
-              }}
-              message={"¿Eliminar Registro?"}
-            />
           </div>
         );
       },
@@ -125,7 +120,7 @@ export function DataTableHeGrupos({
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
+        {/* <Input
           placeholder="Nombre"
           value={(table.getColumn("nombre")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -133,17 +128,11 @@ export function DataTableHeGrupos({
           }
           className="max-w-sm"
         />
-
-        <Button
-          variant="outline"
-          className="ml-auto"
-          onClick={() => {
-            setAccion("crear");
-            setSelectedData({});
-          }}
-        >
-          Nuevo {icons.agregar("")}
-        </Button>
+        <ModalImportarHeEmpleados
+          title={"Importar empleados"}
+          endpoint={"/he-empleados/import"}
+          updateData={updateData}
+        /> */}
       </div>
       <div className="rounded-md border">
         <Table>
