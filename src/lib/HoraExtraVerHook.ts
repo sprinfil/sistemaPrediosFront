@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchData } from "./ToolService";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { CambiarEstado, CambiarEtapa} from "./Solicitudes";
 
 export const useHoraExtraVerHook = () => {
     const params = useParams();
@@ -15,6 +16,21 @@ export const useHoraExtraVerHook = () => {
         setSolicitud(response?.data);
     }
 
+    const CambioEstados = async(SolicitudID:number, values:any)=>{
+        const requestData = {
+          status: values
+        };
+        await CambiarEstado(SolicitudID,setLoadingArea,requestData,setSolicitud)
+    }
+    
+    const CambioEtapa = async(SolicitudID:number, values:any)=>{
+        const requestData = {
+          step: values
+        };
+        await CambiarEtapa(SolicitudID,setLoadingArea,requestData,setSolicitud)
+    }
+    
+
     useEffect(() => {
         fetchSolicitud();
     }, [])
@@ -24,7 +40,9 @@ export const useHoraExtraVerHook = () => {
         fetchSolicitud,
         solicitud,
         setSolicitud,
-        loadingArea
+        loadingArea,
+        CambioEstados,
+        CambioEtapa
     }
 }
 

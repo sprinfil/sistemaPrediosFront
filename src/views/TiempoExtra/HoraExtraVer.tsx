@@ -35,7 +35,9 @@ export const HoraExtraVer = () => {
     fetchArea,
     setSolicitud,
     solicitud,
-    loadingArea
+    loadingArea,
+    CambioEstados,
+    CambioEtapa
   } = useHoraExtraVerHook();
 
 
@@ -75,6 +77,8 @@ export const HoraExtraVer = () => {
                 <div className='mt-3'>
                   <DatosCrearSolicitud
                     solicitud={solicitud}
+                    CambioEstados={CambioEstados}
+                    CambioEtapa={CambioEtapa}
                   />
                 </div>
               </>
@@ -89,19 +93,31 @@ const DatosCrearSolicitud = ({ dataEmpleados,
   setDataEmpleados,
   horasEmpleados,
   setHorasEmpleados,
-  solicitud
+  solicitud,
+  CambioEstados,
+  CambioEtapa,
 }) => {
+  const navigate = useNavigate();
   return (
     <>
       <div className='w-full flex items-center mb-3 gap-3'>
-        <Button variant={"outline"} className='text-green-700'>
+        <Button variant={"outline"} className='text-green-700'
+          onClick={() => {
+            CambioEtapa(solicitud?.id, "Pago");
+            navigate(-1);
+          }}
+        >
           Aprobar {icons.confirmar("")}
         </Button>
-        <Button variant={"outline"} className='text-red-700'>
+        <Button variant={"outline"} className='text-red-700' 
+          onClick={() => {
+            CambioEstados(solicitud?.id, "Rechazado");
+            navigate(-1);
+          }}
+        >
           No aprobar
           {icons.cancelar("")}
         </Button>
-
       </div>
       <div className=" pointer-events-none">
         <div className="w-full mb-3">

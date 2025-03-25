@@ -107,6 +107,36 @@ export async function SolicitudCambiarEtapa(SolicitudId: number,setLoading: Func
   }
 }
 
+export async function CambiarEstado(SolicitudId: number,setLoading: Function,values: Object,setData: Function)
+{
+  try {
+    setLoading(true);
+    const response = await axiosClient.patch('/he-solicitudes/change-status/' + SolicitudId, values);
+    setData(response?.data?.data)
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+}
+
+export async function CambiarEtapa(SolicitudId: number,setLoading: Function,values: Object,setData: Function)
+{
+  try {
+    setLoading(true);
+    const response = await axiosClient.patch('/he-solicitudes/change-step/'+SolicitudId, values);
+    setData(response?.data?.data)
+  }
+  catch (e) {
+    throw e;
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+
 export const getEmpleadosArray = async (setLoading: Function,ids:Object,toast: any) => 
   {
     try {
