@@ -167,9 +167,11 @@ export function DataTableSolicitudes({
                 onClick={() => { navigate("/horasextra/verSolicitud/" + row.original?.id) }}
               >{icons.ver("")}</Button>
               <Button onClick={()=>{CambioEtapa(row.original?.id, "Pago")}}
-              variant={"outline"}>{icons.confirmar("")}</Button>
+                variant={"outline"}>{icons.confirmar("")}
+              </Button>
               <Button onClick={()=>{CambioEstados(row.original?.id, "Rechazado")}}
-              variant={"outline"}>{icons.cancelar("")}</Button>
+                variant={"outline"}>{icons.cancelar("")}
+              </Button>
             </div>
           </>
         )
