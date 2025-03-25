@@ -1,42 +1,21 @@
-import { DataTableProveedores } from "@/components/components/DataTableProveedores";
 import { toast } from "@/hooks/use-toast";
-import {
-  createData,
-  deleteData,
-  fetchData,
-  updateData,
-} from "@/lib/CatalogoService";
+import {createData,deleteData,fetchData,updateData,} from "@/lib/CatalogoService";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { number, z } from "zod";
+import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { icons } from "@/constants/icons";
 import { Loader } from "@/components/components/Loader";
-import { FaLeftLong, FaLeftRight } from "react-icons/fa6";
 import { FaArrowLeft } from "react-icons/fa";
 import { ComboBoxReutilizable } from "@/components/components/ComboBoxReutilizable";
-import { ProductosProveedores } from "@/components/components/ProductosProveedores";
 import { DataTableHeGrupos } from "./DataTableHeGrupos";
 import { ModalReutilizable } from "./ModalRetuilizable";
+import { getEmpleadosArray, getGruposid } from "@/lib/Solicitudes";
+import { DataTableHeGruposEmpleados } from "./DataTableHEGruposEmpleados";
 
 export const GruposCatalogo = () => {
   const [accion, setAccion] = useState("listado");
@@ -94,9 +73,11 @@ const Formulario = ({
   selectedData,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<number[]>([]);
   const formSchema = z.object({
     nombre: z.string().optional(),
     id_he_area: z.number().optional(),
+    empleado: z.number().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -106,16 +87,27 @@ const Formulario = ({
   const { handleSubmit, trigger } = form;
   const [editando, setEditando] = useState(false);
 
+  useEffect(() => {
+    if (accion === "ver" && selectedData?.empleados) {
+      const empeladosids = selectedData.empleados.map((empleado) => empleado.id);
+      setEmpleadosSeleccionados(empeladosids);
+    }
+  }, [selectedData, accion]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (accion == "crear") {
-      const data = await createData(setLoading, values, API_ENDPOINT, toast);
+      const data = await createData(setLoading, 
+        { ...values, empleados: empleadosSeleccionados }, 
+        API_ENDPOINT, 
+        toast
+      );
       setSelectedData(data);
       setAccion("ver");
     }
     if (accion == "ver") {
       const data = await updateData(
         setLoading,
-        values,
+        { ...values, empleados: empleadosSeleccionados },
         API_ENDPOINT + "/" + selectedData?.id,
         toast
       );
@@ -158,6 +150,7 @@ const Formulario = ({
 
   //METODOS EXTRA
   const [areasData, setAreasData] = useState([]);
+  const [empleadosData,setEmpleadosData] = useState([]);
   const [loadingAreas, setLoadingAreas] = useState(false);
 
   const fetchAreas = async () => {
@@ -166,13 +159,36 @@ const Formulario = ({
       "/he-areas",
       toast
     );
-
     setAreasData(response);
+  };
+
+  const fetchEmpleados = async () => {
+    const response = await fetchData(
+      setLoadingAreas,
+      "/he-empleados",
+      toast
+    );
+    setEmpleadosData(response);
   };
 
   useEffect(() => {
     fetchAreas();
+    fetchEmpleados();
   }, []);
+
+  const handleAgregarEmpleado = () => {
+    const empleadoSeleccionado = form.getValues('empleado');
+    console.log(empleadoSeleccionado)
+    if (empleadoSeleccionado && !empleadosSeleccionados.includes(empleadoSeleccionado)) {
+      setEmpleadosSeleccionados(prev => [...prev, empleadoSeleccionado]);
+    } else {
+      toast({
+        title: "Error",
+        description: "Seleccione un empleado válido o ya agregado.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <>
@@ -279,6 +295,43 @@ const Formulario = ({
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="empleado"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Empleados</FormLabel>
+                      <FormControl>
+                        <>
+                          <br />
+                          <ComboBoxReutilizable
+                            loading={loadingAreas}
+                            placeholder="Empleado"
+                            items={empleadosData}
+                            accesorKey="nombre"
+                            defaultValue={selectedData?.id_he_area}
+                            setItem={(value) => {
+                              form.setValue("empleado", value);
+                            }}
+                          />
+                        </>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="button"
+                  className="w-[33%] mt-auto mb-auto"
+                  onClick={handleAgregarEmpleado}
+                >
+                  Agregar {icons.agregar("")}
+                </Button>
+                {/* {empleadosSeleccionados.length > 0 && (
+                  <div className="col-span-full">
+                    <p>Empleados seleccionados: {empleadosSeleccionados.join(', ')}</p>
+                  </div>
+                )} */}
               </div>
 
               {accion == "crear" && (
@@ -300,29 +353,56 @@ const Formulario = ({
           </Form>
         </CardContent>
       </Card>
-      {/* {accion == "ver" && (
+      {accion == "ver" && (
         <div className="mt-3">
-          <Productos
+          <Empleados
             selectedData={selectedData}
+            setSelectedData={selectedData}
+            dataSelected={selectedData?.id}
+            empleadosSeleccionados={empleadosSeleccionados}
+            setEmpleadosSeleccionados={setEmpleadosSeleccionados}
           />
         </div>
-      )} */}
+      )}
     </>
   );
 };
 
-// const Productos = ({ selectedData }) => {
-//   return (
-//     <>
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Productos</CardTitle>
-//           <CardDescription></CardDescription>
-//         </CardHeader>
-//         <CardContent>
-//           <ProductosProveedores idSupplier={selectedData?.id} />
-//         </CardContent>
-//       </Card>
-//     </>
-//   );
-// };
+const Empleados = ({ selectedData,setSelectedData,dataSelected,empleadosSeleccionados,setEmpleadosSeleccionados }) => {
+  const [loading, setLoading] = useState(false);
+  const [data,setData] = useState([]);
+  const API_ENDPOINT = "/he-grupos";
+  
+  useEffect(()=>{
+    if(empleadosSeleccionados.length>0){
+      get()
+    }
+  },[empleadosSeleccionados])
+
+  const get = async () => {
+    const data = await getEmpleadosArray(setLoading,empleadosSeleccionados,toast);
+    setData(data);
+  };
+
+  return (
+    <>
+      <Card>
+        <CardContent>
+          <DataTableHeGruposEmpleados
+            loading={loading}
+            setLoading={setLoading}
+            data={data}
+            setData={setData}
+            setSelectedData={selectedData}
+            updateData={null}
+            API_ENDPOINT={API_ENDPOINT}
+            empleadosSeleccionados={empleadosSeleccionados}
+            setEmpleadosSeleccionados={setEmpleadosSeleccionados}
+          />
+        </CardContent>
+      </Card>
+    </>
+  );
+};
+
+export default GruposCatalogo;
