@@ -104,12 +104,12 @@ export function AppSidebar() {
     //   icon: <GiValve />
     // },
 
-    {
-      title: "Operadores",
-      url: "/operadores",
-      icon: <FaUserTie />,
-      requiredRol: "master"
-    },
+    // {
+    //   title: "Operadores",
+    //   url: "/operadores",
+    //   icon: <FaUserTie />,
+    //   requiredRol: "master"
+    // },
   ]
 
   const horasExtraItems = [
@@ -124,13 +124,38 @@ export function AppSidebar() {
       icon: <IoTimeSharp />
     },
     {
-      title: "Configuración",
-      icon: <FaGear />,
-      options: [
-        { title: "Empleados", url: "/horasextra/empleados", icon: <FaUsers /> },
-        { title: "Áreas", url: "/horasextra/areas", icon: <HiMiniSquare3Stack3D /> },
-        { title: "Grupos", url: "/horasextra/grupos", icon: <FaUsers /> },
-      ],
+      title: "Grupos",
+      url: "/horasextra/grupos",
+      icon: <FaUsers />
+    },
+
+    // {
+    //   title: "Configuración",
+    //   icon: <FaGear />,
+    //   options: [
+    //     { title: "Empleados", url: "/horasextra/empleados", icon: <FaUsers /> },
+    //     { title: "Áreas", url: "/horasextra/areas", icon: <HiMiniSquare3Stack3D /> },
+    //     { title: "Grupos", url: "/horasextra/grupos", icon: <FaUsers /> },
+    //   ],
+    // },
+  ]
+
+
+  const administracion = [
+    {
+      title: "Usuarios",
+      url: "/operadores",
+      icon: <FaUserTie />
+    },
+    {
+      title: "Empleados",
+      url: "/horasextra/empleados",
+      icon: <FaUsers />
+    },
+    {
+      title: "Áreas",
+      url: "/horasextra/areas",
+      icon: <HiMiniSquare3Stack3D />
     },
   ]
 
@@ -150,6 +175,9 @@ export function AppSidebar() {
     }
     if (modulo == "horasExtra") {
       setItems(horasExtraItems);
+    }
+    if (modulo == "administracion") {
+      setItems(administracion);
     }
 
   }, [modulo])
@@ -172,11 +200,10 @@ export function AppSidebar() {
               <SelectLabel>Módulos</SelectLabel>
               <SelectItem value="valulasPredios">Válvulas y predios</SelectItem>
               <SelectItem value="horasExtra">Horas extra</SelectItem>
+              <SelectItem value="administracion">Administración del sistema</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
-
-
       </div>
       <SidebarContent>
         <SidebarGroup>
