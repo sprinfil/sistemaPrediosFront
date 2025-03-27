@@ -129,12 +129,8 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
         <AlertDialogHeader>
           <AlertDialogTitle></AlertDialogTitle>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="gap-4 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
-
-
-
-
-              <div className="grid  grid-cols-1 gap-10">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="gap-1 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <Card>
                   <CardHeader>
                     <CardTitle>
@@ -212,23 +208,6 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
                     </div>
                   </CardContent>
                 </Card>
-
-                <div>
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        Area
-                      </CardTitle>
-                    </CardHeader>
-
-                    <CardContent>
-                      <ComboBoxReutilizable
-                        placeholder="Buscar area"
-                      />
-                    </CardContent>
-                  </Card>
-
-                </div>
                 <Card>
                   <CardHeader>
                     <CardTitle>
@@ -272,7 +251,7 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
                   </CardContent>
                 </Card>
 
-                <Card>
+                {/* <Card>
                   <CardHeader>
                     <CardTitle>
                       Módulos del sistema
@@ -313,7 +292,7 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
 
                     </div>
                   </CardContent>
-                </Card>
+                </Card> */}
 
 
               </div>

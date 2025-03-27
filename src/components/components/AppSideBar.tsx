@@ -20,12 +20,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { FaShare, FaUser, FaUsers } from "react-icons/fa";
+import { FaKey, FaShare, FaUser, FaUsers } from "react-icons/fa";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { IoDocumentLockOutline, IoDocumentText, IoHome, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
+import { IoDocumentLockOutline, IoDocumentText, IoHome, IoKeyOutline, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
 import { HiMiniSquare3Stack3D } from "react-icons/hi2";
@@ -70,11 +70,6 @@ export function AppSidebar() {
       url: "/",
       icon: <IoHome />
     },
-    // {
-    //   title: "Mapa",
-    //   url: "/mapa",
-    //   icon: <FaMapMarkedAlt />
-    // },
     {
       title: "Cargas de trabajo (predios)",
       url: "/cargasTrabajo",
@@ -98,18 +93,6 @@ export function AppSidebar() {
         { title: "Mapa Válvulas", url: "/mapaValvulas", icon: <FaMapMarkedAlt /> },
       ],
     },
-    // {
-    //   title: "Padrón de tomas",
-    //   url: "/padronTomas",
-    //   icon: <GiValve />
-    // },
-
-    // {
-    //   title: "Operadores",
-    //   url: "/operadores",
-    //   icon: <FaUserTie />,
-    //   requiredRol: "master"
-    // },
   ]
 
   const horasExtraItems = [
@@ -129,15 +112,6 @@ export function AppSidebar() {
       icon: <FaUsers />
     },
 
-    // {
-    //   title: "Configuración",
-    //   icon: <FaGear />,
-    //   options: [
-    //     { title: "Empleados", url: "/horasextra/empleados", icon: <FaUsers /> },
-    //     { title: "Áreas", url: "/horasextra/areas", icon: <HiMiniSquare3Stack3D /> },
-    //     { title: "Grupos", url: "/horasextra/grupos", icon: <FaUsers /> },
-    //   ],
-    // },
   ]
 
 
@@ -146,6 +120,11 @@ export function AppSidebar() {
       title: "Usuarios",
       url: "/operadores",
       icon: <FaUserTie />
+    },
+    {
+      title: "Roles y permisos",
+      url: "/rolesPermisos",
+      icon: <FaKey />
     },
     {
       title: "Empleados",
@@ -166,7 +145,6 @@ export function AppSidebar() {
     if (modulo == "horasExtra") {
       setItems(horasExtraItems);
     }
-
   }, [])
 
   useEffect(() => {
@@ -198,9 +176,18 @@ export function AppSidebar() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Módulos</SelectLabel>
-              <SelectItem value="valulasPredios">Válvulas y predios</SelectItem>
-              <SelectItem value="horasExtra">Horas extra</SelectItem>
-              <SelectItem value="administracion">Administración del sistema</SelectItem>
+              {
+                user?.all_permissions?.find(permisot => permisot == "MostrarModuloHorasExtra") &&
+                <SelectItem value="horasExtra">Horas extra</SelectItem>
+              }
+              {
+                user?.all_permissions?.find(permisot => permisot == "MostrarModuloValvulasPredios") &&
+                <SelectItem value="valulasPredios">Válvulas y predios</SelectItem>
+              }
+              {
+                user?.all_permissions?.find(permisot => permisot == "MostrarModuloAdministracion") &&
+                <SelectItem value="administracion">Administración del sistema</SelectItem>
+              }
             </SelectGroup>
           </SelectContent>
         </Select>
