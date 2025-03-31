@@ -8,6 +8,7 @@ import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
 import { useState } from "react"
 import {Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion"
 import { DatosCrearSolicitudGrupos } from "@/components/components/DatosCrearSolicitudGrupos"
+import { DatosCrearSolicitud } from "@/components/components/DatosCrearSolicitud"
 
 
 export const Solicitud = () => {
@@ -22,7 +23,8 @@ export const Solicitud = () => {
           <CardHeader>
             <CardTitle>Crear</CardTitle>
           </CardHeader>
-          <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
+          <DatosCrearSolicitud/>
+          {/* <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
             <AccordionItem value="item-1">
               <AccordionTrigger>Empleados</AccordionTrigger>
               <AccordionContent>
@@ -35,7 +37,13 @@ export const Solicitud = () => {
                 <DatosCrearSolicitudGrupos/>
               </AccordionContent>
             </AccordionItem>
-          </Accordion>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>General</AccordionTrigger>
+              <AccordionContent>
+                
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion> */}
         </Card>
       </TabsContent>
       <TabsContent value="vistaActualizar">

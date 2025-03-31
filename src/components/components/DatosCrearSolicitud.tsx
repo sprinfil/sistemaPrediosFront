@@ -1,5 +1,4 @@
 import { Input } from "../ui/input"
-import { PopoverHorasExtrasEmpleado } from "./PopoverHorasExtraEmpleados"
 import { Button } from "../ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "../ui/textarea"
@@ -14,22 +13,56 @@ import { icons } from "@/constants/icons";
 import { Loader } from "lucide-react"
 import { crearSolicitudEmpleados } from "@/lib/Solicitudes"
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal"
+import { fetchData } from "@/lib/CatalogoService"
+import { ComboBoxReutilizable } from "./ComboBoxReutilizable"
+import {Collapsible,CollapsibleContent,CollapsibleTrigger,} from "@/components/ui/collapsible"
+import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
+import { ChevronDown, ChevronUp, X } from "lucide-react"
 
-export const DatosCrearSolicitudEmpleados = ({}) => {
+export const DatosCrearSolicitud = ({}) => {
     const [dataEmpleados, setDataEmpleados] = useState<any[]>([]);
     const [empleados, setEmpleados] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const {user} = ZustandPrincipal();
+    const [empleadosData,setEmpleadosData] = useState([]);
+    const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<number[]>([]);
+    const [grupoData,setGrupoData] = useState([]);
+    const [open, setOpen] = useState(false);
+
+    const fetchEmpleados = async () => {
+        const response = await fetchData(
+          setLoading,
+          "/he-empleados",
+          toast
+        );
+        setEmpleadosData(response);
+    };
+
+    const fetchGrupo = async () => {
+        const response = await fetchData(
+          setLoading,
+          "/he-grupos",
+          toast
+        );
+        setGrupoData(response);
+    };
+
+    useEffect(() => {
+        fetchGrupo();
+        fetchEmpleados();
+    }, []);
 
     const isTimeAfter = (startTime: string, endTime: string) => {
         const [startHour, startMinute] = startTime.split(':').map(Number);
         const [endHour, endMinute] = endTime.split(':').map(Number);
-        
         if (startHour < endHour) return true;
         if (startHour === endHour && startMinute < endMinute) return true;
         return false;
     };
+
     const formSchema = z.object({
+        grupo:z.number().optional(),
+        empleado: z.number().optional(),
         horas: z.string()
             .min(1, { message: "Las horas son obligatorias" })
             .refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" })
@@ -62,6 +95,8 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            grupo:1,
+            empleado: 1,
             horas: "",
             horainicial: "",
             horafinal: "",
@@ -81,17 +116,45 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
         return result;
     };
 
-    useEffect(() => {
-        //const empleadosIds = empleados.id;
-    }, [empleados]);
+
+    const handleAgregarGrupo = () => {
+        const grupoId = form.getValues('grupo');
+        const grupoids = grupoData.find((grupo) => grupo.id === grupoId);
+        if (grupoids && grupoids.empleados && grupoids.empleados.length > 0) {
+            const empleadosDelGrupo = grupoids.empleados.map((empleado) => empleado.id);
+            setEmpleadosSeleccionados(prev => {
+                const todosIds = [...prev, ...empleadosDelGrupo];
+                return [...new Set(todosIds)];
+            });
+        } else {
+            toast({
+                title: "Error",
+                description: "Seleccione un grupo válido o no hay empleados en este grupo.",
+                variant: "destructive"
+            });
+        }
+    }
+
+    const handleAgregarEmpleado = () => {
+        const empleadoSeleccionado = form.getValues('empleado');
+        console.log(empleadoSeleccionado)
+        if (empleadoSeleccionado && !empleadosSeleccionados.includes(empleadoSeleccionado)) {
+          setEmpleadosSeleccionados(prev => [...prev, empleadoSeleccionado]);
+        } else {
+          toast({
+            title: "Error",
+            description: "Seleccione un empleado válido o ya agregado.",
+            variant: "destructive"
+          });
+        }
+    };
+
+    //useEffect(()=>{console.log(empleadosSeleccionados)},[empleadosSeleccionados])
 
     async function onSubmit(values: FormValues) {
         setLoading(true);
         try {
-            if (!empleados || empleados.length === 0) {
-                throw new Error("Debe seleccionar un empleado");
-            } 
-            const empleadosIds = empleados.id;
+            const empleadosIds = values.empleado;
             const requestData = {
                 id_user_solicitante:  user?.id,
                 clave: `${empleadosIds}${generateRandomLetters(3)}${values.horas}${generateRandomLetters(3)}`,
@@ -134,20 +197,122 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
 
     return (
     <>
-      <div className="ml-10 mr-10">
-        <div className="w-full space-x-4 flex mb-5">
-          <PopoverHorasExtrasEmpleado 
-            dataEmpleados={dataEmpleados} 
-            setDataEmpleados={setDataEmpleados} 
-            empleados={empleados} 
-            setEmpleados={setEmpleados} 
-          />
-          {dataEmpleados.length === 0 && 
-            <p className="text-red-500 text-sm">Debe seleccionar al menos un empleado</p>
-          }
-        </div>
+    <div className="ml-10 mr-10 mb-5">
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="grupo"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Grupo</FormLabel>
+                        <FormControl>
+                        <>
+                            <br />
+                            <ComboBoxReutilizable
+                                loading={loading}
+                                placeholder="Grupo"
+                                items={grupoData}
+                                accesorKey="nombre"
+                                defaultValue={null}
+                                setItem={(value) => {
+                                    form.setValue("grupo", value);
+                                }}
+                            />
+                            <Button  type="button" variant={"outline"} className="ml-5" onClick={handleAgregarGrupo}>
+                                {icons.agregar("text-black")}
+                            </Button>
+                        </>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="empleado"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Empleados</FormLabel>
+                        <FormControl>
+                            <>
+                            <br/>
+                            <ComboBoxReutilizable
+                                loading={loading}
+                                placeholder="Empleado"
+                                items={empleadosData}
+                                accesorKey="nombre"
+                                defaultValue={null}
+                                setItem={(value) => {
+                                    form.setValue("empleado", value);
+                                }}
+                            />
+                            <Button type="button" variant={"outline"} className="ml-5" onClick={handleAgregarEmpleado}>
+                                {icons.agregar("text-black")}
+                            </Button>
+                            </>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <div className="col-span-2 mb-4">
+                    <Collapsible className="w-full border rounded-md">
+                        <div className="flex items-center justify-between px-4 py-2 border-b">
+                        <h3 className="font-medium">Empleados seleccionados ({empleadosSeleccionados.length})</h3>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="p-1">
+                            {open ? (
+                                <ChevronUp className="h-4 w-4" />
+                            ) : (
+                                <ChevronDown className="h-4 w-4" />
+                            )}
+                            </Button>
+                        </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                        <div className="p-4">
+                            {empleadosSeleccionados.length > 0 ? (
+                            <Table>
+                                <TableHeader>
+                                <TableRow>
+                                    <TableHead>Nombre</TableHead>
+                                    <TableHead className="w-[100px]">Acciones</TableHead>
+                                </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                {empleadosSeleccionados.map((id) => {
+                                    const empleado = empleadosData.find(e => e.id === id);
+                                    return (
+                                    <TableRow key={id}>
+                                        <TableCell>{empleado ? empleado.nombre : "Empleado no encontrado"}</TableCell>
+                                        <TableCell>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => {
+                                            setEmpleadosSeleccionados(
+                                                empleadosSeleccionados.filter((empId) => empId !== id)
+                                            );
+                                            }}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                    );
+                                })}
+                                </TableBody>
+                            </Table>
+                            ) : (
+                            <p className="text-center text-muted-foreground">
+                                No hay empleados seleccionados
+                            </p>
+                            )}
+                        </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
                 <FormField
                     control={form.control}
                     name="horas"
@@ -259,9 +424,9 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
                         />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                            <FormLabel>Prima dominical</FormLabel>
+                            <FormLabel>Prima</FormLabel>
                             <FormDescription>
-                                Marcar si las horas extras fueron realizadas en domingo
+                                Marcar si las horas extras fueron realizadas en dia de descanso
                             </FormDescription>
                         </div>
                         <FormMessage />
@@ -298,7 +463,7 @@ export const DatosCrearSolicitudEmpleados = ({}) => {
                 </div>
             </form>
         </Form>
-      </div>
+    </div>
     </>
   )
 }
