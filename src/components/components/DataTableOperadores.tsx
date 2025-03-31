@@ -75,6 +75,17 @@ export function DataTableOperadores({ data, setData }) {
         )
       }
     },
+    {
+      accessorKey: "role",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+
+        return (
+          <div>{data?.area?.nombre}</div>
+        )
+      }
+    },
     // {
     //   accessorKey: "status",
     //   header: "Nombre de Usuario"
@@ -117,7 +128,7 @@ export function DataTableOperadores({ data, setData }) {
                 setData={setData}
               />
 
-              <ModalDesactivarOperador operadorId={operador?.id} setData={setData} status={operador?.status}/>
+              <ModalDesactivarOperador operadorId={operador?.id} setData={setData} status={operador?.status} />
 
             </div>
 
