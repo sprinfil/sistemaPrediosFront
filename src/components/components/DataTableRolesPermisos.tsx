@@ -31,9 +31,8 @@ import { useNavigate } from "react-router-dom";
 import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
 import { deleteData } from "@/lib/CatalogoService";
 import { toast } from "@/hooks/use-toast";
-import { formatearFecha } from "@/lib/ToolService";
 
-export function DataTableSolicitudes({
+export function DataTableRolesPermisos({
   data = [],
   loading,
   setData,
@@ -41,8 +40,6 @@ export function DataTableSolicitudes({
   setAccion,
   setSelectedData,
   API_ENDPOINT,
-  CambioEstados,
-  CambioEtapa
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -54,130 +51,50 @@ export function DataTableSolicitudes({
   const navigate = useNavigate();
   const columns = [
     {
-      accessorKey: "status",
-      header: "Clave",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.clave}</div>
-        </>)
-      },
+      accessorKey: "name",
+      header: "Nombre",
     },
-    {
-      accessorKey: "status",
-      header: "Empleado",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.empleados_trabajador?.nombre}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Area",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.empleados_trabajador?.areas?.nombre}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Solicito",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.user_solicitante?.name}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Descripcion",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.descripcion}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Horas",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.horas}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Fecha",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{formatearFecha(data?.fecha)}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Etapa",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.etapa}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.estado}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Motivo de cancelación",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.motivo}</div>
-        </>)
-      },
-    },
-
     {
       id: "actions",
-      enableHiding: false,
+      header: "",
       cell: ({ row }) => {
-        const payment = row.original
-
         return (
-          <>
-            <div className="flex gap-2 items-center">
-              <Button
-                onClick={() => { navigate("/horasextra/verSolicitud/" + row.original?.id) }}
-              >{icons.ver("")}</Button>
-              <Button onClick={()=>{CambioEtapa(row.original?.id, "Pago")}}
-                variant={"outline"}>{icons.confirmar("")}
-              </Button>
-              <Button onClick={()=>{CambioEstados(row.original?.id, "Rechazado")}}
-                variant={"outline"}>{icons.cancelar("")}
-              </Button>
-            </div>
-          </>
-        )
+          <div className="flex items-center gap-2 justify-end">
+            <Button
+              variant={"outline"}
+              disabled={loading}
+              onClick={() => {
+                setSelectedData(row?.original);
+                setAccion("ver");
+              }}
+            >
+              {icons.ver("")}
+            </Button>
+            <ModalEliminarReutilizable
+              trigger={
+                <Button
+                  variant={"outline"}
+                  disabled={loading}>
+                  {icons.eliminar("text-red-500")}
+                </Button>
+              }
+              onConfirm={async () => {
+                await deleteData(
+                  setLoading,
+                  API_ENDPOINT + "/" + row.original.id,
+                  toast
+                );
+                setData((prev) => {
+                  return prev?.filter((data) => data?.id !== row.original.id);
+                });
+              }}
+              message={"¿Eliminar Registro?"}
+            />
+          </div>
+        );
       },
     },
-  ]
+  ];
   const table = useReactTable({
     data,
     columns,
@@ -200,11 +117,11 @@ export function DataTableSolicitudes({
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        {/* <Input
-          placeholder="Nombre comercial"
-          value={(table.getColumn("nombre_comercial")?.getFilterValue() as string) ?? ""}
+        <Input
+          placeholder="Nombre "
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("nombre_comercial")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -218,7 +135,7 @@ export function DataTableSolicitudes({
           }}
         >
           Nuevo {icons.agregar("")}
-        </Button> */}
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -278,7 +195,7 @@ export function DataTableSolicitudes({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        {/* <div className="space-x-2">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -295,7 +212,7 @@ export function DataTableSolicitudes({
           >
             Siguiente
           </Button>
-        </div> */}
+        </div>
       </div>
     </div>
   );

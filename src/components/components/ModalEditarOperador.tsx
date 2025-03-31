@@ -37,8 +37,9 @@ import { useEffect, useRef, useState } from "react"
 import { ToastAction } from "@/components/ui/toast"
 import { Loader } from "./Loader"
 import { LoaderSecondary } from "./LoaderSecondary"
-import { Card } from "../ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { fetchRoles, getRoles } from "@/lib/RolesService"
+import { ComboBoxReutilizable } from "./ComboBoxReutilizable"
 
 export function ModalEditarOperador({ trigger, setData, operador }) {
 
@@ -46,6 +47,8 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
   const [roles, setRoles] = useState([]);
   const [loadingRoles, setLoadingRoles] = useState();
   const [selectedRoles, setSelectedRoles] = useState(operador?.roles.map(rol => rol?.name));
+  const [modulos, setModulos] = useState([{ name: "Horas Extra" }, { name: "Predios y valvulas" }, { name: "administracion" }])
+  const [selectedModulos, setSelectedModulos] = useState(operador?.modulos?.map(modulo => modulo?.name))
   const { toast } = useToast();
   const cancelarButton = useRef();
   // useEffect(() => {
@@ -122,112 +125,176 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
       <AlertDialogTrigger asChild onClick={() => { fetchRoles(setLoadingRoles, setRoles); setSelectedRoles(operador?.roles.map(rol => rol?.name)); }}>
         {trigger}
       </AlertDialogTrigger>
-      <AlertDialogContent className="min-w-[70%]">
+      <AlertDialogContent className="min-w-[90%]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Ver Operador</AlertDialogTitle>
+          <AlertDialogTitle></AlertDialogTitle>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="gap-4 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
-              <div className="flex gap-4 w-full">
-                <div className="w-[45%]">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre Completo</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nombre Completo" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Nombre Completo del operador
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Username" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Username para ingresar al sistema.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contraseña</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Contraseña" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Contraseña para ingresar al sistema
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password_confirmation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repetir contraseña</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Repetir contraseña" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Repetir contraseña.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="w-[45%]">
-                  {
-                    loadingRoles ?
-                      <>
-                        <div className="flex h-full items-center justify-center">
-                          <Loader />
-                        </div>
-                      </>
-                      :
-                      <>
-                        <p className="mb-2">Roles</p>
-                        {
-                          roles?.map(rol => (
-                            <Card className="py-1 px-2 flex items-center my-1">
-                              <p>{rol?.name}</p>
-                              <Checkbox className="ml-auto w-7 h-7"
-                                defaultChecked={selectedRoles.includes(rol?.name)}
-                                onClick={() => {
-                                  setSelectedRoles(prev => {
-                                    if (prev.includes(rol?.name)) {
-                                      return prev.filter(item => item !== rol?.name);
-                                    } else {
-                                      return [...prev, rol?.name];
-                                    }
-                                  });
-                                }} />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="gap-1 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Información principal
+                    </CardTitle>
+                  </CardHeader>
 
-                            </Card>
-                          ))
-                        }
-                      </>
-                  }
+                  <CardContent>
+                    <div className="">
+                      <p></p>
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre Completo</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Nombre Completo" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Nombre Completo del operador
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Username" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Username para ingresar al sistema.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contraseña</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Contraseña" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Contraseña para ingresar al sistema
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="password_confirmation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Repetir contraseña</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Repetir contraseña" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Repetir contraseña.
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Roles
+                    </CardTitle>
+                  </CardHeader>
 
-                </div>
+                  <CardContent>
+                    <div className="">
+                      {
+                        loadingRoles ?
+                          <>
+                            <div className="flex h-full items-center justify-center">
+                              <Loader />
+                            </div>
+                          </>
+                          :
+                          <>
+                            {
+                              roles?.map(rol => (
+                                <Card className="py-1 px-2 flex items-center my-1">
+                                  <p>{rol?.name}</p>
+                                  <Checkbox className="ml-auto w-7 h-7"
+                                    defaultChecked={selectedRoles.includes(rol?.name)}
+                                    onClick={() => {
+                                      setSelectedRoles(prev => {
+                                        if (prev.includes(rol?.name)) {
+                                          return prev.filter(item => item !== rol?.name);
+                                        } else {
+                                          return [...prev, rol?.name];
+                                        }
+                                      });
+                                    }} />
+                                </Card>
+                              ))
+                            }
+                          </>
+                      }
+
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Módulos del sistema
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="">
+                      {
+                        loadingRoles ?
+                          <>
+                            <div className="flex h-full items-center justify-center">
+                              <Loader />
+                            </div>
+                          </>
+                          :
+                          <>
+                            {
+                              modulos?.map(modulo => (
+                                <Card className="py-1 px-2 flex items-center my-1">
+                                  <p>{modulo?.name}</p>
+                                  <Checkbox className="ml-auto w-7 h-7"
+                                    defaultChecked={selectedModulos?.includes(modulo?.name)}
+                                    onClick={() => {
+                                      setSelectedModulos(prev => {
+                                        if (prev.includes(modulo?.name)) {
+                                          return prev.filter(item => item !== modulo?.name);
+                                        } else {
+                                          return [...prev, modulo?.name];
+                                        }
+                                      });
+                                    }} />
+                                </Card>
+                              ))
+                            }
+                          </>
+                      }
+
+                    </div>
+                  </CardContent>
+                </Card> */}
+
+
               </div>
 
 

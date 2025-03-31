@@ -39,6 +39,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { ModalCrearOperador } from "./ModalCrearOperador"
 import { ModalEditarOperador } from "./ModalEditarOperador";
 import { ModalDesactivarOperador } from "./ModalDesactivarOperador";
+import { icons } from "@/constants/icons";
 
 
 export type Operador = {
@@ -121,7 +122,7 @@ export function DataTableOperadores({ data, setData }) {
               <ModalEditarOperador
                 trigger={
                   <Button variant={"outline"}>
-                    Editar <BsPencilSquare />
+                    {icons.ver("")}
                   </Button>
                 }
                 operador={operador}

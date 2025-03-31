@@ -1,4 +1,5 @@
 import axiosClient from "@/axios-client"
+import { catchErrors } from "./ToolService";
 
 export const getEmpleados = async (setLoading: Function, values: Object, setData: Function) => {
     try {
@@ -52,15 +53,7 @@ export async function editarSolicitud( SolicitudId: any,setLoading: Function,val
   try {
     setLoading(true);
     const response = await axiosClient.put('/he-solicitudes/' + SolicitudId, values);
-    setData(prev => {
-      return prev.map(solicitud => {
-        if (solicitud?.id == SolicitudId) {
-          return response?.data?.data
-        } else {
-          return solicitud;
-        }
-      })
-    })
+    setData(response?.data?.data); 
     console.log(response?.data?.data)
   }
   catch (e) {
@@ -113,4 +106,20 @@ export async function SolicitudCambiarEtapa(SolicitudId: number,setLoading: Func
     setLoading(false);
   }
 }
+
+export const getEmpleadosArray = async (setLoading: Function,ids:Object,toast: any) => 
+  {
+    try {
+      setLoading(true);
+      const response = await axiosClient.post('/he-empleados/by-ids', { ids: ids });
+      return response?.data?.data;
+    } catch (e) {
+      catchErrors(e, toast);
+      throw e;
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
 

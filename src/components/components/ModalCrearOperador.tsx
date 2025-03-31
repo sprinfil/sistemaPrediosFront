@@ -129,7 +129,7 @@ export function ModalCrearOperador({ trigger, setData }) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="gap-4 select-none px-3 space-y-2 flex flex-col  w-full max-h-[80vh] overflow-auto">
               <div className="flex gap-4 w-full">
-                <div className="w-[45%]">
+                <div className="w-[100%]">
                   <FormField
                     control={form.control}
                     name="name"
@@ -195,7 +195,7 @@ export function ModalCrearOperador({ trigger, setData }) {
                     )}
                   />
                 </div>
-                <div className="w-[45%]">
+                {/* <div className="w-[45%]">
                   {
                     loadingRoles ?
                       <>
@@ -226,7 +226,7 @@ export function ModalCrearOperador({ trigger, setData }) {
                       </>
                   }
 
-                </div>
+                </div> */}
               </div>
 
               <div className="flex gap-3 ml-auto items-center">
