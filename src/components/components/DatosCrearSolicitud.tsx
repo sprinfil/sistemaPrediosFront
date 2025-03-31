@@ -137,7 +137,6 @@ export const DatosCrearSolicitud = ({}) => {
 
     const handleAgregarEmpleado = () => {
         const empleadoSeleccionado = form.getValues('empleado');
-        console.log(empleadoSeleccionado)
         if (empleadoSeleccionado && !empleadosSeleccionados.includes(empleadoSeleccionado)) {
           setEmpleadosSeleccionados(prev => [...prev, empleadoSeleccionado]);
         } else {
@@ -154,11 +153,12 @@ export const DatosCrearSolicitud = ({}) => {
     async function onSubmit(values: FormValues) {
         setLoading(true);
         try {
-            const empleadosIds = values.empleado;
+            const empleadosIds = empleadosSeleccionados;
+            console.log(empleadosIds)
             const requestData = {
                 id_user_solicitante:  user?.id,
                 clave: `${empleadosIds}${generateRandomLetters(3)}${values.horas}${generateRandomLetters(3)}`,
-                id_he_empleado_trabajador: empleadosIds,
+                empleados: empleadosIds,
                 descripcion: values.descripcion,
                 prima_dominical: values.primadominical ? 1 : null,
                 dias_festivos: values.diafestivo ? 1 : null,
@@ -183,6 +183,7 @@ export const DatosCrearSolicitud = ({}) => {
                     setEmpleados(null);
                 }
             );
+            setEmpleadosSeleccionados([]);
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -236,7 +237,7 @@ export const DatosCrearSolicitud = ({}) => {
                         <FormLabel>Empleados</FormLabel>
                         <FormControl>
                             <>
-                            <br/>
+                            <br />
                             <ComboBoxReutilizable
                                 loading={loading}
                                 placeholder="Empleado"
@@ -277,7 +278,7 @@ export const DatosCrearSolicitud = ({}) => {
                                 <TableHeader>
                                 <TableRow>
                                     <TableHead>Nombre</TableHead>
-                                    <TableHead className="w-[100px]">Acciones</TableHead>
+                                    <TableHead className="w-[100px]">Quitar</TableHead>
                                 </TableRow>
                                 </TableHeader>
                                 <TableBody>

@@ -1,13 +1,6 @@
-import { DataTableSolicitud } from "@/components/components/DataTableSolicitud"
-import { DataTableSolicitudesEmpleado } from "@/components/components/DataTableSolicitudesEmpleado"
-import { DatosCrearSolicitudEmpleados } from "@/components/components/DatosCrearSolicitudEmpleados"
 import DatosSolicitudes from "@/components/components/DatosSolicitudes"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card"
 import {Tabs,TabsContent,TabsList,TabsTrigger,} from "@/components/ui/tabs"
-import { useState } from "react"
-import {Accordion,AccordionContent,AccordionItem,AccordionTrigger,} from "@/components/ui/accordion"
-import { DatosCrearSolicitudGrupos } from "@/components/components/DatosCrearSolicitudGrupos"
 import { DatosCrearSolicitud } from "@/components/components/DatosCrearSolicitud"
 
 
@@ -24,26 +17,6 @@ export const Solicitud = () => {
             <CardTitle>Crear</CardTitle>
           </CardHeader>
           <DatosCrearSolicitud/>
-          {/* <Accordion type="single" collapsible className="w-[95%] ml-auto mr-auto">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>Empleados</AccordionTrigger>
-              <AccordionContent>
-                <DatosCrearSolicitudEmpleados/>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Grupos</AccordionTrigger>
-              <AccordionContent>
-                <DatosCrearSolicitudGrupos/>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>General</AccordionTrigger>
-              <AccordionContent>
-                
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion> */}
         </Card>
       </TabsContent>
       <TabsContent value="vistaActualizar">
