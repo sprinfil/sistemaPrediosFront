@@ -40,15 +40,20 @@ import { LoaderSecondary } from "./LoaderSecondary"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { fetchRoles, getRoles } from "@/lib/RolesService"
 import { ComboBoxReutilizable } from "./ComboBoxReutilizable"
+import { fetchData } from "@/lib/ToolService"
 
-export function ModalEditarOperador({ trigger, setData, operador }) {
+export function ModalEditarOperador({
+  trigger,
+  setData,
+  operador,
+  areas,
+  loadingAreas,
+  roles,
+  loadingRoles
+}) {
 
   const [loading, setLoading] = useState();
-  const [roles, setRoles] = useState([]);
-  const [loadingRoles, setLoadingRoles] = useState();
   const [selectedRoles, setSelectedRoles] = useState(operador?.roles.map(rol => rol?.name));
-  const [modulos, setModulos] = useState([{ name: "Horas Extra" }, { name: "Predios y valvulas" }, { name: "administracion" }])
-  const [selectedModulos, setSelectedModulos] = useState(operador?.modulos?.map(modulo => modulo?.name))
   const { toast } = useToast();
   const cancelarButton = useRef();
   // useEffect(() => {
@@ -60,6 +65,7 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
       username: z.string().min(2, {
         message: "Username tiene que tener al menos 2 caracteres.",
       }),
+      id_area: z.string().optional(),
       name: z.string().min(2, {
         message: "El nombre completo tiene que tener al menos 2 caracteres.",
       }),
@@ -122,7 +128,7 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild onClick={() => { fetchRoles(setLoadingRoles, setRoles); setSelectedRoles(operador?.roles.map(rol => rol?.name)); }}>
+      <AlertDialogTrigger asChild onClick={() => { setSelectedRoles(operador?.roles.map(rol => rol?.name)); }}>
         {trigger}
       </AlertDialogTrigger>
       <AlertDialogContent className="min-w-[90%]">
@@ -205,6 +211,27 @@ export function ModalEditarOperador({ trigger, setData, operador }) {
                           </FormItem>
                         )}
                       />
+
+                      <FormItem>
+                        <FormLabel>Area</FormLabel>
+                        <FormControl>
+                          <div>
+                            <ComboBoxReutilizable
+                              loading={loadingAreas}
+                              placeholder="Buscar Area"
+                              items={areas}
+                              defaultValue={operador?.area?.id}
+                              setItem={(value) => {
+                                form.setValue("id_area", String(value));
+                              }}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
                     </div>
                   </CardContent>
                 </Card>

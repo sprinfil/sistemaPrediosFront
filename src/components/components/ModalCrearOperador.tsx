@@ -39,6 +39,8 @@ import { Loader } from "./Loader"
 import { LoaderSecondary } from "./LoaderSecondary"
 import { Card } from "../ui/card"
 import { fetchRoles, getRoles } from "@/lib/RolesService"
+import { ComboBoxReutilizable } from "./ComboBoxReutilizable"
+import { fetchData } from "@/lib/ToolService"
 
 export function ModalCrearOperador({ trigger, setData }) {
 
@@ -48,9 +50,20 @@ export function ModalCrearOperador({ trigger, setData }) {
   const [selectedRoles, setSelectedRoles] = useState([]);
   const { toast } = useToast();
   const cancelarButton = useRef();
+
+  const [areas, setAreas] = useState([]);
+  const [loadingAreas, setLoadingAreas] = useState(false);
+
+  const fetchAreas = async () => {
+    const response = await fetchData(setLoadingAreas, toast, {}, "/he-areas");
+    setAreas(response?.data);
+  }
+
   useEffect(() => {
     fetchRoles(setLoadingRoles, setRoles);
+    fetchAreas();
   }, []);
+
 
   const formSchema = z
     .object({
@@ -66,6 +79,7 @@ export function ModalCrearOperador({ trigger, setData }) {
       password_confirmation: z.string().min(2, {
         message: "Se debe confirmar la contraseña",
       }),
+      id_area: z.string().optional()
       // role: z.string().min(1, {
       //   message: "Se debe seleccionar un rol",
       // }),
@@ -140,7 +154,7 @@ export function ModalCrearOperador({ trigger, setData }) {
                           <Input placeholder="Nombre Completo" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Nombre Completo del operador
+
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -156,7 +170,7 @@ export function ModalCrearOperador({ trigger, setData }) {
                           <Input placeholder="Username" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Username para ingresar al sistema.
+
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -172,7 +186,7 @@ export function ModalCrearOperador({ trigger, setData }) {
                           <Input type="password" placeholder="Contraseña" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Contraseña para ingresar al sistema
+
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -188,12 +202,34 @@ export function ModalCrearOperador({ trigger, setData }) {
                           <Input type="password" placeholder="Repetir contraseña" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Repetir contraseña.
+
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
+                  <FormItem>
+                    <FormLabel>Area</FormLabel>
+                    <FormControl>
+                      <div>
+
+                        <ComboBoxReutilizable
+                          loading={loadingAreas}
+                          placeholder="Buscar Area"
+                          items={areas}
+                          setItem={(value) => {
+                            form.setValue("id_area", String(value));
+                          }}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+
                 </div>
                 {/* <div className="w-[45%]">
                   {

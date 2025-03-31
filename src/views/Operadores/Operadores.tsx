@@ -11,14 +11,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { fetchRoles } from '@/lib/RolesService';
+import { fetchData } from '@/lib/ToolService';
+import { toast } from '@/hooks/use-toast';
 
 
 export const Operadores = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = ZustandPrincipal();
-
   getOperadores(setLoading, setData);
+  const [areas, setAreas] = React.useState([]);
+  const [loadingAreas, setLoadingAreas] = React.useState(false);
+  const [roles, setRoles] = React.useState([]);
+  const [loadingRoles, setLoadingRoles] = React.useState();
+
+  const fetchAreas = async () => {
+    const response = await fetchData(setLoadingAreas, toast, {}, "/he-areas");
+    setAreas(response?.data);
+  }
+
+  React.useEffect(() => {
+    fetchAreas();
+    fetchRoles(setLoadingRoles, setRoles);
+  }, [])
 
   return (
     <>
@@ -32,7 +48,7 @@ export const Operadores = () => {
             <CardContent className='h-full'>
               <div className='mt-2'>
                 {
-                  loading ?
+                  loading || loadingAreas || loadingRoles ?
                     <>
                       <div className='w-full flex items-center justify-center'>
                         <Loader />
@@ -40,7 +56,14 @@ export const Operadores = () => {
                     </>
                     :
                     <>
-                      <DataTableOperadores data={data} setData={setData} />
+                      <DataTableOperadores
+                        data={data}
+                        setData={setData}
+                        areas={areas}
+                        loadingAreas={loadingAreas}
+                        roles={roles}
+                        loadingRoles={loadingRoles}
+                      />
                     </>
                 }
               </div>

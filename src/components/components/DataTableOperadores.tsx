@@ -40,6 +40,9 @@ import { ModalCrearOperador } from "./ModalCrearOperador"
 import { ModalEditarOperador } from "./ModalEditarOperador";
 import { ModalDesactivarOperador } from "./ModalDesactivarOperador";
 import { icons } from "@/constants/icons";
+import { fetchData } from "@/lib/ToolService";
+import { toast } from "@/hooks/use-toast";
+import { fetchRoles } from "@/lib/RolesService";
 
 
 export type Operador = {
@@ -52,7 +55,9 @@ export type Operador = {
 
 
 
-export function DataTableOperadores({ data, setData }) {
+export function DataTableOperadores({ data, setData, areas, loadingAreas, roles, loadingRoles }) {
+
+
   const columns: ColumnDef<Operador>[] = [
     {
       accessorKey: "name",
@@ -121,12 +126,16 @@ export function DataTableOperadores({ data, setData }) {
             <div className="flex gap-2 items-center">
               <ModalEditarOperador
                 trigger={
-                  <Button variant={"outline"}>
+                  <Button variant={"outline"} disabled={(loadingAreas || loadingRoles)}>
                     {icons.ver("")}
                   </Button>
                 }
                 operador={operador}
                 setData={setData}
+                loadingAreas={loadingAreas}
+                areas={areas}
+                roles={roles}
+                loadingRoles={loadingRoles}
               />
 
               <ModalDesactivarOperador operadorId={operador?.id} setData={setData} status={operador?.status} />
