@@ -157,7 +157,7 @@ export function ModalEditarOperador({
                               <Input placeholder="Nombre Completo" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Nombre Completo del operador
+
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -173,7 +173,7 @@ export function ModalEditarOperador({
                               <Input placeholder="Username" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Username para ingresar al sistema.
+
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -189,7 +189,7 @@ export function ModalEditarOperador({
                               <Input type="password" placeholder="Contraseña" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Contraseña para ingresar al sistema
+
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -205,7 +205,7 @@ export function ModalEditarOperador({
                               <Input type="password" placeholder="Repetir contraseña" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Repetir contraseña.
+
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
