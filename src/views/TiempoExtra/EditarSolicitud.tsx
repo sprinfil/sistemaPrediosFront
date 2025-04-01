@@ -473,27 +473,27 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
                 </FormItem>
               )}
             />
-            {/* <FormField
-                    control={form.control}
-                    name="archivo"
-                    render={({ field: { value, onChange, ...field } }) => (
-                    <FormItem className="col-span-2">
-                        <FormLabel>Evidencia (opcional)</FormLabel>
-                        <FormControl>
-                        <Input 
-                            type="file" 
-                            accept=".jpg,.jpeg,.png,.pdf" 
-                            onChange={(e) => onChange(e.target.files)}
-                            {...field}
-                        />
-                        </FormControl>
-                        <FormDescription>
-                            Puede subir evidencia de las horas extras (JPG, PNG o PDF)
-                        </FormDescription>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                /> */}
+            <FormField
+              control={form.control}
+              name="archivo"
+              render={({ field: { value, onChange, ...field } }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Evidencia (opcional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="file" 
+                      accept=".jpg,.jpeg,.png,.pdf" 
+                        onChange={(e) => onChange(e.target.files)}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Puede subir evidencia de las horas extras (JPG, PNG o PDF)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </form>
       </Form>

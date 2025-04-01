@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
 import { icons } from "@/constants/icons";
-import { Loader } from "lucide-react"
+import { Loader, XCircle } from "lucide-react"
 import { crearSolicitudEmpleados } from "@/lib/Solicitudes"
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal"
 import { fetchData } from "@/lib/CatalogoService"
@@ -28,6 +28,8 @@ export const DatosCrearSolicitud = ({}) => {
     const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<number[]>([]);
     const [grupoData,setGrupoData] = useState([]);
     const [open, setOpen] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [calculatedHours, setCalculatedHours] = useState<string>("0");
 
     const fetchEmpleados = async () => {
         const response = await fetchData(
@@ -60,6 +62,20 @@ export const DatosCrearSolicitud = ({}) => {
         return false;
     };
 
+    const calculateHours = (horaInicial: string, horaFinal: string): string => {
+        if (!horaInicial || !horaFinal) return "0";
+        const [startHour, startMinute] = horaInicial.split(':').map(Number);
+        const [endHour, endMinute] = horaFinal.split(':').map(Number);
+        const startTotalMinutes = startHour * 60 + startMinute;
+        const endTotalMinutes = endHour * 60 + endMinute;
+        let diffMinutes = endTotalMinutes - startTotalMinutes;
+        if (diffMinutes < 0) {
+            diffMinutes += 24 * 60;
+        }
+        const diffHours = Math.ceil(diffMinutes / 60);
+        return diffHours.toString();
+    };
+
     const formSchema = z.object({
         grupo:z.number().optional(),
         empleado: z.number().optional(),
@@ -75,11 +91,11 @@ export const DatosCrearSolicitud = ({}) => {
         fecha: z.string()
             .min(1, { message: "La fecha es obligatoria" }),
         descripcion: z.string()
-            .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
+            .min(1, { message: "La descripción debe tener al menos 1 caracteres" })
             .max(500, { message: "La descripción no puede exceder los 500 caracteres" }),
         primadominical: z.boolean().default(false),
         diafestivo: z.boolean().default(false),       
-        archivo: z.any().optional(),
+        archivos: z.any().optional(),
     }).refine((data) => {
         if (data.horainicial && data.horafinal) {
             return isTimeAfter(data.horainicial, data.horafinal);
@@ -97,25 +113,27 @@ export const DatosCrearSolicitud = ({}) => {
         defaultValues: {
             grupo:1,
             empleado: 1,
-            horas: "",
+            horas: "0",
             horainicial: "",
             horafinal: "",
             fecha: "",
             descripcion: "",
             primadominical: false,
             diafestivo: false,
+            archivos: undefined,
         },
     });
 
-    const generateRandomLetters = (length: number): string => {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-          result += letters.charAt(Math.floor(Math.random() * letters.length));
+    useEffect(() => {
+        const horaInicial = form.watch("horainicial");
+        const horaFinal = form.watch("horafinal");
+        
+        if (horaInicial && horaFinal) {
+            const hours = calculateHours(horaInicial, horaFinal);
+            setCalculatedHours(hours);
+            form.setValue("horas", hours);
         }
-        return result;
-    };
-
+    }, [form.watch("horainicial"), form.watch("horafinal")]);
 
     const handleAgregarGrupo = () => {
         const grupoId = form.getValues('grupo');
@@ -148,30 +166,57 @@ export const DatosCrearSolicitud = ({}) => {
         }
     };
 
-    //useEffect(()=>{console.log(empleadosSeleccionados)},[empleadosSeleccionados])
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files) return;
+        const newFiles = Array.from(files);
+        const validFiles = newFiles.filter(file => {
+            const fileType = file.type;
+            return fileType === 'image/jpeg' || fileType === 'image/png' || fileType === 'application/pdf';
+        });
+        if (validFiles.length !== newFiles.length) {
+            toast({
+                title: "Archivo no válido",
+                description: "Solo se permiten archivos JPG, PNG o PDF",
+                variant: "destructive",
+            });
+        }
+        setSelectedFiles(prev => [...prev, ...validFiles]);
+    };
+
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => {
+            const newFiles = [...prev];
+            newFiles.splice(index, 1);
+            return newFiles;
+        });
+    };
 
     async function onSubmit(values: FormValues) {
         setLoading(true);
         try {
             const empleadosIds = empleadosSeleccionados;
-            console.log(empleadosIds)
-            const requestData = {
-                id_user_solicitante:  user?.id,
-                clave: `${empleadosIds}${generateRandomLetters(3)}${values.horas}${generateRandomLetters(3)}`,
-                empleados: empleadosIds,
-                descripcion: values.descripcion,
-                prima_dominical: values.primadominical ? 1 : null,
-                dias_festivos: values.diafestivo ? 1 : null,
-                horas: values.horas,
-                hora_inicio: values.horainicial,
-                hora_fin: values.horafinal,
-                fecha: values.fecha,
-                estapa: "Solicitar", 
-                estado: "Pendiente",
-            };
+            const formData = new FormData();
+            formData.append('id_user_solicitante', user?.id.toString());
+            formData.append('descripcion', values.descripcion);
+            formData.append('prima_dominical', values.primadominical ? '1' : '');
+            formData.append('dias_festivos', values.diafestivo ? '1' : '');
+            formData.append('horas', values.horas);
+            formData.append('hora_inicio', values.horainicial);
+            formData.append('hora_fin', values.horafinal);
+            formData.append('fecha', values.fecha);
+            empleadosIds.forEach((id, index) => {
+                formData.append(`empleados[${index}]`, id.toString());
+            });
+            if (selectedFiles.length > 0) {
+                selectedFiles.forEach((file, index) => {
+                    formData.append(`archivos[${index}]`, file);
+                });
+            }
+            
             await crearSolicitudEmpleados(
                 setLoading,
-                requestData,
+                formData,
                 (responseData: any) => {                    
                     toast({
                         title: "Solicitud creada",
@@ -181,9 +226,11 @@ export const DatosCrearSolicitud = ({}) => {
                     form.reset();
                     setDataEmpleados([]);
                     setEmpleados(null);
+                    setSelectedFiles([]);
+                    setCalculatedHours("0");
+                    setEmpleadosSeleccionados([]);
                 }
             );
-            setEmpleadosSeleccionados([]);
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -316,36 +363,6 @@ export const DatosCrearSolicitud = ({}) => {
                 </div>
                 <FormField
                     control={form.control}
-                    name="horas"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Horas</FormLabel>
-                        <FormControl>
-                        <Input placeholder="0" {...field} type="number" min="1" max="24"/>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="fecha"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Fecha</FormLabel>
-                        <FormControl>
-                        <Input 
-                            placeholder="" 
-                            type="date" 
-                            {...field}
-                        />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="horainicial"
                     render={({ field }) => (
                     <FormItem>
@@ -365,6 +382,40 @@ export const DatosCrearSolicitud = ({}) => {
                         <FormLabel>Hora final</FormLabel>
                         <FormControl>
                         <Input {...field} type="time"/>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="horas"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Horas (calculado automáticamente)</FormLabel>
+                        <FormControl>
+                        <Input placeholder="0" {...field} type="number" min="1" max="24" readOnly disabled 
+                            className="bg-gray-100" value={calculatedHours}/>
+                        </FormControl>
+                        <FormDescription>
+                            Horas calculadas automáticamente
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="fecha"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Fecha</FormLabel>
+                        <FormControl>
+                        <Input 
+                            placeholder="" 
+                            type="date" 
+                            {...field}
+                        />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -393,25 +444,50 @@ export const DatosCrearSolicitud = ({}) => {
                 />
                 <FormField
                     control={form.control}
-                    name="archivo"
-                    render={({ field: { value, onChange, ...field } }) => (
+                    name="archivos"
+                    render={({ field: { onChange, ...field } }) => (
                     <FormItem className="col-span-2">
-                        <FormLabel>Evidencia (opcional)</FormLabel>
+                        <FormLabel>Evidencias (opcional)</FormLabel>
                         <FormControl>
                         <Input 
                             type="file" 
                             accept=".jpg,.jpeg,.png,.pdf" 
-                            onChange={(e) => onChange(e.target.files)}
+                            multiple 
+                            onChange={handleFileChange}
                             {...field}
                         />
                         </FormControl>
                         <FormDescription>
-                            Puede subir evidencia de las horas extras (JPG, PNG o PDF)
+                            Puede subir múltiples evidencias de las horas extras (JPG, PNG o PDF)
                         </FormDescription>
                         <FormMessage />
                     </FormItem>
                     )}
                 />
+                
+                {/* Preview y eliminación de archivos seleccionados */}
+                {selectedFiles.length > 0 && (
+                    <div className="col-span-2 mt-2">
+                        <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
+                        <div className="flex flex-wrap gap-2">
+                            {selectedFiles.map((file, index) => (
+                                <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
+                                    <span className="text-sm truncate max-w-xs">{file.name}</span>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-5 w-5 ml-1"
+                                        onClick={() => removeFile(index)}
+                                        type="button"
+                                    >
+                                        <XCircle className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                
                 <FormField
                     control={form.control}
                     name="primadominical"
