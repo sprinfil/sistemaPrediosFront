@@ -1,12 +1,12 @@
 import { toast } from "@/hooks/use-toast";
-import {createData,deleteData,fetchData,updateData,} from "@/lib/CatalogoService";
+import { createData, deleteData, fetchData, updateData, } from "@/lib/CatalogoService";
 import React, { useEffect, useState } from "react";
-import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { number, z } from "zod";
-import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { icons } from "@/constants/icons";
 import { Loader } from "@/components/components/Loader";
@@ -96,9 +96,9 @@ const Formulario = ({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (accion == "crear") {
-      const data = await createData(setLoading, 
-        { ...values, empleados: empleadosSeleccionados }, 
-        API_ENDPOINT, 
+      const data = await createData(setLoading,
+        { ...values, empleados: empleadosSeleccionados },
+        API_ENDPOINT,
         toast
       );
       setSelectedData(data);
@@ -150,7 +150,7 @@ const Formulario = ({
 
   //METODOS EXTRA
   const [areasData, setAreasData] = useState([]);
-  const [empleadosData,setEmpleadosData] = useState([]);
+  const [empleadosData, setEmpleadosData] = useState([]);
   const [loadingAreas, setLoadingAreas] = useState(false);
 
   const fetchAreas = async () => {
@@ -262,9 +262,9 @@ const Formulario = ({
                   name="nombre"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre Comercial</FormLabel>
+                      <FormLabel>Nombre</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nombre Comercial" {...field} />
+                        <Input placeholder="Nombre" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -295,7 +295,7 @@ const Formulario = ({
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="empleado"
                   render={({ field }) => (
@@ -304,29 +304,14 @@ const Formulario = ({
                       <FormControl>
                         <>
                           <br />
-                          <ComboBoxReutilizable
-                            loading={loadingAreas}
-                            placeholder="Empleado"
-                            items={empleadosData}
-                            accesorKey="nombre"
-                            defaultValue={selectedData?.id_he_area}
-                            setItem={(value) => {
-                              form.setValue("empleado", value);
-                            }}
-                          />
+
                         </>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-                <Button 
-                  type="button"
-                  className="w-[33%] mt-auto mb-auto"
-                  onClick={handleAgregarEmpleado}
-                >
-                  Agregar {icons.agregar("")}
-                </Button>
+                /> */}
+
                 {/* {empleadosSeleccionados.length > 0 && (
                   <div className="col-span-full">
                     <p>Empleados seleccionados: {empleadosSeleccionados.join(', ')}</p>
@@ -354,53 +339,79 @@ const Formulario = ({
         </CardContent>
       </Card>
       {accion == "ver" && (
-        <div className="mt-3">
-          <Empleados
-            selectedData={selectedData}
-            setSelectedData={selectedData}
-            dataSelected={selectedData?.id}
-            empleadosSeleccionados={empleadosSeleccionados}
-            setEmpleadosSeleccionados={setEmpleadosSeleccionados}
-          />
+        <div className={`mt-5 ${editando ? "":"pointer-events-none"}`}>
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Empleados
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4">
+                <ComboBoxReutilizable
+                  loading={loadingAreas}
+                  placeholder="Empleado"
+                  items={empleadosData}
+                  accesorKey="nombre"
+                  defaultValue={selectedData?.id_he_area}
+                  setItem={(value) => {
+                    form.setValue("empleado", value);
+                  }}
+                />
+                <Button
+                  type="button"
+                  className="w-[33%] mt-auto mb-auto"
+                  onClick={handleAgregarEmpleado}
+                >
+                  Agregar {icons.agregar("")}
+                </Button>
+              </div>
+
+              <Empleados
+                selectedData={selectedData}
+                setSelectedData={selectedData}
+                dataSelected={selectedData?.id}
+                empleadosSeleccionados={empleadosSeleccionados}
+                setEmpleadosSeleccionados={setEmpleadosSeleccionados}
+              />
+            </CardContent>
+          </Card>
+
         </div>
       )}
     </>
   );
 };
 
-const Empleados = ({ selectedData,setSelectedData,dataSelected,empleadosSeleccionados,setEmpleadosSeleccionados }) => {
+const Empleados = ({ selectedData, setSelectedData, dataSelected, empleadosSeleccionados, setEmpleadosSeleccionados }) => {
   const [loading, setLoading] = useState(false);
-  const [data,setData] = useState([]);
+  const [data, setData] = useState([]);
   const API_ENDPOINT = "/he-grupos";
-  
-  useEffect(()=>{
-    if(empleadosSeleccionados.length>0){
+
+  useEffect(() => {
+    if (empleadosSeleccionados.length > 0) {
       get()
     }
-  },[empleadosSeleccionados])
+  }, [empleadosSeleccionados])
 
   const get = async () => {
-    const data = await getEmpleadosArray(setLoading,empleadosSeleccionados,toast);
+    const data = await getEmpleadosArray(setLoading, empleadosSeleccionados, toast);
     setData(data);
   };
 
   return (
     <>
-      <Card>
-        <CardContent>
-          <DataTableHeGruposEmpleados
-            loading={loading}
-            setLoading={setLoading}
-            data={data}
-            setData={setData}
-            setSelectedData={selectedData}
-            updateData={null}
-            API_ENDPOINT={API_ENDPOINT}
-            empleadosSeleccionados={empleadosSeleccionados}
-            setEmpleadosSeleccionados={setEmpleadosSeleccionados}
-          />
-        </CardContent>
-      </Card>
+      <DataTableHeGruposEmpleados
+        loading={loading}
+        setLoading={setLoading}
+        data={data}
+        setData={setData}
+        setSelectedData={selectedData}
+        updateData={null}
+        API_ENDPOINT={API_ENDPOINT}
+        empleadosSeleccionados={empleadosSeleccionados}
+        setEmpleadosSeleccionados={setEmpleadosSeleccionados}
+      />
     </>
   );
 };
