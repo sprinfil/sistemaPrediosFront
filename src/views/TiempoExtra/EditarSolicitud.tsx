@@ -15,8 +15,9 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form"
 import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form"
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
-import { Edit, Check, X, Save, ArrowLeft, Loader } from "lucide-react"
+import { Edit, Check, X, Save, ArrowLeft, Loader, CheckCircle, XCircle } from "lucide-react"
 import { editarSolicitud } from '@/lib/Solicitudes';
+import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger,} from "@/components/ui/dialog"
 
 export const EditarSolicitud = () => {
     const navigate = useNavigate();
@@ -32,6 +33,8 @@ export const EditarSolicitud = () => {
   
     const [loading, setLoading] = useState(false);
     const [cambiosPendientes, setCambiosPendientes] = useState(false);
+    const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
+    const [motivoRechazo, setMotivoRechazo] = useState("");
   
     const form = useForm({
       resolver: zodResolver(formSchema),
@@ -52,7 +55,6 @@ export const EditarSolicitud = () => {
       try {
           const idSolicitud = solicitud.id;
           const formValues = datoForm;
-  
           const requestData = {
                 id_he_empleado_trabajador:solicitud.id_he_empleado_trabajador,
                 id_user_solicitante:solicitud.id_user_solicitante,
@@ -80,13 +82,93 @@ export const EditarSolicitud = () => {
           });
           setCambiosPendientes(false);
           navigate(-1);
-      } catch (error: any) {
+      } catch (error) {
         toast({
           title: "Error",
           description: error.message || "Ocurrió un error al actualizar la solicitud",
           variant: "destructive",
           action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
         });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const handleConfirmarSolicitud = async () => {
+      setLoading(true);
+      try {
+        let nuevoEstado = 'aprobada';
+        if (solicitud.etapa === 'solicitud') {
+          nuevoEstado = 'aprobada';
+        } else if (solicitud.etapa === 'trabajando') {
+          nuevoEstado = 'terminado';
+        } else if (solicitud.etapa === 'pago') {
+          nuevoEstado = 'pagado';
+        }
+        const values = {
+          nuevo_estado: nuevoEstado
+        };
+        await editarSolicitud(
+          solicitud.id,
+          setLoading,
+          values,
+          (responseData) => {
+            setSolicitud({...solicitud, estado: nuevoEstado});
+            toast({
+              title: "Éxito",
+              description: `Solicitud ${nuevoEstado} correctamente`,
+            });
+            navigate(-1);
+          }
+        );
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar la solicitud",
+          variant: "destructive",
+        });
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    const handleRechazarSolicitud = async () => {
+      if (!motivoRechazo.trim()) {
+        toast({
+          title: "Error",
+          description: "Debe ingresar un motivo de rechazo",
+          variant: "destructive",
+        });
+        return;
+      }
+      setLoading(true);
+      try {
+        const values = {
+          nuevo_estado: 'rechazado',
+          motivo: motivoRechazo
+        };
+        await editarSolicitud(
+          solicitud.id,
+          setLoading,
+          values,
+          (responseData) => {
+            setSolicitud({...solicitud, estado: 'rechazado', motivo: motivoRechazo});
+            setIsRejectDialogOpen(false);
+            toast({
+              title: "Éxito",
+              description: "Solicitud rechazada correctamente",
+            });
+            navigate(-1);
+          }
+        );
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo rechazar la solicitud",
+          variant: "destructive",
+        });
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -138,12 +220,44 @@ export const EditarSolicitud = () => {
                       cambiosPendientes={cambiosPendientes}
                       setDatosForm={setDatosForm}
                       datoForm={datoForm}
+                      handleConfirmarSolicitud={handleConfirmarSolicitud}
+                      setIsRejectDialogOpen={setIsRejectDialogOpen}
                     />
                   </div>
                 </>
             }
           </CardContent>
         </Card>
+        <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Rechazar solicitud</DialogTitle>
+              <DialogDescription>
+                Indique el motivo del rechazo / cancelación de esta solicitud.
+              </DialogDescription>
+            </DialogHeader>
+            <Textarea 
+              placeholder="Motivo de rechazo..." 
+              value={motivoRechazo}
+              onChange={(e) => setMotivoRechazo(e.target.value)}
+              className="resize-none" 
+              rows={4}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleRechazarSolicitud} disabled={loading}>
+                {loading ? (
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <XCircle className="mr-2 h-4 w-4" />
+                )}
+                Confirmar Rechazo
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </>
     );
   };
@@ -181,7 +295,18 @@ const formSchema = z.object({
   path: ["hora_fin"]
 });
 
-const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, handleGuardarCambios, loading, cambiosPendientes, datoForm,setDatosForm }) => {
+const DatosEditarSolicitud = ({ 
+  solicitud, 
+  setSolicitud, 
+  onCambiosPendientes, 
+  handleGuardarCambios, 
+  loading, 
+  cambiosPendientes, 
+  datoForm, 
+  setDatosForm,
+  handleConfirmarSolicitud,
+  setIsRejectDialogOpen
+}) => {
   type FormValues = z.infer<typeof formSchema>;
   
   const [isEditing, setIsEditing] = useState(false);
@@ -274,7 +399,31 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
 
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between mb-4">
+        <div className="flex space-x-2">
+          <Button 
+            variant="default" 
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => handleConfirmarSolicitud(solicitud)}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle className="mr-2 h-4 w-4" />
+            )}
+            Aceptar
+          </Button>
+          <Button 
+            variant="destructive"
+            onClick={() => setIsRejectDialogOpen(true)}
+            disabled={loading}
+          >
+            <XCircle className="mr-2 h-4 w-4" />
+            Rechazar
+          </Button>
+        </div>
+        
         {!isEditing ? (
           <Button 
             onClick={handleToggleEdit}
