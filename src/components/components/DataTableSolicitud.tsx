@@ -255,14 +255,14 @@ export function DataTableSolicitud({
               size="sm"
               variant={"outline"}
               onClick={() => handleConfirmarSolicitud(data)}
-              disabled={(!userDif && (soli || paga))}
+              //disabled={(!userDif && (soli || paga))}
             >{icons.confirmar("")}</Button>
             
             <Button
               size="sm"
               variant={"outline"}
               onClick={() => handleOpenRejectDialog(data)}
-              disabled={(!userDif && paga)||(userDif && traba)}
+              //disabled={(!userDif && paga)||(userDif && traba)}
             >{icons.cancelar("")}</Button>
           </div>
         );

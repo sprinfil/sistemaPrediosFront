@@ -431,7 +431,7 @@ const DatosEditarSolicitud = ({
             variant="default" 
             className="bg-green-600 hover:bg-green-700"
             onClick={() => handleConfirmarSolicitud(solicitud)}
-            disabled={loading || (!userDif && (soli || paga))}
+            disabled={loading}
           >
             {loading ? (
               <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -443,7 +443,7 @@ const DatosEditarSolicitud = ({
           <Button 
             variant="destructive"
             onClick={() => setIsRejectDialogOpen(true)}
-            disabled={loading || (!userDif && paga) || (userDif && traba)}
+            disabled={loading}
           >
             <XCircle className="mr-2 h-4 w-4" />
             {userDif ? "Rechazar" : "Cancelar"}
