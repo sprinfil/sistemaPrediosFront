@@ -46,7 +46,8 @@ const DatosSolicitudes = () => {
     setSolicitudes,
     meta,
     setMeta,
-    toast
+    toast,
+    userID
   } = useLogicSolicitudes();
 
   return (
@@ -76,6 +77,7 @@ const DatosSolicitudes = () => {
             loading={loadingData}
             setData={setSolicitudes}
             setLoading={setLoadingData}
+            userID={userID}
           />
           <PaginationSpl
             meta={meta}

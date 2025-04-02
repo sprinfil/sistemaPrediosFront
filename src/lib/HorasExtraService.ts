@@ -2,12 +2,15 @@ import { useEffect, useState } from "react"
 import { fetchData } from "./ToolService"
 import { toast } from "@/hooks/use-toast"
 import { SolicitudCambiarEstado, SolicitudCambiarEtapa } from "./Solicitudes";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 
 export const useLogicSolicitudes = () => {
   const [loadingData, setLoadingData] = useState(false);
   const [params, setParams] = useState({});
   const [solicitudes, setSolicitudes] = useState(false);
   const [meta, setMeta] = useState({});
+  const {user} = ZustandPrincipal();
+  const userID = user.id
 
   const fetch = async () => {
     const data = await fetchData(setLoadingData, toast, params, "/he-solicitudes");
@@ -45,7 +48,8 @@ export const useLogicSolicitudes = () => {
     CambioEtapa,
     meta,
     setMeta,
-    toast
+    toast,
+    userID
   }
 
 

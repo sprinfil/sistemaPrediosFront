@@ -28,7 +28,8 @@ export const EditarSolicitud = () => {
       solicitud,
       loadingArea,
       datoForm,
-      setDatosForm
+      setDatosForm,
+      userID
     } = useSolicitudVerHook();
   
     const [loading, setLoading] = useState(false);
@@ -98,12 +99,16 @@ export const EditarSolicitud = () => {
       setLoading(true);
       try {
         let nuevoEstado = 'aprobada';
-        if (solicitud.etapa === 'solicitud') {
-          nuevoEstado = 'aprobada';
-        } else if (solicitud.etapa === 'trabajando') {
-          nuevoEstado = 'terminado';
-        } else if (solicitud.etapa === 'pago') {
-          nuevoEstado = 'pagado';
+        if(solicitud.id_user_solicitante !== userID){
+          if (solicitud.etapa === 'solicitud') {
+            nuevoEstado = 'aprobada';
+          } else if (solicitud.etapa === 'pago') {
+            nuevoEstado = 'pagado';
+          }
+        }else{
+          if (solicitud.etapa === 'trabajando') {
+            nuevoEstado = 'terminado';
+          }
         }
         const values = {
           nuevo_estado: nuevoEstado
@@ -144,8 +149,23 @@ export const EditarSolicitud = () => {
       }
       setLoading(true);
       try {
+        let nuevoEstado = 'rechazado';
+        if(solicitud.id_user_solicitante !== userID){
+          if (solicitud.etapa === 'solicitud') {
+            nuevoEstado = 'rechazado';
+          } else if (solicitud.etapa === 'pago') {
+            nuevoEstado = 'rechazado';
+          }
+        }
+        else{
+          if (solicitud.etapa === 'solicitud') {
+            nuevoEstado = 'cancelado';
+          } else if (solicitud.etapa === 'trabajando') {
+            nuevoEstado = 'cancelado';
+          }
+        }
         const values = {
-          nuevo_estado: 'rechazado',
+          nuevo_estado: nuevoEstado,
           motivo: motivoRechazo
         };
         await editarSolicitud(
@@ -153,7 +173,7 @@ export const EditarSolicitud = () => {
           setLoading,
           values,
           (responseData) => {
-            setSolicitud({...solicitud, estado: 'rechazado', motivo: motivoRechazo});
+            setSolicitud({...solicitud, estado: responseData.estado, motivo: motivoRechazo});
             setIsRejectDialogOpen(false);
             toast({
               title: "Éxito",
@@ -222,6 +242,7 @@ export const EditarSolicitud = () => {
                       datoForm={datoForm}
                       handleConfirmarSolicitud={handleConfirmarSolicitud}
                       setIsRejectDialogOpen={setIsRejectDialogOpen}
+                      userID={userID}
                     />
                   </div>
                 </>
@@ -305,11 +326,16 @@ const DatosEditarSolicitud = ({
   datoForm, 
   setDatosForm,
   handleConfirmarSolicitud,
-  setIsRejectDialogOpen
+  setIsRejectDialogOpen,
+  userID
 }) => {
   type FormValues = z.infer<typeof formSchema>;
   
   const [isEditing, setIsEditing] = useState(false);
+  const userDif = solicitud.id_user_solicitante != userID;
+  const soli = solicitud.etapa === "solicitud";
+  const paga = solicitud.etapa === "pago";
+  const traba = solicitud.etapa === "trabajando";
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -405,7 +431,7 @@ const DatosEditarSolicitud = ({
             variant="default" 
             className="bg-green-600 hover:bg-green-700"
             onClick={() => handleConfirmarSolicitud(solicitud)}
-            disabled={loading}
+            disabled={loading || (!userDif && (soli || paga))}
           >
             {loading ? (
               <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -417,10 +443,10 @@ const DatosEditarSolicitud = ({
           <Button 
             variant="destructive"
             onClick={() => setIsRejectDialogOpen(true)}
-            disabled={loading}
+            disabled={loading || (!userDif && paga) || (userDif && traba)}
           >
             <XCircle className="mr-2 h-4 w-4" />
-            Rechazar
+            {userDif ? "Rechazar" : "Cancelar"}
           </Button>
         </div>
         
@@ -578,7 +604,6 @@ const DatosEditarSolicitud = ({
                     </FormItem>
                   )}
                 />
-                
                 <FormField
                   control={form.control}
                   name="dias_festivos"

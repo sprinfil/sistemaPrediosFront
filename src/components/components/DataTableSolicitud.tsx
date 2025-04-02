@@ -21,6 +21,7 @@ export function DataTableSolicitud({
   setAccion,
   setSelectedData,
   API_ENDPOINT,
+  userID,
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -34,12 +35,16 @@ export function DataTableSolicitud({
   const handleConfirmarSolicitud = async (solicitud) => {
     try {
       let nuevoEstado = 'aprobada';
-      if (solicitud.etapa === 'solicitud') {
-        nuevoEstado = 'aprobada';
-      } else if (solicitud.etapa === 'trabajando') {
-        nuevoEstado = 'terminado';
-      } else if (solicitud.etapa === 'pago') {
-        nuevoEstado = 'pagado';
+      if(solicitud.id_user_solicitante !== userID){
+        if (solicitud.etapa === 'solicitud') {
+          nuevoEstado = 'aprobada';
+        } else if (solicitud.etapa === 'pago') {
+          nuevoEstado = 'pagado';
+        }
+      }else{
+        if (solicitud.etapa === 'trabajando') {
+          nuevoEstado = 'terminado';
+        }
       }
       const values = {
         nuevo_estado: nuevoEstado
@@ -49,6 +54,7 @@ export function DataTableSolicitud({
         setLoading,
         values,
         (responseData) => {
+          //console.log(responseData)
           const updatedData = data.map(item => 
             item.id === solicitud.id ? { ...item, estado: nuevoEstado } : item
           );
@@ -85,8 +91,23 @@ export function DataTableSolicitud({
       return;
     }
     try {
+      let nuevoEstado = 'rechazado';
+      if(currentSolicitud.id_user_solicitante !== userID){
+        if (currentSolicitud.etapa === 'solicitud') {
+          nuevoEstado = 'rechazado';
+        } else if (currentSolicitud.etapa === 'pago') {
+          nuevoEstado = 'rechazado';
+        }
+      }
+      else{
+        if (currentSolicitud.etapa === 'solicitud') {
+          nuevoEstado = 'cancelado';
+        } else if (currentSolicitud.etapa === 'trabajando') {
+          nuevoEstado = 'cancelado';
+        }
+      }
       const values = {
-        nuevo_estado: 'rechazado',
+        nuevo_estado: nuevoEstado,
         motivo: motivoRechazo
       };
       await editarSolicitud(
@@ -94,8 +115,9 @@ export function DataTableSolicitud({
         setLoading,
         values,
         (responseData) => {
+          //console.log(responseData)
           const updatedData = data.map(item => 
-            item.id === currentSolicitud.id ? { ...item, estado: 'rechazado', motivo: motivoRechazo } : item
+            item.id === currentSolicitud.id ? { ...item, estado: responseData.estado, motivo: motivoRechazo } : item
           );
           setData(updatedData);
           setIsRejectDialogOpen(false);
@@ -217,23 +239,30 @@ export function DataTableSolicitud({
       enableHiding: false,
       cell: ({ row }) => {
         const data = row.original;
+
+        const userDif = data.id_user_solicitante != userID;
+        const soli = data.etapa === "solicitud";
+        const paga = data.etapa === "pago";
+        const traba = data.etapa === "trabajando";
         return (
           <div className="flex items-center space-x-1">
             <Button
               size="sm"
               onClick={() => { navigate("/solicitud/solicitudes/" + data?.id) }}
             >{icons.ver("")}</Button>
-            
+
             <Button
               size="sm"
               variant={"outline"}
               onClick={() => handleConfirmarSolicitud(data)}
+              disabled={(!userDif && (soli || paga))}
             >{icons.confirmar("")}</Button>
             
             <Button
               size="sm"
               variant={"outline"}
               onClick={() => handleOpenRejectDialog(data)}
+              disabled={(!userDif && paga)||(userDif && traba)}
             >{icons.cancelar("")}</Button>
           </div>
         );

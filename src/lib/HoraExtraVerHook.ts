@@ -3,6 +3,7 @@ import { fetchData } from "./ToolService";
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { CambiarEstado, CambiarEtapa} from "./Solicitudes";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 
 export const useHoraExtraVerHook = () => {
     const params = useParams();
@@ -49,10 +50,12 @@ export const useHoraExtraVerHook = () => {
 export const useSolicitudVerHook = () => {
     const params = useParams();
     const solicitudId = params?.solicitudId;
+    const {user} = ZustandPrincipal();
 
     const [loadingArea, setLoadingArea] = useState(false);
     const [solicitud, setSolicitud] = useState({});
     const [datoForm,setDatosForm] = useState({});
+    const userID = user.id
 
     const fetchSolicitud = async () => {
         const response = await fetchData(setLoadingArea, toast, {}, "/he-solicitudes/" + solicitudId);
@@ -70,6 +73,7 @@ export const useSolicitudVerHook = () => {
         setSolicitud,
         loadingArea,
         datoForm,
-        setDatosForm
+        setDatosForm,
+        userID
     }
 }
