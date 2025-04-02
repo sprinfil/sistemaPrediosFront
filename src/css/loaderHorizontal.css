@@ -1,8 +1,8 @@
 .loaderHorizontal {
     height: 4px;
     
-    --c:no-repeat linear-gradient(#3B82F6 0 0);
-    background: var(--c),var(--c),#26C6FF;
+    --c:no-repeat linear-gradient(#159455 0 0);
+    background: var(--c),var(--c),#39e48f;
     background-size: 60% 100%;
     animation: l16 3s infinite;
   }

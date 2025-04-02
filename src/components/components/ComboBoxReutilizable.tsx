@@ -27,7 +27,8 @@ export function ComboBoxReutilizable({
   placeholder = "Buscar calles ...",
   defaultValue = null,
   accesorKey = "nombre",
-  setAllObject = null
+  setAllObject = null,
+
 }) {
   const [frameworks, setFrameworks] = React.useState([]);
   const [open, setOpen] = React.useState(false)
@@ -49,10 +50,11 @@ export function ComboBoxReutilizable({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className=" justify-between"
+          className="w-full justify-between"
         >
           {value
             ? frameworks.find((framework) => framework.id === value)?.[accesorKey]

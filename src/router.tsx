@@ -18,6 +18,7 @@ import { Empleados } from './views/TiempoExtra/Empleados';
 import { Areas } from './views/TiempoExtra/Areas';
 import { Grupos } from './views/TiempoExtra/Grupos';
 import { EditarSolicitud } from './views/TiempoExtra/EditarSolicitud';
+import { RolesPermisos } from './views/AdministracionSistema/RolesPermisos';
 
 const router = createBrowserRouter([
   {
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
         path: '/horasextra/grupos',
         element: <Grupos />
       },
+      {
+        path: "/rolesPermisos",
+        element: <RolesPermisos />
+      }
     ]
   },
   {
