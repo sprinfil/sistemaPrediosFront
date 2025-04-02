@@ -1,37 +1,17 @@
 "use client";
-
 import * as React from "react";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
+import {ColumnDef,ColumnFiltersState,SortingState,VisibilityState,flexRender,getCoreRowModel,getFilteredRowModel,
+  getPaginationRowModel,getSortedRowModel,useReactTable,} from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
+import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { icons } from "@/constants/icons";
 import LoaderHorizontal from "./LoaderHorizontal";
 import { useNavigate } from "react-router-dom";
-import { ModalEliminarReutilizable } from "./ModalEliminarReutilizable";
-import { deleteData } from "@/lib/CatalogoService";
 import { toast } from "@/hooks/use-toast";
 import { formatearFecha } from "@/lib/ToolService";
+import { editarSolicitud } from "@/lib/Solicitudes";
 
 export function DataTableSolicitud({
   data = [],
@@ -43,13 +23,98 @@ export function DataTableSolicitud({
   API_ENDPOINT,
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const navigate = useNavigate();
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = React.useState(false);
+  const [currentSolicitud, setCurrentSolicitud] = React.useState(null);
+  const [motivoRechazo, setMotivoRechazo] = React.useState("");
+  
+  const handleConfirmarSolicitud = async (solicitud) => {
+    try {
+      let nuevoEstado = 'aprobada';
+      if (solicitud.etapa === 'solicitud') {
+        nuevoEstado = 'aprobada';
+      } else if (solicitud.etapa === 'trabajando') {
+        nuevoEstado = 'terminado';
+      } else if (solicitud.etapa === 'pago') {
+        nuevoEstado = 'pagado';
+      }
+      const values = {
+        nuevo_estado: nuevoEstado
+      };
+      await editarSolicitud(
+        solicitud.id,
+        setLoading,
+        values,
+        (responseData) => {
+          const updatedData = data.map(item => 
+            item.id === solicitud.id ? { ...item, estado: nuevoEstado } : item
+          );
+          setData(updatedData);
+          toast({
+            title: "Éxito",
+            description: `Solicitud ${nuevoEstado} correctamente`,
+          });
+        }
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la solicitud",
+        variant: "destructive",
+      });
+      console.error(error);
+    }
+  };
+  
+  const handleOpenRejectDialog = (solicitud) => {
+    setCurrentSolicitud(solicitud);
+    setMotivoRechazo("");
+    setIsRejectDialogOpen(true);
+  };
+  
+  const handleRechazarSolicitud = async () => {
+    if (!motivoRechazo.trim()) {
+      toast({
+        title: "Error",
+        description: "Debe ingresar un motivo de rechazo",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      const values = {
+        nuevo_estado: 'rechazado',
+        motivo: motivoRechazo
+      };
+      await editarSolicitud(
+        currentSolicitud.id,
+        setLoading,
+        values,
+        (responseData) => {
+          const updatedData = data.map(item => 
+            item.id === currentSolicitud.id ? { ...item, estado: 'rechazado', motivo: motivoRechazo } : item
+          );
+          setData(updatedData);
+          setIsRejectDialogOpen(false);
+          toast({
+            title: "Éxito",
+            description: "Solicitud rechazado correctamente",
+          });
+        }
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo rechazar la solicitud",
+        variant: "destructive",
+      });
+      console.error(error);
+    }
+  };
+  
   const columns = [
     {
       accessorKey: "status",
@@ -63,27 +128,17 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
-      header: "Empleado",
+      header: "Solicito",
       cell: ({ row }) => {
         const data = row.original;
-        return (<>
-          <div>{data?.empleados_trabajador?.nombre}</div>
+        return(<>
+          <div>{data?.user_solicitante?.name}</div>
         </>)
       },
     },
     {
       accessorKey: "status",
-      header: "Puesto",
-      cell: ({ row }) => {
-        const data = row.original;
-        return (<>
-          <div>{data?.empleados_trabajador?.puesto}</div>
-        </>)
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Prima dominical",
+      header: "Prima",
       cell: ({ row }) => {
         const data = row.original;
         const primaDominical = data.prima_dominical;
@@ -157,25 +212,35 @@ export function DataTableSolicitud({
         </>)
       },
     },
-
     {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original
-
+        const data = row.original;
         return (
-          <>
-            <div className="flex gap-2 items-center">
-              <Button
-                onClick={() => { navigate("/solicitud/solicitudes/" + row.original?.id) }}
-              >{icons.ver("")}</Button>
-            </div>
-          </>
-        )
+          <div className="flex items-center space-x-1">
+            <Button
+              size="sm"
+              onClick={() => { navigate("/solicitud/solicitudes/" + data?.id) }}
+            >{icons.ver("")}</Button>
+            
+            <Button
+              size="sm"
+              variant={"outline"}
+              onClick={() => handleConfirmarSolicitud(data)}
+            >{icons.confirmar("")}</Button>
+            
+            <Button
+              size="sm"
+              variant={"outline"}
+              onClick={() => handleOpenRejectDialog(data)}
+            >{icons.cancelar("")}</Button>
+          </div>
+        );
       },
-    },
-  ]
+    }
+  ];
+  
   const table = useReactTable({
     data,
     columns,
@@ -197,27 +262,6 @@ export function DataTableSolicitud({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        {/* <Input
-          placeholder="Nombre comercial"
-          value={(table.getColumn("nombre_comercial")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("nombre_comercial")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-
-        <Button
-          variant="outline"
-          className="ml-auto"
-          onClick={() => {
-            setAccion("crear");
-            setSelectedData({});
-          }}
-        >
-          Nuevo {icons.agregar("")}
-        </Button> */}
-      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -275,26 +319,33 @@ export function DataTableSolicitud({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        {/* <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
-        </div> */}
-      </div>
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rechazar Solicitud</DialogTitle>
+            <DialogDescription>
+              Indique el motivo del rechazo / cancelación de esta solicitud.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              id="motivo"
+              value={motivoRechazo}
+              onChange={(e) => setMotivoRechazo(e.target.value)}
+              placeholder="Motivo de rechazo"
+              className="col-span-3"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleRechazarSolicitud}>
+              Confirmar Rechazo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

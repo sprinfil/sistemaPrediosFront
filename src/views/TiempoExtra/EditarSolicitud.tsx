@@ -161,7 +161,7 @@ const formSchema = z.object({
   prima_dominical: z.boolean().default(false),
   dias_festivos: z.boolean().default(false),
   descripcion: z.string()
-    .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
+    .min(1, { message: "La descripción debe tener al menos 1 caracteres" })
     .max(500, { message: "La descripción no puede exceder los 500 caracteres" }),
 }).refine((data) => {
   const startTime = data.hora_inicio;
@@ -249,7 +249,6 @@ const DatosEditarSolicitud = ({ solicitud, setSolicitud, onCambiosPendientes, ha
               descripcion: form.getValues('descripcion'),
             });
           }
-          
           setIsEditing(false);
         }
       });

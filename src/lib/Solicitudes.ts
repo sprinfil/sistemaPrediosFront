@@ -52,7 +52,7 @@ export const crearSolicitudGrupos = async(GrupoId:any, setLoading:Function, valu
 export async function editarSolicitud( SolicitudId: any,setLoading: Function,values: Object,setData: Function) {
   try {
     setLoading(true);
-    const response = await axiosClient.put('/he-solicitudes/' + SolicitudId, values);
+    const response = await axiosClient.post('/he-solicitudes/update/' + SolicitudId, values);
     setData(response?.data?.data); 
     console.log(response?.data?.data)
   }
