@@ -623,7 +623,7 @@ const DatosEditarSolicitud = ({
       <Form {...form}>
         <form className="w-[95%] space-y-4">
           <div className="w-full mb-3">
-            <div className='mb-5 p-3' style={{ backgroundColor: '#cce5ff', color: '#004085', borderRadius: '0.5rem', border: '1px solid transparent', borderColor: '#b8daff', margin: '1rem 0' }}>
+            <div className='mb-5 p-3' style={{ backgroundColor: '#cce5ff', color: '#004085', borderRadius: '0.5rem', border: '1px solid transparent', borderColor: '#b8daff', margin: '1rem 0', display: !disponible ? 'block' : 'none' }}>
               <p style={{ margin: 0 }}>{!disponible ? "Solo se pueden agregar archivos en esta etapa" : ""}</p>
             </div>
             <FormField
