@@ -200,153 +200,153 @@ export const EditarSolicitud = () => {
       } finally {
         setLoading(false);
       }
-    };
+  };
     
-    const handleRechazarSolicitud = async () => {
-      if (!motivoRechazo.trim()) {
-        toast({
-          title: "Error",
-          description: "Debe ingresar un motivo de rechazo",
-          variant: "destructive",
-        });
+  const handleRechazarSolicitud = async () => {
+    if (!motivoRechazo.trim()) {
+      toast({
+        title: "Error",
+        description: "Debe ingresar un motivo de rechazo",
+        variant: "destructive",
+      });
         return;
+    }
+    setLoading(true);
+    try {
+      let nuevoEstado = 'rechazado';
+      if(solicitud.id_user_solicitante !== userID){
+        if (solicitud.etapa === 'solicitud') {
+          nuevoEstado = 'rechazado';
+        } else if (solicitud.etapa === 'pago') {
+          nuevoEstado = 'rechazado';
+        }
       }
-      setLoading(true);
-      try {
-        let nuevoEstado = 'rechazado';
-        if(solicitud.id_user_solicitante !== userID){
-          if (solicitud.etapa === 'solicitud') {
-            nuevoEstado = 'rechazado';
-          } else if (solicitud.etapa === 'pago') {
-            nuevoEstado = 'rechazado';
-          }
+      else{
+        if (solicitud.etapa === 'solicitud') {
+          nuevoEstado = 'cancelado';
+        } else if (solicitud.etapa === 'trabajando') {
+          nuevoEstado = 'cancelado';
         }
-        else{
-          if (solicitud.etapa === 'solicitud') {
-            nuevoEstado = 'cancelado';
-          } else if (solicitud.etapa === 'trabajando') {
-            nuevoEstado = 'cancelado';
-          }
+      }
+      const values = {
+        nuevo_estado: nuevoEstado,
+        motivo: motivoRechazo
+      };
+      await editarSolicitud(
+        solicitud.id,
+        setLoading,
+        values,
+        (responseData) => {
+          setSolicitud({...solicitud, estado: responseData.estado, motivo: motivoRechazo});
+          setIsRejectDialogOpen(false);
+          toast({
+            title: "Éxito",
+            description: "Solicitud rechazada correctamente",
+          });
+          navigate(-1);
         }
-        const values = {
-          nuevo_estado: nuevoEstado,
-          motivo: motivoRechazo
-        };
-        await editarSolicitud(
-          solicitud.id,
-          setLoading,
-          values,
-          (responseData) => {
-            setSolicitud({...solicitud, estado: responseData.estado, motivo: motivoRechazo});
-            setIsRejectDialogOpen(false);
-            toast({
-              title: "Éxito",
-              description: "Solicitud rechazada correctamente",
-            });
-            navigate(-1);
-          }
-        );
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "No se pudo rechazar la solicitud",
-          variant: "destructive",
-        });
-        console.error(error);
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo rechazar la solicitud",
+        variant: "destructive",
+      });
+      console.error(error);
       } finally {
         setLoading(false);
       }
-    };
+  };
     
-    return (
-      <>
-        <Card className='h-full'>
-          <CardHeader>
-            <CardTitle>Editar solicitud</CardTitle>
-            <CardDescription>
-              Modifique los campos necesarios y guarde los cambios
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {
-              loadingArea ?
-                <div>
-                  <Skeleton
-                    className='w-full h-[70vh]'
+  return (
+    <>
+      <Card className='h-full'>
+        <CardHeader>
+          <CardTitle>Editar solicitud</CardTitle>
+          <CardDescription>
+            Modifique los campos necesarios y guarde los cambios
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {
+            loadingArea ?
+              <div>
+                <Skeleton
+                  className='w-full h-[70vh]'
+                />
+              </div>
+              :
+              <>
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink className='cursor-pointer'
+                        onClick={() => {
+                          navigate(-1);
+                        }}
+                      >Seleccionar solicitud</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink className='cursor-pointer'>Solicitud</BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+                <div className='mt-3'>
+                  <DatosEditarSolicitud
+                    form={form}
+                    solicitud={solicitud}
+                    setSolicitud={setSolicitud}
+                    onCambiosPendientes={(hayCambios) => setCambiosPendientes(hayCambios)}
+                    handleGuardarCambios={handleGuardarCambios}
+                    loading={loading}
+                    cambiosPendientes={cambiosPendientes}
+                    setDatosForm={setDatosForm}
+                    datoForm={datoForm}
+                    handleConfirmarSolicitud={handleConfirmarSolicitud}
+                    setIsRejectDialogOpen={setIsRejectDialogOpen}
+                    userID={userID}
+                    empleados={empleados}
+                    setSelectedFiles={setSelectedFiles}
+                    selectedFiles={selectedFiles}
                   />
                 </div>
-                :
-                <>
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink className='cursor-pointer'
-                          onClick={() => {
-                            navigate(-1);
-                          }}
-                        >Seleccionar solicitud</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbLink className='cursor-pointer'>Solicitud</BreadcrumbLink>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                  <div className='mt-3'>
-                    <DatosEditarSolicitud
-                      form={form}
-                      solicitud={solicitud}
-                      setSolicitud={setSolicitud}
-                      onCambiosPendientes={(hayCambios) => setCambiosPendientes(hayCambios)}
-                      handleGuardarCambios={handleGuardarCambios}
-                      loading={loading}
-                      cambiosPendientes={cambiosPendientes}
-                      setDatosForm={setDatosForm}
-                      datoForm={datoForm}
-                      handleConfirmarSolicitud={handleConfirmarSolicitud}
-                      setIsRejectDialogOpen={setIsRejectDialogOpen}
-                      userID={userID}
-                      empleados={empleados}
-                      setSelectedFiles={setSelectedFiles}
-                      selectedFiles={selectedFiles}
-                    />
-                  </div>
-                </>
-            }
-          </CardContent>
-        </Card>
-        <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Rechazar solicitud</DialogTitle>
-              <DialogDescription>
-                Indique el motivo del rechazo / cancelación de esta solicitud.
-              </DialogDescription>
-            </DialogHeader>
-            <Textarea 
-              placeholder="Motivo de rechazo..." 
-              value={motivoRechazo}
-              onChange={(e) => setMotivoRechazo(e.target.value)}
-              className="resize-none" 
-              rows={4}
-            />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={handleRechazarSolicitud} disabled={loading}>
-                {loading ? (
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <XCircle className="mr-2 h-4 w-4" />
-                )}
-                Confirmar Rechazo
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </>
-    );
+              </>
+          }
+        </CardContent>
+      </Card>
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rechazar solicitud</DialogTitle>
+            <DialogDescription>
+              Indique el motivo del rechazo / cancelación de esta solicitud.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea 
+            placeholder="Motivo de rechazo..." 
+            value={motivoRechazo}
+            onChange={(e) => setMotivoRechazo(e.target.value)}
+            className="resize-none" 
+            rows={4}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRejectDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleRechazarSolicitud} disabled={loading}>
+              {loading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <XCircle className="mr-2 h-4 w-4" />
+              )}
+              Confirmar Rechazo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 const DatosEditarSolicitud = ({ 
