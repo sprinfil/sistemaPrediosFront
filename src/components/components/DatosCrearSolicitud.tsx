@@ -78,7 +78,7 @@ export const DatosCrearSolicitud = ({}) => {
 
     const formSchema = z.object({
         grupo:z.number().optional(),
-        empleado: z.number().optional(),
+        empleado: z.any().optional(),
         horas: z.string()
             .min(1, { message: "Las horas son obligatorias" })
             .refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" })
