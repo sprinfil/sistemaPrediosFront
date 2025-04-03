@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
-import {Breadcrumb,BreadcrumbItem,BreadcrumbLink,BreadcrumbList,BreadcrumbPage,BreadcrumbSeparator,} from "@/components/ui/breadcrumb"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator, } from "@/components/ui/breadcrumb"
 import { useNavigate, useParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from "@/components/ui/checkbox"
@@ -11,13 +11,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
-import {Form,FormControl,FormDescription,FormField,FormItem,FormLabel,FormMessage,} from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
 import { Edit, Check, X, Save, ArrowLeft, Loader, CheckCircle, XCircle } from "lucide-react"
 import { editarSolicitud } from '@/lib/Solicitudes';
-import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger,} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge";
+import { validarPermiso } from '@/lib/ToolService';
 
 const formSchema = z.object({
   empleado: z.string().or(z.array(z.string())).optional(),
@@ -35,20 +36,20 @@ const formSchema = z.object({
     .min(1, { message: "La descripción debe tener al menos 1 caracteres" })
     .max(500, { message: "La descripción no puede exceder los 500 caracteres" }),
   archivos: z.any().optional(),
-  }).refine((data) => {
+}).refine((data) => {
   const startTime = data.hora_inicio;
   const endTime = data.hora_fin;
-  
+
   if (startTime && endTime) {
     const [startHour, startMinute] = startTime.split(':').map(Number);
     const [endHour, endMinute] = endTime.split(':').map(Number);
-    
+
     if (startHour < endHour) return true;
     if (startHour === endHour && startMinute < endMinute) return true;
     return false;
   }
   return true;
-  }, {
+}, {
   message: "La hora final debe ser posterior a la hora inicial",
   path: ["hora_fin"]
 });
@@ -65,14 +66,14 @@ export const EditarSolicitud = () => {
     setDatosForm,
     userID
   } = useSolicitudVerHook();
-  
+
   const [loading, setLoading] = useState(false);
   const [cambiosPendientes, setCambiosPendientes] = useState(false);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [motivoRechazo, setMotivoRechazo] = useState("");
   const [empleados, setEmpleados] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  
+
   useEffect(() => {
     if (solicitud && solicitud.empleados) {
       setEmpleados(solicitud.empleados);
@@ -86,7 +87,7 @@ export const EditarSolicitud = () => {
           return {
             name: archivo.nombre || archivo.name || 'archivo',
             url: archivo.url || archivo.ruta,
-            isExisting: true, 
+            isExisting: true,
             id: archivo.id || null
           };
         });
@@ -94,22 +95,22 @@ export const EditarSolicitud = () => {
       }
     }
   }, [solicitud]);
-  
+
   const form = useForm({
     resolver: zodResolver(formSchema),
-      defaultValues: {
-        empleado: "",
-        archivos:"",
-        hora_inicio: solicitud?.hora_inicio || "",
-        hora_fin: solicitud?.hora_fin || "",
-        fecha: solicitud?.fecha || "",
-        horas: solicitud?.horas?.toString() || "",
-        prima_dominical: solicitud?.prima_dominical || false,
-        dias_festivos: solicitud?.dias_festivos || false,
-        descripcion: solicitud?.descripcion || "",
-      },
+    defaultValues: {
+      empleado: "",
+      archivos: "",
+      hora_inicio: solicitud?.hora_inicio || "",
+      hora_fin: solicitud?.hora_fin || "",
+      fecha: solicitud?.fecha || "",
+      horas: solicitud?.horas?.toString() || "",
+      prima_dominical: solicitud?.prima_dominical || false,
+      dias_festivos: solicitud?.dias_festivos || false,
+      descripcion: solicitud?.descripcion || "",
+    },
   });
-    
+
   const handleGuardarCambios = async () => {
     setLoading(true);
     try {
@@ -136,7 +137,7 @@ export const EditarSolicitud = () => {
         });
       await editarSolicitud(
         idSolicitud,
-        setLoading, 
+        setLoading,
         formData,
         setSolicitud
       );
@@ -158,7 +159,7 @@ export const EditarSolicitud = () => {
       setLoading(false);
     }
   };
-  
+
   const handleConfirmarSolicitud = async () => {
     setLoading(true);
     try {
@@ -170,9 +171,9 @@ export const EditarSolicitud = () => {
         nuevoEstado = 'aprobada';
       } else if (solicitud.etapa === 'trabajando') {
         nuevoEstado = 'terminado';
-      }else if (solicitud.etapa === 'pago') {
+      } else if (solicitud.etapa === 'pago') {
         nuevoEstado = 'pagado';
-      } 
+      }
       const values = {
         nuevo_estado: nuevoEstado
       };
@@ -181,7 +182,7 @@ export const EditarSolicitud = () => {
         setLoading,
         values,
         (responseData) => {
-          setSolicitud({...solicitud, estado: nuevoEstado});
+          setSolicitud({ ...solicitud, estado: nuevoEstado });
           toast({
             title: "Éxito",
             description: `Solicitud ${nuevoEstado} correctamente`,
@@ -196,11 +197,11 @@ export const EditarSolicitud = () => {
         variant: "destructive",
       });
       console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    } finally {
+      setLoading(false);
+    }
   };
-    
+
   const handleRechazarSolicitud = async () => {
     if (!motivoRechazo.trim()) {
       toast({
@@ -208,19 +209,19 @@ export const EditarSolicitud = () => {
         description: "Debe ingresar un motivo de rechazo",
         variant: "destructive",
       });
-        return;
+      return;
     }
     setLoading(true);
     try {
       let nuevoEstado = 'rechazado';
-      if(solicitud.id_user_solicitante !== userID){
+      if (solicitud.id_user_solicitante !== userID) {
         if (solicitud.etapa === 'solicitud') {
           nuevoEstado = 'rechazado';
         } else if (solicitud.etapa === 'pago') {
           nuevoEstado = 'rechazado';
         }
       }
-      else{
+      else {
         if (solicitud.etapa === 'solicitud') {
           nuevoEstado = 'cancelado';
         } else if (solicitud.etapa === 'trabajando') {
@@ -236,7 +237,7 @@ export const EditarSolicitud = () => {
         setLoading,
         values,
         (responseData) => {
-          setSolicitud({...solicitud, estado: responseData.estado, motivo: motivoRechazo});
+          setSolicitud({ ...solicitud, estado: responseData.estado, motivo: motivoRechazo });
           setIsRejectDialogOpen(false);
           toast({
             title: "Éxito",
@@ -252,11 +253,11 @@ export const EditarSolicitud = () => {
         variant: "destructive",
       });
       console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    } finally {
+      setLoading(false);
+    }
   };
-    
+
   return (
     <>
       <Card className='h-full'>
@@ -322,11 +323,11 @@ export const EditarSolicitud = () => {
               Indique el motivo del rechazo / cancelación de esta solicitud.
             </DialogDescription>
           </DialogHeader>
-          <Textarea 
-            placeholder="Motivo de rechazo..." 
+          <Textarea
+            placeholder="Motivo de rechazo..."
             value={motivoRechazo}
             onChange={(e) => setMotivoRechazo(e.target.value)}
-            className="resize-none" 
+            className="resize-none"
             rows={4}
           />
           <DialogFooter>
@@ -348,14 +349,14 @@ export const EditarSolicitud = () => {
   );
 };
 
-const DatosEditarSolicitud = ({ 
-  solicitud, 
-  setSolicitud, 
-  onCambiosPendientes, 
-  handleGuardarCambios, 
-  loading, 
-  cambiosPendientes, 
-  datoForm, 
+const DatosEditarSolicitud = ({
+  solicitud,
+  setSolicitud,
+  onCambiosPendientes,
+  handleGuardarCambios,
+  loading,
+  cambiosPendientes,
+  datoForm,
   setDatosForm,
   handleConfirmarSolicitud,
   setIsRejectDialogOpen,
@@ -368,7 +369,7 @@ const DatosEditarSolicitud = ({
   const [isEditing, setIsEditing] = useState(false);
   const userDif = solicitud.id_user_solicitante != userID;
   const disponible = solicitud.etapa === 'solicitud';
-  
+
   const getSelectedEmployeeIds = () => {
     if (!solicitud.empleados) return [];
     if (Array.isArray(solicitud.empleados)) {
@@ -376,7 +377,7 @@ const DatosEditarSolicitud = ({
     }
     return [];
   };
-  
+
   const handleFileChange = (event) => {
     const files = event.target.files;
     if (!files) return;
@@ -434,7 +435,7 @@ const DatosEditarSolicitud = ({
       descripcion: solicitud?.descripcion || "",
     },
   });
-  
+
   const [valoresOriginales, setValoresOriginales] = useState({
     empleado: getSelectedEmployeeIds()[0] || "",
     hora_inicio: solicitud?.hora_inicio || "",
@@ -445,7 +446,7 @@ const DatosEditarSolicitud = ({
     dias_festivos: solicitud?.dias_festivos || false,
     descripcion: solicitud?.descripcion || "",
   });
-  
+
   useEffect(() => {
     if (solicitud) {
       form.reset({
@@ -470,7 +471,7 @@ const DatosEditarSolicitud = ({
       });
     }
   }, [solicitud]);
-  
+
   useEffect(() => {
     if (isEditing) {
       const startTime = form.watch('hora_inicio');
@@ -483,13 +484,13 @@ const DatosEditarSolicitud = ({
       }
     }
   }, [form.watch('hora_inicio'), form.watch('hora_fin'), isEditing]);
-  
+
   useEffect(() => {
     const currentValues = form.getValues();
     const initialFilesLength = solicitud?.archivos?.length || 0;
-    const filesHaveChanged = selectedFiles.length !== initialFilesLength || 
+    const filesHaveChanged = selectedFiles.length !== initialFilesLength ||
       selectedFiles.some(file => !file.isExisting);
-    const hasCambiosPendientes = 
+    const hasCambiosPendientes =
       currentValues.empleado !== valoresOriginales.empleado ||
       currentValues.hora_inicio !== valoresOriginales.hora_inicio ||
       currentValues.hora_fin !== valoresOriginales.hora_fin ||
@@ -502,7 +503,7 @@ const DatosEditarSolicitud = ({
     onCambiosPendientes(hasCambiosPendientes);
     setDatosForm(currentValues);
   }, [form.watch(), selectedFiles]);
-  
+
   const handleToggleEdit = () => {
     if (isEditing) {
       form.trigger().then(isValid => {
@@ -539,7 +540,7 @@ const DatosEditarSolicitud = ({
       setIsEditing(true);
     }
   };
-  
+
   const handleCancelEdit = () => {
     form.reset({
       ...form.getValues(),
@@ -559,30 +560,39 @@ const DatosEditarSolicitud = ({
     <>
       <div className="flex justify-between mb-4">
         <div className="flex space-x-2">
-          <Button 
-            variant="default" 
-            className="bg-green-600 hover:bg-green-700"
-            onClick={() => handleConfirmarSolicitud(solicitud)}
-            disabled={loading}
-          >
-            {loading ? (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <CheckCircle className="mr-2 h-4 w-4" />
-            )}
-            Aceptar
-          </Button>
-          <Button 
-            variant="destructive"
-            onClick={() => setIsRejectDialogOpen(true)}
-            disabled={loading}
-          >
-            <XCircle className="mr-2 h-4 w-4" />
-            {userDif ? "Rechazar" : "Cancelar"}
-          </Button>
+
+          {
+            validarPermiso("CambiarEtapaSolicitudes")
+            &&
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => handleConfirmarSolicitud(solicitud)}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle className="mr-2 h-4 w-4" />
+              )}
+              Aceptar
+            </Button>
+          }
+          {
+            validarPermiso("CambiarEtapaSolicitudes")
+            &&
+            <Button
+              variant="destructive"
+              onClick={() => setIsRejectDialogOpen(true)}
+              disabled={loading}
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              {userDif ? "Rechazar" : "Cancelar"}
+            </Button>
+          }
         </div>
         {!isEditing ? (
-          <Button 
+          <Button
             onClick={handleToggleEdit}
             variant="outline"
           >
@@ -590,13 +600,13 @@ const DatosEditarSolicitud = ({
           </Button>
         ) : (
           <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleCancelEdit}
             >
               <X className="mr-2 h-4 w-4" /> Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleGuardarCambios}
               disabled={!cambiosPendientes || loading}
             >
@@ -613,9 +623,9 @@ const DatosEditarSolicitud = ({
       <Form {...form}>
         <form className="w-[95%] space-y-4">
           <div className="w-full mb-3">
-          <div className='mb-5 p-3' style={{backgroundColor: '#cce5ff',color: '#004085',borderRadius: '0.5rem',border: '1px solid transparent',borderColor:'#b8daff',margin: '1rem 0'}}>
-            <p style={{ margin: 0 }}>{!disponible ? "Solo se pueden agregar archivos en esta etapa" : ""}</p>
-          </div>
+            <div className='mb-5 p-3' style={{ backgroundColor: '#cce5ff', color: '#004085', borderRadius: '0.5rem', border: '1px solid transparent', borderColor: '#b8daff', margin: '1rem 0' }}>
+              <p style={{ margin: 0 }}>{!disponible ? "Solo se pueden agregar archivos en esta etapa" : ""}</p>
+            </div>
             <FormField
               control={form.control}
               name="empleado"
@@ -645,9 +655,9 @@ const DatosEditarSolicitud = ({
                       <span className="text-gray-500">No hay empleados asignados</span>
                     )}
                   </div>
-                  <Input 
-                    type="hidden" 
-                    {...field} 
+                  <Input
+                    type="hidden"
+                    {...field}
                   />
                   <FormMessage />
                 </FormItem>
@@ -663,7 +673,7 @@ const DatosEditarSolicitud = ({
                   <FormItem>
                     <FormLabel>Hora inicial</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         type="time"
                         {...field}
                         disabled={!isEditing || !disponible}
@@ -684,10 +694,10 @@ const DatosEditarSolicitud = ({
                   <FormItem>
                     <FormLabel>Hora final</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         type="time"
                         {...field}
-                        disabled={!isEditing  || !disponible}
+                        disabled={!isEditing || !disponible}
                         className={!isEditing ? 'bg-gray-50' : ''}
                       />
                     </FormControl>
@@ -705,10 +715,10 @@ const DatosEditarSolicitud = ({
                 <FormItem>
                   <FormLabel>Fecha</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       type="date"
                       {...field}
-                      disabled={!isEditing  || !disponible}
+                      disabled={!isEditing || !disponible}
                       className={!isEditing ? 'bg-gray-50' : ''}
                     />
                   </FormControl>
@@ -727,7 +737,7 @@ const DatosEditarSolicitud = ({
                     <FormItem>
                       <FormLabel>Horas</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           type="number"
                           placeholder="0"
                           {...field}
@@ -751,7 +761,7 @@ const DatosEditarSolicitud = ({
                   render={({ field }) => (
                     <FormItem className="flex space-x-2 items-center">
                       <FormControl>
-                        <Checkbox 
+                        <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           disabled={!isEditing || !disponible}
@@ -767,10 +777,10 @@ const DatosEditarSolicitud = ({
                   render={({ field }) => (
                     <FormItem className="flex space-x-2 items-center">
                       <FormControl>
-                        <Checkbox 
+                        <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!isEditing  || !disponible}
+                          disabled={!isEditing || !disponible}
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Día festivo</FormLabel>
@@ -780,73 +790,73 @@ const DatosEditarSolicitud = ({
               </div>
             </div>
           </div>
-            <FormField
-              control={form.control}
-              name="descripcion"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Descripción..." 
-                      {...field}
-                      disabled={!isEditing  || !disponible}
-                      className={!isEditing ? 'bg-gray-50 resize-none' : 'resize-none'}
-                      maxLength={500}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {field.value?.length || 0}/500 caracteres
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="archivos"
-              render={({ field: { onChange, ...field } }) => (
+          <FormField
+            control={form.control}
+            name="descripcion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descripción</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Descripción..."
+                    {...field}
+                    disabled={!isEditing || !disponible}
+                    className={!isEditing ? 'bg-gray-50 resize-none' : 'resize-none'}
+                    maxLength={500}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {field.value?.length || 0}/500 caracteres
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="archivos"
+            render={({ field: { onChange, ...field } }) => (
               <FormItem className="col-span-2">
                 <FormLabel>Evidencias (opcional)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="file" 
-                      accept=".jpg,.jpeg,.png,.pdf" 
-                      multiple 
-                      onChange={handleFileChange}
-                      disabled={!isEditing}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Puede subir múltiples evidencias de las horas extras (JPG, PNG o PDF)
-                  </FormDescription>
-                    <FormMessage />
-                </FormItem>
-              )}
-            />
-            {selectedFiles.length > 0 && (
-              <div className="col-span-2 mt-2">
-                <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
-                      <span className="text-sm truncate max-w-xs">{file.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 ml-1"
-                          onClick={() => removeFile(index)}
-                          type="button"
-                          disabled={!isEditing}
-                        >
-                          <XCircle className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    multiple
+                    onChange={handleFileChange}
+                    disabled={!isEditing}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Puede subir múltiples evidencias de las horas extras (JPG, PNG o PDF)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
+          />
+          {selectedFiles.length > 0 && (
+            <div className="col-span-2 mt-2">
+              <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
+                    <span className="text-sm truncate max-w-xs">{file.name}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 ml-1"
+                      onClick={() => removeFile(index)}
+                      type="button"
+                      disabled={!isEditing}
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </form>
       </Form>
     </>
