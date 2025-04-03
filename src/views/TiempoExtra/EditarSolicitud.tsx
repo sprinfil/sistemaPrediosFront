@@ -163,18 +163,17 @@ export const EditarSolicitud = () => {
   const handleConfirmarSolicitud = async () => {
     setLoading(true);
     try {
-      let nuevoEstado = 'aprobada';
-      if (solicitud.id_user_solicitante !== userID) {
-        if (solicitud.etapa === 'solicitud') {
-          nuevoEstado = 'aprobada';
-        } else if (solicitud.etapa === 'pago') {
-          nuevoEstado = 'pagado';
-        }
-      } else {
-        if (solicitud.etapa === 'trabajando') {
-          nuevoEstado = 'terminado';
-        }
-      }
+      let nuevoEstado = '';
+      // if(solicitud.id_user_solicitante !== userID){
+      // }else{
+      // }
+      if (solicitud.etapa === 'solicitud') {
+        nuevoEstado = 'aprobada';
+      } else if (solicitud.etapa === 'trabajando') {
+        nuevoEstado = 'terminado';
+      }else if (solicitud.etapa === 'pago') {
+        nuevoEstado = 'pagado';
+      } 
       const values = {
         nuevo_estado: nuevoEstado
       };
@@ -393,7 +392,10 @@ const DatosEditarSolicitud = ({
         variant: "destructive",
       });
     }
-    setSelectedFiles(prev => [...prev, ...validFiles]);
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles]);
+      onCambiosPendientes(true);
+    }
   };
 
   const removeFile = (index) => {
@@ -402,6 +404,7 @@ const DatosEditarSolicitud = ({
       newFiles.splice(index, 1);
       return newFiles;
     });
+    onCambiosPendientes(true);
   };
 
   const calculateHours = (startTime, endTime) => {
@@ -483,7 +486,10 @@ const DatosEditarSolicitud = ({
 
   useEffect(() => {
     const currentValues = form.getValues();
-    const hasCambiosPendientes =
+    const initialFilesLength = solicitud?.archivos?.length || 0;
+    const filesHaveChanged = selectedFiles.length !== initialFilesLength || 
+      selectedFiles.some(file => !file.isExisting);
+    const hasCambiosPendientes = 
       currentValues.empleado !== valoresOriginales.empleado ||
       currentValues.hora_inicio !== valoresOriginales.hora_inicio ||
       currentValues.hora_fin !== valoresOriginales.hora_fin ||
@@ -491,11 +497,12 @@ const DatosEditarSolicitud = ({
       currentValues.horas !== valoresOriginales.horas ||
       currentValues.prima_dominical !== valoresOriginales.prima_dominical ||
       currentValues.dias_festivos !== valoresOriginales.dias_festivos ||
-      currentValues.descripcion !== valoresOriginales.descripcion;
+      currentValues.descripcion !== valoresOriginales.descripcion ||
+      filesHaveChanged;
     onCambiosPendientes(hasCambiosPendientes);
     setDatosForm(currentValues);
-  }, [form.watch()]);
-
+  }, [form.watch(), selectedFiles]);
+  
   const handleToggleEdit = () => {
     if (isEditing) {
       form.trigger().then(isValid => {

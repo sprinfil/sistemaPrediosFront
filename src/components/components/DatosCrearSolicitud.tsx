@@ -78,7 +78,7 @@ export const DatosCrearSolicitud = ({}) => {
 
     const formSchema = z.object({
         grupo:z.number().optional(),
-        empleado: z.number().optional(),
+        empleado: z.any().optional(),
         horas: z.string()
             .min(1, { message: "Las horas son obligatorias" })
             .refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" })
@@ -464,8 +464,6 @@ export const DatosCrearSolicitud = ({}) => {
                     </FormItem>
                     )}
                 />
-                
-                {/* Preview y eliminación de archivos seleccionados */}
                 {selectedFiles.length > 0 && (
                     <div className="col-span-2 mt-2">
                         <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>

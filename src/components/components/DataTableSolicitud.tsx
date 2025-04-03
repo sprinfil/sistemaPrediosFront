@@ -37,17 +37,24 @@ export function DataTableSolicitud({
   const { user } = ZustandPrincipal();
   const handleConfirmarSolicitud = async (solicitud) => {
     try {
-      let nuevoEstado = 'aprobada';
-      if (solicitud.id_user_solicitante !== userID) {
-        if (solicitud.etapa === 'solicitud') {
-          nuevoEstado = 'aprobada';
-        } else if (solicitud.etapa === 'pago') {
-          nuevoEstado = 'pagado';
-        }
-      } else {
-        if (solicitud.etapa === 'trabajando') {
-          nuevoEstado = 'terminado';
-        }
+      let nuevoEstado = '';
+      // if(solicitud.id_user_solicitante !== userID){
+      //   if (solicitud.etapa === 'solicitud') {
+      //     nuevoEstado = 'aprobada';
+      //   } else if (solicitud.etapa === 'pago') {
+      //     nuevoEstado = 'pagado';
+      //   }
+      // }else{
+      //   if (solicitud.etapa === 'trabajando') {
+      //     nuevoEstado = 'terminado';
+      //   }
+      // }
+      if (solicitud.etapa === 'solicitud') {
+        nuevoEstado = 'aprobada';
+      } else if (solicitud.etapa === 'trabajando') {
+        nuevoEstado = 'terminado';
+      }else if (solicitud.etapa === 'pago') {
+        nuevoEstado = 'pagado';
       }
       const values = {
         nuevo_estado: nuevoEstado
