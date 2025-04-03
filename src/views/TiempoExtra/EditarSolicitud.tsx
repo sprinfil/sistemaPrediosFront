@@ -63,7 +63,8 @@ export const EditarSolicitud = () => {
     loadingArea,
     datoForm,
     setDatosForm,
-    userID
+    userID,
+    userPermiso
   } = useSolicitudVerHook();
   
   const [loading, setLoading] = useState(false);
@@ -308,6 +309,7 @@ export const EditarSolicitud = () => {
                     empleados={empleados}
                     setSelectedFiles={setSelectedFiles}
                     selectedFiles={selectedFiles}
+                    userPermiso={userPermiso}
                   />
                 </div>
               </>
@@ -362,7 +364,8 @@ const DatosEditarSolicitud = ({
   userID,
   empleados,
   setSelectedFiles,
-  selectedFiles
+  selectedFiles,
+  userPermiso
 }) => {
   type FormValues = z.infer<typeof formSchema>;
   const [isEditing, setIsEditing] = useState(false);
@@ -559,27 +562,33 @@ const DatosEditarSolicitud = ({
     <>
       <div className="flex justify-between mb-4">
         <div className="flex space-x-2">
-          <Button 
-            variant="default" 
-            className="bg-green-600 hover:bg-green-700"
-            onClick={() => handleConfirmarSolicitud(solicitud)}
-            disabled={loading}
-          >
-            {loading ? (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <CheckCircle className="mr-2 h-4 w-4" />
-            )}
-            Aceptar
-          </Button>
-          <Button 
-            variant="destructive"
-            onClick={() => setIsRejectDialogOpen(true)}
-            disabled={loading}
-          >
-            <XCircle className="mr-2 h-4 w-4" />
-            {userDif ? "Rechazar" : "Cancelar"}
-          </Button>
+          {
+            userPermiso?.all_permissions?.find(permisot => permisot == "CambiarEtapaSolicitudes") &&
+            <Button 
+              variant="default" 
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => handleConfirmarSolicitud(solicitud)}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle className="mr-2 h-4 w-4" />
+              )}
+              Aceptar
+            </Button>
+          }
+          {
+            userPermiso?.all_permissions?.find(permisot => permisot == "EliminarSolicitudes") &&
+            <Button 
+              variant="destructive"
+              onClick={() => setIsRejectDialogOpen(true)}
+              disabled={loading}
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              {userDif ? "Rechazar" : "Cancelar"}
+            </Button>
+          }
         </div>
         {!isEditing ? (
           <Button 

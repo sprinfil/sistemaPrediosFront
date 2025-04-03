@@ -56,6 +56,7 @@ export const useSolicitudVerHook = () => {
     const [solicitud, setSolicitud] = useState({});
     const [datoForm,setDatosForm] = useState({});
     const userID = user.id
+    const userPermiso = user
 
     const fetchSolicitud = async () => {
         const response = await fetchData(setLoadingArea, toast, {}, "/he-solicitudes/" + solicitudId);
@@ -74,6 +75,7 @@ export const useSolicitudVerHook = () => {
         loadingArea,
         datoForm,
         setDatosForm,
-        userID
+        userID,
+        userPermiso
     }
 }
