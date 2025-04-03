@@ -19,6 +19,7 @@ import { editarSolicitud } from '@/lib/Solicitudes';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge";
 import ZustandPrincipal from '@/Zustand/ZustandPrincipal';
+import { icons } from '@/constants/icons';
 
 const formSchema = z.object({
   empleado: z.string().or(z.array(z.string())).optional(),
@@ -171,9 +172,9 @@ export const EditarSolicitud = () => {
         nuevoEstado = 'aprobada';
       } else if (solicitud.etapa === 'trabajando') {
         nuevoEstado = 'terminado';
-      }else if (solicitud.etapa === 'pago') {
+      } else if (solicitud.etapa === 'pago') {
         nuevoEstado = 'pagado';
-      } 
+      }
       const values = {
         nuevo_estado: nuevoEstado
       };
@@ -487,9 +488,9 @@ const DatosEditarSolicitud = ({
   useEffect(() => {
     const currentValues = form.getValues();
     const initialFilesLength = solicitud?.archivos?.length || 0;
-    const filesHaveChanged = selectedFiles.length !== initialFilesLength || 
+    const filesHaveChanged = selectedFiles.length !== initialFilesLength ||
       selectedFiles.some(file => !file.isExisting);
-    const hasCambiosPendientes = 
+    const hasCambiosPendientes =
       currentValues.empleado !== valoresOriginales.empleado ||
       currentValues.hora_inicio !== valoresOriginales.hora_inicio ||
       currentValues.hora_fin !== valoresOriginales.hora_fin ||
@@ -502,7 +503,7 @@ const DatosEditarSolicitud = ({
     onCambiosPendientes(hasCambiosPendientes);
     setDatosForm(currentValues);
   }, [form.watch(), selectedFiles]);
-  
+
   const handleToggleEdit = () => {
     if (isEditing) {
       form.trigger().then(isValid => {
@@ -838,19 +839,25 @@ const DatosEditarSolicitud = ({
               <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
               <div className="flex flex-wrap gap-2">
                 {selectedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
-                    <span className="text-sm truncate max-w-xs">{file.name}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 ml-1"
-                      onClick={() => removeFile(index)}
-                      type="button"
-                      disabled={!isEditing}
-                    >
-                      <XCircle className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <>
+                    <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
+                      <a className="text-sm truncate max-w-xs"
+                        href={import.meta.env.VITE_BASE_URL + "/storage/" + file?.url}
+                      >{file.name}</a>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 ml-1"
+                        onClick={() => removeFile(index)}
+                        type="button"
+                        disabled={!isEditing}
+                      >
+                        <XCircle className="h-4 w-4" />
+                      </Button>
+
+                    </div>
+                  </>
+
                 ))}
               </div>
             </div>

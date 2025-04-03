@@ -1,4 +1,5 @@
 import axiosClient from "@/axios-client";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 import dayjs from "dayjs";
 dayjs.locale("es");
 
@@ -111,3 +112,11 @@ export const useLog = (data) => {
   }
 }
 
+export const validarPermiso = (permiso) => {
+
+  const { user } = ZustandPrincipal();
+  if (user?.all_permissions?.find(permisot => permisot == permiso) || user?.roles?.find(rolt => rolt?.name == "master")) {
+    return true;
+  }
+  return false;
+}

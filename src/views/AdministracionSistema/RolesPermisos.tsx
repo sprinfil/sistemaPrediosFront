@@ -154,6 +154,8 @@ const Formulario = ({
       );
       setSelectedData(data);
       setEditando(false);
+      setAddPermissions([]);
+      setRemovePermissions([]);
     }
   }
 

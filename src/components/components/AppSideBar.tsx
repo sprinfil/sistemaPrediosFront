@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/select"
 import { GearIcon } from "@radix-ui/react-icons";
 import { FaGear } from "react-icons/fa6";
+import { validarPermiso } from "@/lib/ToolService";
 
 export function AppSidebar() {
   const navigate = useNavigate();
@@ -177,15 +178,15 @@ export function AppSidebar() {
             <SelectGroup>
               <SelectLabel>Módulos</SelectLabel>
               {
-                user?.all_permissions?.find(permisot => permisot == "MostrarModuloHorasExtra") &&
+                validarPermiso("MostrarModuloHorasExtra") &&
                 <SelectItem value="horasExtra">Horas extra</SelectItem>
               }
               {
-                user?.all_permissions?.find(permisot => permisot == "MostrarModuloValvulasPredios") &&
+                validarPermiso("MostrarModuloValvulasPredios") &&
                 <SelectItem value="valulasPredios">Válvulas y predios</SelectItem>
               }
               {
-                user?.all_permissions?.find(permisot => permisot == "MostrarModuloAdministracion") &&
+                validarPermiso("MostrarModuloAdministracion") &&
                 <SelectItem value="administracion">Administración del sistema</SelectItem>
               }
             </SelectGroup>
