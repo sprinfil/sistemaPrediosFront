@@ -367,6 +367,7 @@ const DatosEditarSolicitud = ({
   type FormValues = z.infer<typeof formSchema>;
   const [isEditing, setIsEditing] = useState(false);
   const userDif = solicitud.id_user_solicitante != userID;
+  const disponible = solicitud.etapa === 'solicitud';
   
   const getSelectedEmployeeIds = () => {
     if (!solicitud.empleados) return [];
@@ -612,6 +613,9 @@ const DatosEditarSolicitud = ({
       <Form {...form}>
         <form className="w-[95%] space-y-4">
           <div className="w-full mb-3">
+            <div className='text-center mb-5'>
+              <p className='text-[25px]'>{!disponible ? "Solo se pueden agregar archivos en esta etapa" : ""}</p>
+            </div>
             <FormField
               control={form.control}
               name="empleado"
@@ -662,7 +666,7 @@ const DatosEditarSolicitud = ({
                       <Input 
                         type="time"
                         {...field}
-                        disabled={!isEditing}
+                        disabled={!isEditing || !disponible}
                         className={!isEditing ? 'bg-gray-50' : ''}
                       />
                     </FormControl>
@@ -683,7 +687,7 @@ const DatosEditarSolicitud = ({
                       <Input 
                         type="time"
                         {...field}
-                        disabled={!isEditing}
+                        disabled={!isEditing  || !disponible}
                         className={!isEditing ? 'bg-gray-50' : ''}
                       />
                     </FormControl>
@@ -704,7 +708,7 @@ const DatosEditarSolicitud = ({
                     <Input 
                       type="date"
                       {...field}
-                      disabled={!isEditing}
+                      disabled={!isEditing  || !disponible}
                       className={!isEditing ? 'bg-gray-50' : ''}
                     />
                   </FormControl>
@@ -750,7 +754,7 @@ const DatosEditarSolicitud = ({
                         <Checkbox 
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!isEditing}
+                          disabled={!isEditing || !disponible}
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Prima dominical</FormLabel>
@@ -766,7 +770,7 @@ const DatosEditarSolicitud = ({
                         <Checkbox 
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={!isEditing}
+                          disabled={!isEditing  || !disponible}
                         />
                       </FormControl>
                       <FormLabel className="font-normal">Día festivo</FormLabel>
@@ -786,7 +790,7 @@ const DatosEditarSolicitud = ({
                     <Textarea 
                       placeholder="Descripción..." 
                       {...field}
-                      disabled={!isEditing}
+                      disabled={!isEditing  || !disponible}
                       className={!isEditing ? 'bg-gray-50 resize-none' : 'resize-none'}
                       maxLength={500}
                     />
