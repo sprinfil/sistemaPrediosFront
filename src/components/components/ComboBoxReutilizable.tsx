@@ -54,7 +54,7 @@ export function ComboBoxReutilizable({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className=" justify-between"
         >
           {value
             ? frameworks.find((framework) => framework.id === value)?.[accesorKey]
