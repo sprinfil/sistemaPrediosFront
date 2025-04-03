@@ -18,6 +18,7 @@ import { Edit, Check, X, Save, ArrowLeft, Loader, CheckCircle, XCircle } from "l
 import { editarSolicitud } from '@/lib/Solicitudes';
 import { Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,DialogTrigger,} from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge";
+import { validarPermiso } from '@/lib/ToolService';
 
 const formSchema = z.object({
   empleado: z.string().or(z.array(z.string())).optional(),
@@ -563,7 +564,8 @@ const DatosEditarSolicitud = ({
       <div className="flex justify-between mb-4">
         <div className="flex space-x-2">
           {
-            userPermiso?.all_permissions?.find(permisot => permisot == "CambiarEtapaSolicitudes") &&
+            validarPermiso("CambiarEtapaSolicitudes")
+            &&
             <Button 
               variant="default" 
               className="bg-green-600 hover:bg-green-700"
@@ -579,7 +581,8 @@ const DatosEditarSolicitud = ({
             </Button>
           }
           {
-            userPermiso?.all_permissions?.find(permisot => permisot == "EliminarSolicitudes") &&
+            validarPermiso("EliminarSolicitudes")
+            &&
             <Button 
               variant="destructive"
               onClick={() => setIsRejectDialogOpen(true)}
