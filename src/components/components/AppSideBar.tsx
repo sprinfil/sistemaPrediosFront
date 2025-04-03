@@ -9,46 +9,68 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarMenuSub,
-  SidebarMenuSubItem
+  SidebarMenuSubItem,
+  SidebarHeader
 } from "@/components/ui/sidebar"
-import { Calendar, ChevronUp, Home, icons, Inbox, LineChartIcon, } from "lucide-react"
-import { MdOutlineExitToApp } from "react-icons/md";
+import { Calendar, ChevronDown, ChevronsUpDown, ChevronUp, Home, icons, Inbox, LineChartIcon, } from "lucide-react"
+import { MdEngineering, MdOutlineExitToApp } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { FaUser } from "react-icons/fa";
+import { FaKey, FaShare, FaUser, FaUsers } from "react-icons/fa";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { FaUserTie } from "react-icons/fa";
 import { FaClipboardList } from "react-icons/fa";
 import { FaMapMarkedAlt } from "react-icons/fa";
-import { IoHome } from "react-icons/io5";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoDocumentLockOutline, IoDocumentText, IoHome, IoKeyOutline, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
+import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
+import { HiMiniSquare3Stack3D } from "react-icons/hi2";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { IoMapSharp } from "react-icons/io5";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { BsClipboardFill } from "react-icons/bs";
+import { Button } from "../ui/button";
+import { FaUserClock } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { SideBarMenuCollapsibleIconButton } from "./SideBarMenuCollapsibleIconButton";
+import { DropdownAppSideBarUser } from "./DropdownAppSideBarUser";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { GearIcon } from "@radix-ui/react-icons";
+import { FaGear } from "react-icons/fa6";
+import { validarPermiso } from "@/lib/ToolService";
 
 export function AppSidebar() {
   const navigate = useNavigate();
-  const { user } = ZustandPrincipal();
+  const { user, modulo, setModulo } = ZustandPrincipal();
+  const [items, setItems] = useState([]);
 
-  const items = [
+  const ValvulasYPrediositems = [
     {
       title: "Home",
       url: "/",
       icon: <IoHome />
     },
-    // {
-    //   title: "Mapa",
-    //   url: "/mapa",
-    //   icon: <FaMapMarkedAlt />
-    // },
     {
       title: "Cargas de trabajo (predios)",
       url: "/cargasTrabajo",
@@ -62,125 +84,203 @@ export function AppSidebar() {
     {
       title: "Reportes",
       url: "/reporte",
-      icon: <LineChartIcon/>
+      icon: <LineChartIcon />
+    },
+    {
+      title: "Mapas",
+      icon: <FaMapMarkedAlt />,
+      options: [
+        { title: "Mapa Predios", url: "/mapa", icon: <FaMapMarkedAlt /> },
+        { title: "Mapa Válvulas", url: "/mapaValvulas", icon: <FaMapMarkedAlt /> },
+      ],
+    },
+  ]
+
+  const horasExtraItems = [
+    {
+      title: "Solicitudes",
+      url: "/solicitud",
+      icon: <IoDocumentText />
     },
     // {
-    //   title: "Padrón de tomas",
-    //   url: "/padronTomas",
-    //   icon: <GiValve />
+    //   title: "horas Extra",
+    //   url: "/horasextra",
+    //   icon: <IoTimeSharp />
     // },
-    // {
-    //   title: "Operadores",
-    //   url: "/operadores",
-    //   icon: <FaUserTie />
-    // },
+    {
+      title: "Grupos",
+      url: "/horasextra/grupos",
+      icon: <FaUsers />
+    },
+
   ]
+
+
+  const administracion = [
+    {
+      title: "Usuarios",
+      url: "/operadores",
+      icon: <FaUserTie />
+    },
+    {
+      title: "Roles y permisos",
+      url: "/rolesPermisos",
+      icon: <FaKey />
+    },
+    {
+      title: "Empleados",
+      url: "/horasextra/empleados",
+      icon: <FaUsers />
+    },
+    {
+      title: "Áreas",
+      url: "/horasextra/areas",
+      icon: <HiMiniSquare3Stack3D />
+    },
+  ]
+
+  useEffect(() => {
+    if (modulo == "valulasPredios") {
+      setItems(ValvulasYPrediositems);
+    }
+    if (modulo == "horasExtra") {
+      setItems(horasExtraItems);
+    }
+  }, [])
+
+  useEffect(() => {
+    if (modulo == "valulasPredios") {
+      setItems(ValvulasYPrediositems);
+    }
+    if (modulo == "horasExtra") {
+      setItems(horasExtraItems);
+    }
+    if (modulo == "administracion") {
+      setItems(administracion);
+    }
+
+  }, [modulo])
 
   return (
     <Sidebar>
+      <div className="p-4 w-full ">
+        <p className="text-sm text-muted-foreground">Módulo</p>
+        <Select
+          defaultValue={modulo}
+          onValueChange={(value) => {
+            setModulo(value);
+          }}
+        >
+          <SelectTrigger className="rounded-md h-[7vh] bg-[#FAFAFA] border-none">
+            <SelectValue placeholder="Selecciona un módulo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Módulos</SelectLabel>
+              {
+                validarPermiso("MostrarModuloHorasExtra") &&
+                <SelectItem value="horasExtra">Horas extra</SelectItem>
+              }
+              {
+                validarPermiso("MostrarModuloValvulasPredios") &&
+                <SelectItem value="valulasPredios">Válvulas y predios</SelectItem>
+              }
+              {
+                validarPermiso("MostrarModuloAdministracion") &&
+                <SelectItem value="administracion">Administración del sistema</SelectItem>
+              }
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Sapa ops</SidebarGroupLabel>
+          <div className="w-full flex flex-col items-center">
+            {/* <img src={images.logo} alt="" className="w-[100px] h-[100px]" /> */}
+          </div>
+          <SidebarGroupLabel>MENU</SidebarGroupLabel>
+
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      {/* <a href={item.url}>
-                        {item.icon}
-                        <span>{item.title}</span>
-                      </a> */}
-                      <div onClick={() => navigate(item.url)} className="cursor-pointer">
-                        {item.icon}
-                        <span>{item.title}</span>
-                      </div>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
+                if (item.options) {
+                  // Renderizar Collapsible para elementos con opciones
+                  return (
+                    <Collapsible key={item.title} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton className="relative">
+                            <span>{item.icon}</span>{" "}
+                            <span className="">{item.title}</span>{" "}
+                            <SideBarMenuCollapsibleIconButton />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
 
-              <Collapsible className="group/collapsible">
-
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton><FaMapMarkedAlt /> Mapas <IoIosArrowDown className="ml-auto" /></SidebarMenuButton>
-                  </CollapsibleTrigger>
-
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubItem onClick={() => navigate("/mapa")}>
-                        <SidebarMenuButton><FaMapMarkedAlt />Mapa Predios</SidebarMenuButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem onClick={() => navigate("/mapaValvulas")}>
-                        <SidebarMenuButton><FaMapMarkedAlt />Mapa Valvulas</SidebarMenuButton>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-
-                </SidebarMenuItem>
-              </Collapsible>
-
-              {
-                user?.roles?.some(role => role.name === "master") ?
-                  <>
-                    <SidebarMenuItem onClick={() => navigate("/operadores")} >
-                      <SidebarMenuButton asChild  >
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.options.map((option) => (
+                              <SidebarMenuSubItem key={option.title}>
+                                <SidebarMenuButton
+                                  onClick={() => navigate(option.url)}
+                                >
+                                  <span>{option.icon}</span>{" "}
+                                  <span className="">{option.title}</span>
+                                </SidebarMenuButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
+                }
+                if (item?.requiredRol == null) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        onClick={() => navigate(item.url)}
+                        className="cursor-pointer select-none"
+                      >
                         <div>
-                          <FaUserTie />
-                          <span>Operadores</span>
+                          {item.icon}
+                          <span className="">{item.title}</span>
                         </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                  </>
-                  :
-                  <>
+                  );
+                } else {
+                  if (user?.roles?.some(role => role.name == item?.requiredRol)) {
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          onClick={() => navigate(item.url)}
+                          className="cursor-pointer select-none"
+                        >
+                          <div>
+                            {item.icon}
+                            <span className="">{item.title}</span>
+                          </div>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+                }
 
-                  </>
-              }
-
-
+              })}
             </SidebarMenu>
-
           </SidebarGroupContent>
         </SidebarGroup>
-
-
-
-
-
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <FaUser /> {user?.name} ({user?.username})
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                {/* <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem> */}
-
-                <DropdownMenuItem onClick={() => {
-                  localStorage.setItem("TOKEN", "");
-                  navigate("/login");
-                }}>
-                  <div className="h-[40px] flex gap-2 items-center text-red-500 cursor-pointer">
-                    <MdOutlineExitToApp />
-                    Sign out</div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <DropdownAppSideBarUser />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )
 }
+
