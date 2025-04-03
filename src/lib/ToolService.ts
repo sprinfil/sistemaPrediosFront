@@ -4,6 +4,8 @@ dayjs.locale("es");
 
 export const catchErrors = (e, toast) => {
   let texto = 'Algo salio mal';
+  let variant = "destructive"
+
   if (e?.response?.status == 422) {
     texto = "";
     let errores = e?.response?.data?.errors;
@@ -23,10 +25,15 @@ export const catchErrors = (e, toast) => {
     }
   }
 
+  if (e?.response?.status == 403) {
+    texto = "No tienes permisos para realizar esta acción";
+    variant = ""
+  }
+
   toast({
     title: "Error",
     description: texto,
-    variant: "destructive"
+    variant: variant
   })
 
 }

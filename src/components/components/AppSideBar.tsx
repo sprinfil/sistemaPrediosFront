@@ -101,11 +101,11 @@ export function AppSidebar() {
       url: "/solicitud",
       icon: <IoDocumentText />
     },
-    {
-      title: "horas Extra",
-      url: "/horasextra",
-      icon: <IoTimeSharp />
-    },
+    // {
+    //   title: "horas Extra",
+    //   url: "/horasextra",
+    //   icon: <IoTimeSharp />
+    // },
     {
       title: "Grupos",
       url: "/horasextra/grupos",

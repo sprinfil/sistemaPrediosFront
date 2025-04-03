@@ -408,7 +408,7 @@ const PermisosHorasExtra = ({
               permission: "EditarSolicitudes"
             },
             {
-              titulo: "Eliminar",
+              titulo: "Cancelar solicitudes",
               permission: "EliminarSolicitudes"
             },
             {
@@ -419,10 +419,10 @@ const PermisosHorasExtra = ({
               titulo: "Cambiar etapa",
               permission: "CambiarEtapaSolicitudes"
             },
-            {
-              titulo: "Subir documentación",
-              permission: "SubirDocumentacionSolicitudes"
-            }
+            // {
+            //   titulo: "Subir documentación",
+            //   permission: "SubirDocumentacionSolicitudes"
+            // }
           ]
       },
       {

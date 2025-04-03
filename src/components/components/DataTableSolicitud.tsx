@@ -1,10 +1,12 @@
 "use client";
 import * as React from "react";
-import {ColumnDef,ColumnFiltersState,SortingState,VisibilityState,flexRender,getCoreRowModel,getFilteredRowModel,
-  getPaginationRowModel,getSortedRowModel,useReactTable,} from "@tanstack/react-table";
+import {
+  ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel,
+  getPaginationRowModel, getSortedRowModel, useReactTable,
+} from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table";
-import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { icons } from "@/constants/icons";
 import LoaderHorizontal from "./LoaderHorizontal";
@@ -12,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatearFecha } from "@/lib/ToolService";
 import { editarSolicitud } from "@/lib/Solicitudes";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 
 export function DataTableSolicitud({
   data = [],
@@ -31,17 +34,17 @@ export function DataTableSolicitud({
   const [isRejectDialogOpen, setIsRejectDialogOpen] = React.useState(false);
   const [currentSolicitud, setCurrentSolicitud] = React.useState(null);
   const [motivoRechazo, setMotivoRechazo] = React.useState("");
-  
+  const { user } = ZustandPrincipal();
   const handleConfirmarSolicitud = async (solicitud) => {
     try {
       let nuevoEstado = 'aprobada';
-      if(solicitud.id_user_solicitante !== userID){
+      if (solicitud.id_user_solicitante !== userID) {
         if (solicitud.etapa === 'solicitud') {
           nuevoEstado = 'aprobada';
         } else if (solicitud.etapa === 'pago') {
           nuevoEstado = 'pagado';
         }
-      }else{
+      } else {
         if (solicitud.etapa === 'trabajando') {
           nuevoEstado = 'terminado';
         }
@@ -55,7 +58,7 @@ export function DataTableSolicitud({
         values,
         (responseData) => {
           //console.log(responseData)
-          const updatedData = data.map(item => 
+          const updatedData = data.map(item =>
             item.id === solicitud.id ? { ...item, estado: nuevoEstado } : item
           );
           setData(updatedData);
@@ -74,13 +77,13 @@ export function DataTableSolicitud({
       console.error(error);
     }
   };
-  
+
   const handleOpenRejectDialog = (solicitud) => {
     setCurrentSolicitud(solicitud);
     setMotivoRechazo("");
     setIsRejectDialogOpen(true);
   };
-  
+
   const handleRechazarSolicitud = async () => {
     if (!motivoRechazo.trim()) {
       toast({
@@ -92,14 +95,14 @@ export function DataTableSolicitud({
     }
     try {
       let nuevoEstado = 'rechazado';
-      if(currentSolicitud.id_user_solicitante !== userID){
+      if (currentSolicitud.id_user_solicitante !== userID) {
         if (currentSolicitud.etapa === 'solicitud') {
           nuevoEstado = 'rechazado';
         } else if (currentSolicitud.etapa === 'pago') {
           nuevoEstado = 'rechazado';
         }
       }
-      else{
+      else {
         if (currentSolicitud.etapa === 'solicitud') {
           nuevoEstado = 'cancelado';
         } else if (currentSolicitud.etapa === 'trabajando') {
@@ -116,7 +119,7 @@ export function DataTableSolicitud({
         values,
         (responseData) => {
           //console.log(responseData)
-          const updatedData = data.map(item => 
+          const updatedData = data.map(item =>
             item.id === currentSolicitud.id ? { ...item, estado: responseData.estado, motivo: motivoRechazo } : item
           );
           setData(updatedData);
@@ -136,7 +139,7 @@ export function DataTableSolicitud({
       console.error(error);
     }
   };
-  
+
   const columns = [
     {
       accessorKey: "status",
@@ -153,7 +156,7 @@ export function DataTableSolicitud({
       header: "Solicito",
       cell: ({ row }) => {
         const data = row.original;
-        return(<>
+        return (<>
           <div>{data?.user_solicitante?.name}</div>
         </>)
       },
@@ -251,25 +254,46 @@ export function DataTableSolicitud({
               onClick={() => { navigate("/solicitud/solicitudes/" + data?.id) }}
             >{icons.ver("")}</Button>
 
-            <Button
+
+            {
+              user?.all_permissions?.find(permisot => permisot == "CambiarEtapaSolicitudes") &&
+              <Button
+                size="sm"
+                variant={"outline"}
+                onClick={() => handleConfirmarSolicitud(data)}
+              //disabled={(!userDif && (soli || paga))}
+              >{icons.confirmar("")}</Button>
+            }
+
+            {/* <Button
               size="sm"
               variant={"outline"}
               onClick={() => handleConfirmarSolicitud(data)}
-              //disabled={(!userDif && (soli || paga))}
-            >{icons.confirmar("")}</Button>
-            
-            <Button
+            //disabled={(!userDif && (soli || paga))}
+            >{icons.confirmar("")}</Button> */}
+
+            {
+              user?.all_permissions?.find(permisot => permisot == "EliminarSolicitudes") &&
+              <Button
+                size="sm"
+                variant={"outline"}
+                onClick={() => handleOpenRejectDialog(data)}
+              //disabled={(!userDif && paga)||(userDif && traba)}
+              >{icons.cancelar("")}</Button>
+            }
+
+            {/* <Button
               size="sm"
               variant={"outline"}
               onClick={() => handleOpenRejectDialog(data)}
-              //disabled={(!userDif && paga)||(userDif && traba)}
-            >{icons.cancelar("")}</Button>
+            //disabled={(!userDif && paga)||(userDif && traba)}
+            >{icons.cancelar("")}</Button> */}
           </div>
         );
       },
     }
   ];
-  
+
   const table = useReactTable({
     data,
     columns,
