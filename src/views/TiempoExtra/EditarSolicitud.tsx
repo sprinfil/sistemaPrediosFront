@@ -366,7 +366,6 @@ const DatosEditarSolicitud = ({
   selectedFiles
 }) => {
   type FormValues = z.infer<typeof formSchema>;
-  
   const [isEditing, setIsEditing] = useState(false);
   const userDif = solicitud.id_user_solicitante != userID;
   
@@ -793,52 +792,52 @@ const DatosEditarSolicitud = ({
               )}
             />
             <FormField
-                  control={form.control}
-                  name="archivos"
-                  render={({ field: { onChange, ...field } }) => (
-                  <FormItem className="col-span-2">
-                      <FormLabel>Evidencias (opcional)</FormLabel>
-                      <FormControl>
-                      <Input 
-                          type="file" 
-                          accept=".jpg,.jpeg,.png,.pdf" 
-                          multiple 
-                          onChange={handleFileChange}
-                          disabled={!isEditing}
-                          {...field}
-                      />
-                      </FormControl>
-                      <FormDescription>
-                          Puede subir múltiples evidencias de las horas extras (JPG, PNG o PDF)
-                      </FormDescription>
-                      <FormMessage />
-                  </FormItem>
-                  )}
-              />
-              {selectedFiles.length > 0 && (
-                <div className="col-span-2 mt-2">
-                  <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
-                        <span className="text-sm truncate max-w-xs">{file.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5 ml-1"
-                            onClick={() => removeFile(index)}
-                            type="button"
-                            disabled={!isEditing}
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              control={form.control}
+              name="archivos"
+              render={({ field: { onChange, ...field } }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Evidencias (opcional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="file" 
+                      accept=".jpg,.jpeg,.png,.pdf" 
+                      multiple 
+                      onChange={handleFileChange}
+                      disabled={!isEditing}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Puede subir múltiples evidencias de las horas extras (JPG, PNG o PDF)
+                  </FormDescription>
+                    <FormMessage />
+                </FormItem>
               )}
-      </form>
-    </Form>
+            />
+            {selectedFiles.length > 0 && (
+              <div className="col-span-2 mt-2">
+                <p className="text-sm font-medium mb-2">Archivos seleccionados ({selectedFiles.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center bg-gray-100 rounded-md p-2">
+                      <span className="text-sm truncate max-w-xs">{file.name}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 ml-1"
+                          onClick={() => removeFile(index)}
+                          type="button"
+                          disabled={!isEditing}
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+        </form>
+      </Form>
     </>
   )
 }
