@@ -115,6 +115,8 @@ export const useLog = (data) => {
 export const validarPermiso = (permiso) => {
 
   const { user } = ZustandPrincipal();
+
+  console.log(permiso)
   if (user?.all_permissions?.find(permisot => permisot == permiso) || user?.roles?.find(rolt => rolt?.name == "master")) {
     return true;
   }

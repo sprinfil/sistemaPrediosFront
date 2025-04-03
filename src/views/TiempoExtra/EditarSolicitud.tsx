@@ -18,6 +18,7 @@ import { Edit, Check, X, Save, ArrowLeft, Loader, CheckCircle, XCircle } from "l
 import { editarSolicitud } from '@/lib/Solicitudes';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge";
+import { validarPermiso } from '@/lib/ToolService';
 
 const formSchema = z.object({
   empleado: z.string().or(z.array(z.string())).optional(),
@@ -559,27 +560,36 @@ const DatosEditarSolicitud = ({
     <>
       <div className="flex justify-between mb-4">
         <div className="flex space-x-2">
-          <Button
-            variant="default"
-            className="bg-green-600 hover:bg-green-700"
-            onClick={() => handleConfirmarSolicitud(solicitud)}
-            disabled={loading}
-          >
-            {loading ? (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <CheckCircle className="mr-2 h-4 w-4" />
-            )}
-            Aceptar
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => setIsRejectDialogOpen(true)}
-            disabled={loading}
-          >
-            <XCircle className="mr-2 h-4 w-4" />
-            {userDif ? "Rechazar" : "Cancelar"}
-          </Button>
+
+          {
+            validarPermiso("CambiarEtapaSolicitudes")
+            &&
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => handleConfirmarSolicitud(solicitud)}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle className="mr-2 h-4 w-4" />
+              )}
+              Aceptar
+            </Button>
+          }
+          {
+            validarPermiso("CambiarEtapaSolicitudes")
+            &&
+            <Button
+              variant="destructive"
+              onClick={() => setIsRejectDialogOpen(true)}
+              disabled={loading}
+            >
+              <XCircle className="mr-2 h-4 w-4" />
+              {userDif ? "Rechazar" : "Cancelar"}
+            </Button>
+          }
         </div>
         {!isEditing ? (
           <Button
