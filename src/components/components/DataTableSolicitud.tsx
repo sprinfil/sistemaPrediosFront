@@ -16,6 +16,13 @@ import { formatearFecha } from "@/lib/ToolService";
 import { editarSolicitud, validarCambiarEtapa } from "@/lib/Solicitudes";
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
 import { FaForward } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { FaUsers } from "react-icons/fa";
+
 
 export function DataTableSolicitud({
   data = [],
@@ -67,7 +74,7 @@ export function DataTableSolicitud({
         (responseData) => {
           //console.log(responseData.etapa)
           const updatedData = data.map(item =>
-            item.id === solicitud.id ? { ...item, etapa: responseData.etapa, estado:responseData.estado} : item
+            item.id === solicitud.id ? { ...item, etapa: responseData.etapa, estado: responseData.estado } : item
           );
           setData(updatedData);
           toast({
@@ -171,6 +178,16 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.user_solicitante?.area?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
       header: "Prima",
       cell: ({ row }) => {
         const data = row.original;
@@ -193,6 +210,16 @@ export function DataTableSolicitud({
         } else {
           return <div>NO</div>;
         }
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Horas",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.horas}</div>
+        </>)
       },
     },
     {
@@ -255,6 +282,7 @@ export function DataTableSolicitud({
         const soli = data.etapa === "solicitud";
         const paga = data.etapa === "pago";
         const traba = data.etapa === "trabajando";
+        console.log(data?.empleados)
         return (
           <div className="flex items-center space-x-1">
             <Button
@@ -286,6 +314,17 @@ export function DataTableSolicitud({
                 }
               </>
             }
+            <Popover>
+              <PopoverTrigger>
+                <Button variant={"outline"}><FaUsers /></Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                {data?.empleados?.map((empleado) => (<>
+                  <p>{empleado?.nombre}</p>
+                </>))
+                }
+              </PopoverContent>
+            </Popover>
 
 
 
