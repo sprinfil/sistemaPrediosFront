@@ -15,6 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { formatearFecha } from "@/lib/ToolService";
 import { editarSolicitud, validarCambiarEtapa } from "@/lib/Solicitudes";
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { FaForward } from "react-icons/fa6";
 
 export function DataTableSolicitud({
   data = [],
@@ -271,7 +272,7 @@ export function DataTableSolicitud({
                     variant={"outline"}
                     onClick={() => handleConfirmarSolicitud(data)}
                   //disabled={(!userDif && (soli || paga))}
-                  >{icons.confirmar("")}</Button>
+                  >{<FaForward />}</Button>
                 }
 
                 {
