@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { toast } from "@/hooks/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
 import { Edit, Check, X, Save, ArrowLeft, Loader, CheckCircle, XCircle } from "lucide-react"
-import { editarSolicitud } from '@/lib/Solicitudes';
+import { editarSolicitud, validarCambiarEtapa } from '@/lib/Solicitudes';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge";
 import { validarPermiso } from '@/lib/ToolService';
@@ -562,34 +562,42 @@ const DatosEditarSolicitud = ({
         <div className="flex space-x-2">
 
           {
-            validarPermiso("CambiarEtapaSolicitudes")
-            &&
-            <Button
-              variant="default"
-              className="bg-green-600 hover:bg-green-700"
-              onClick={() => handleConfirmarSolicitud(solicitud)}
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCircle className="mr-2 h-4 w-4" />
-              )}
-              Aceptar
-            </Button>
+            validarCambiarEtapa(solicitud?.etapa, solicitud?.estado) &&
+            <>
+              {
+                validarPermiso("CambiarEtapaSolicitudes")
+                &&
+                <Button
+                  variant="default"
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => handleConfirmarSolicitud(solicitud)}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                  )}
+                  Aceptar
+                </Button>
+              }
+              {
+                validarPermiso("CambiarEtapaSolicitudes")
+                &&
+                <Button
+                  variant="destructive"
+                  onClick={() => setIsRejectDialogOpen(true)}
+                  disabled={loading}
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  {userDif ? "Rechazar" : "Cancelar"}
+                </Button>
+              }
+            </>
           }
-          {
-            validarPermiso("CambiarEtapaSolicitudes")
-            &&
-            <Button
-              variant="destructive"
-              onClick={() => setIsRejectDialogOpen(true)}
-              disabled={loading}
-            >
-              <XCircle className="mr-2 h-4 w-4" />
-              {userDif ? "Rechazar" : "Cancelar"}
-            </Button>
-          }
+
+
+
         </div>
         {!isEditing ? (
           <Button
