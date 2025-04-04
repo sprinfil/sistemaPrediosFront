@@ -27,7 +27,7 @@ export const DatosCrearSolicitud = ({ }) => {
     const [empleadosData, setEmpleadosData] = useState([]);
     const [empleadosSeleccionados, setEmpleadosSeleccionados] = useState<number[]>([]);
     const [grupoData, setGrupoData] = useState([]);
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [calculatedHours, setCalculatedHours] = useState<string>("0");
 
@@ -305,7 +305,7 @@ export const DatosCrearSolicitud = ({ }) => {
                             )}
                         />
                         <div className="col-span-2 mb-4">
-                            <Collapsible className="w-full border rounded-md">
+                            <Collapsible className="w-full border rounded-md" open={open} onOpenChange={setOpen}>
                                 <div className="flex items-center justify-between px-4 py-2 border-b">
                                     <h3 className="font-medium">Empleados seleccionados ({empleadosSeleccionados.length})</h3>
                                     <CollapsibleTrigger asChild>
