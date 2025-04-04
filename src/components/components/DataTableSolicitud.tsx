@@ -178,6 +178,16 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.user_solicitante?.area?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
       header: "Prima",
       cell: ({ row }) => {
         const data = row.original;
