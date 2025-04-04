@@ -197,6 +197,16 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
+      header: "Horas",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.horas}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
       header: "Descripcion",
       cell: ({ row }) => {
         const data = row.original;
