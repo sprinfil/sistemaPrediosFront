@@ -67,7 +67,7 @@ export function DataTableSolicitud({
         (responseData) => {
           //console.log(responseData.etapa)
           const updatedData = data.map(item =>
-            item.id === solicitud.id ? { ...item, etapa: responseData.etapa } : item
+            item.id === solicitud.id ? { ...item, etapa: responseData.etapa, estado:responseData.estado} : item
           );
           setData(updatedData);
           toast({
