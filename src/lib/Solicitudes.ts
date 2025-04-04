@@ -28,7 +28,7 @@ export const getGrupos = async (setLoading: Function, values: Object, setData: F
 export const crearSolicitudEmpleados = async(setLoading:Function, values:Object, setData:Function) => {
   try {
     setLoading(true)
-    const response = await axiosClient.post("/he-solicitudes/", values);
+    const response = await axiosClient.post("/he-solicitudes", values);
     setData(response?.data?.data); 
   } catch (e) {
     throw e;
