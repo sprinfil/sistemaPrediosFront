@@ -179,6 +179,30 @@ export function DataTableCargasTrabajo() {
       }
     },
     {
+      header: "Asignados",
+      cell: ({ row }) => {
+        const progreso = row.original.numero_detalles_asignados;
+        //agregar asignar
+        return (
+          <>
+            <p>{progreso}</p>
+          </>
+        )
+      }
+    },
+    {
+      header: "sin asignar",
+      cell: ({ row }) => {
+        const pendientes = row.original.numero_detalles;
+        //agregar el sin asignar
+        return (
+          <>
+            <p>{pendientes}</p>
+          </>
+        )
+      }
+    },
+    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {

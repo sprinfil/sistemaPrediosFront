@@ -319,6 +319,7 @@ const Permisos = ({ selectedData, addPermissions, setAddPermissions, removePermi
               <TabsTrigger value="administracion">Administración del sistema</TabsTrigger>
               <TabsTrigger value="horasExtra">Horas Extra</TabsTrigger>
               <TabsTrigger value="valvulasPredios">Válvulas y predios</TabsTrigger>
+              
             </TabsList>
             <TabsContent value="horasExtra">
               <PermisosHorasExtra
