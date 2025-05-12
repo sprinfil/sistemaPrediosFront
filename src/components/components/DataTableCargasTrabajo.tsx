@@ -191,7 +191,7 @@ export function DataTableCargasTrabajo() {
       }
     },
     {
-      header: "sin asignar",
+      header: "Sin Asignar",
       cell: ({ row }) => {
         const sinasig = row.original.numero_asignaciones_nulas;
         return (
