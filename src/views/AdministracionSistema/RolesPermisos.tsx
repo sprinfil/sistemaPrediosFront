@@ -319,7 +319,7 @@ const Permisos = ({ selectedData, addPermissions, setAddPermissions, removePermi
               <TabsTrigger value="administracion">Administración del sistema</TabsTrigger>
               <TabsTrigger value="horasExtra">Horas Extra</TabsTrigger>
               <TabsTrigger value="valvulasPredios">Válvulas y predios</TabsTrigger>
-              
+              <TabsTrigger value="censos">Censos</TabsTrigger>
             </TabsList>
             <TabsContent value="horasExtra">
               <PermisosHorasExtra
@@ -343,6 +343,16 @@ const Permisos = ({ selectedData, addPermissions, setAddPermissions, removePermi
             </TabsContent>
             <TabsContent value="administracion">
               <PermisosAdministracion
+                selectedData={selectedData}
+                addPermissions={addPermissions}
+                setAddPermissions={setAddPermissions}
+                removePermissions={removePermissions}
+                setRemovePermissions={setRemovePermissions}
+                editando={editando}
+              />
+            </TabsContent>
+            <TabsContent value="censos">
+              <PermisosCensos
                 selectedData={selectedData}
                 addPermissions={addPermissions}
                 setAddPermissions={setAddPermissions}
@@ -627,6 +637,144 @@ const PermisosAdministracion = ({
             {
               titulo: "Activar / Desactivar Administración del sistema",
               permission: "MostrarModuloAdministracion"
+            },
+          ]
+      },
+    ]
+
+  const AgregarQuitarPermiso = (nombre) => {
+    if (selectedData?.permissions?.some(permisot => permisot?.name == nombre)) {
+      setRemovePermissions(prev => {
+        if (prev?.find(permisot => permisot == nombre)) {
+          return prev?.filter(permisot => permisot != nombre)
+        } else {
+          return [
+            ...prev,
+            nombre
+          ]
+        }
+      })
+    } else {
+      setAddPermissions(prev => {
+        if (prev?.find(permisot => permisot == nombre)) {
+          return prev?.filter(permisot => permisot != nombre)
+        } else {
+          return [
+            ...prev,
+            nombre
+          ]
+        }
+      })
+    }
+  }
+
+
+  return (
+    <>
+      <Accordion type="multiple" collapsible defaultValue={["item-0"]}>
+        {
+          estructuraPermisos?.map((estructura, index) => {
+
+            return (
+              <AccordionItem value={"item-" + index} key={index}>
+                <AccordionTrigger>{estructura?.title}</AccordionTrigger>
+                <AccordionContent>
+                  <table className={`${editando ? "" : "pointer-events-none"}`}>
+                    {
+                      estructura?.permisos?.map((permiso, index) => (
+                        <tr className={trStyles} key={index}>
+                          <td className={tdStyles + " w-[500px]"}>{permiso?.titulo}</td>
+                          <td className={tdStyles}>
+                            <input
+                              onClick={() => {
+                                AgregarQuitarPermiso(permiso?.permission);
+                              }}
+                              defaultChecked={selectedData?.permissions?.some(permisot => permisot?.name == permiso?.permission)}
+                              className="w-5 h-5"
+                              type="checkbox"
+                            />
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </table>
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })
+        }
+      </Accordion>
+    </>
+  )
+}
+const PermisosCensos = ({
+  selectedData,
+  addPermissions,
+  setAddPermissions,
+  removePermissions,
+  setRemovePermissions,
+  editando
+}) => {
+  const tdStyles = "flex items-center"
+  const trStyles = "flex items-center "
+
+  const estructuraPermisos =
+    [
+      {
+        title: "Módulo",
+        permisos:
+          [
+            {
+              titulo: "Activar / Desactivar Censos",
+              permission: "MostrarModuloCensos"
+            },
+          ]
+      },
+      {
+        title: "Solicitudes",
+        permisos:
+          [
+            {
+              titulo: "Crear",
+              permission: "CrearSolicitudes"
+            },
+            {
+              titulo: "Editar",
+              permission: "EditarSolicitudes"
+            },
+            {
+              titulo: "Cancelar solicitudes",
+              permission: "EliminarSolicitudes"
+            },
+            {
+              titulo: "Consultar",
+              permission: "ConsultarSolicitudes"
+            },
+            {
+              titulo: "Cambiar etapa",
+              permission: "CambiarEtapaSolicitudes"
+            },
+          ]
+      },
+      {
+        title: "Grupos",
+        permisos:
+          [
+            {
+              titulo: "Crear",
+              permission: "storeGrupo"
+            },
+            {
+              titulo: "Editar",
+              permission: "updateGrupo"
+            },
+            {
+              titulo: "Eliminar",
+              permission: "deleteGrupo"
+            },
+            {
+              titulo: "Consultar",
+              permission: "indexGrupo"
             },
           ]
       },

@@ -28,7 +28,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { IoDocumentLockOutline, IoDocumentText, IoHome, IoKeyOutline, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
-import { HiMiniSquare3Stack3D } from "react-icons/hi2";
+import { HiDocumentCheck, HiMiniSquare3Stack3D } from "react-icons/hi2";
 import {
   Popover,
   PopoverContent,
@@ -112,7 +112,14 @@ export function AppSidebar() {
       url: "/horasextra/grupos",
       icon: <FaUsers />
     },
+  ]
 
+  const censosItems = [
+    {
+      title: "Censos",
+      url: "/censos",
+      icon: <HiDocumentCheck/>
+    },
   ]
 
 
@@ -158,6 +165,9 @@ export function AppSidebar() {
     if (modulo == "administracion") {
       setItems(administracion);
     }
+    if (modulo == "censos") {
+      setItems(censosItems);
+    }
 
   }, [modulo])
 
@@ -189,6 +199,10 @@ export function AppSidebar() {
                 validarPermiso("MostrarModuloAdministracion") &&
                 <SelectItem value="administracion">Administración del sistema</SelectItem>
               }
+              {/* {
+                validarPermiso("MostrarModuloCensos") &&
+                <SelectItem value="censos">Censos</SelectItem>
+              } */}
             </SelectGroup>
           </SelectContent>
         </Select>
