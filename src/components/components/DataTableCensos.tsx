@@ -51,13 +51,13 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { Loader } from "./Loader"
-import { ModalEditarCargaDeTrabajo, ModalVerCargaDeTrabajo } from "./ModalEditarCargaDeTrabajo"
+import { ModalEditarCargaDeTrabajo } from "./ModalEditarCargaDeTrabajo"
 import { ModalCancelarCargaTrabajo } from "./ModalCancelarCargaTrabajo"
 import { ModalConcluirCargaTrabajo } from "./ModalConcluirCargaTrabajo"
 import { ModalEnProgresoCargaTrabajo } from "./ModalEnProgresoCargaTrabajo"
 
 
-export function DataTableCargasTrabajo() {
+export function DataTableCensos() {
   const [data, setData] = React.useState([]);
   const [estadoFiltro, setEstadoFiltro] = React.useState("cualquiera");
   const columns = [
@@ -164,42 +164,6 @@ export function DataTableCargasTrabajo() {
         const status = row.getValue(columnId);
         return filterValue === "" || status == Number(filterValue);
       },
-    },
-    {
-      header: "Progreso",
-      cell: ({ row }) => {
-        const progreso = row.original.total_numero_asignaciones;
-        const pendientes = row.original.numero_detalles;
-
-        return (
-          <>
-            <p>{progreso} / {pendientes}</p>
-          </>
-        )
-      }
-    },
-    {
-      header: "Asignados",
-      cell: ({ row }) => {
-        const asignados = row.original.numero_detalles_asignados;
-        //agregar asignar
-        return (
-          <>
-            <p>{asignados}</p>
-          </>
-        )
-      }
-    },
-    {
-      header: "Sin Asignar",
-      cell: ({ row }) => {
-        const sinasig = row.original.numero_asignaciones_nulas;
-        return (
-          <>
-            <p>{sinasig}</p>
-          </>
-        )
-      }
     },
     {
       id: "actions",

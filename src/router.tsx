@@ -19,6 +19,7 @@ import { Areas } from './views/TiempoExtra/Areas';
 import { Grupos } from './views/TiempoExtra/Grupos';
 import { EditarSolicitud } from './views/TiempoExtra/EditarSolicitud';
 import { RolesPermisos } from './views/AdministracionSistema/RolesPermisos';
+import { Censos } from './views/Censos/Censos';
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
       {
         path: "/rolesPermisos",
         element: <RolesPermisos />
+      },
+      {
+        path: "/censos",
+        element: <Censos />
       }
     ]
   },
