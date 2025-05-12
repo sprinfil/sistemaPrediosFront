@@ -13,8 +13,16 @@ import LoaderHorizontal from "./LoaderHorizontal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatearFecha } from "@/lib/ToolService";
-import { editarSolicitud } from "@/lib/Solicitudes";
+import { editarSolicitud, validarCambiarEtapa } from "@/lib/Solicitudes";
 import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { FaForward } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { FaUsers } from "react-icons/fa";
+
 
 export function DataTableSolicitud({
   data = [],
@@ -53,7 +61,7 @@ export function DataTableSolicitud({
         nuevoEstado = 'aprobada';
       } else if (solicitud.etapa === 'trabajando') {
         nuevoEstado = 'terminado';
-      }else if (solicitud.etapa === 'pago') {
+      } else if (solicitud.etapa === 'pago') {
         nuevoEstado = 'pagado';
       }
       const values = {
@@ -64,9 +72,9 @@ export function DataTableSolicitud({
         setLoading,
         values,
         (responseData) => {
-          //console.log(responseData)
+          //console.log(responseData.etapa)
           const updatedData = data.map(item =>
-            item.id === solicitud.id ? { ...item, estado: nuevoEstado } : item
+            item.id === solicitud.id ? { ...item, etapa: responseData.etapa, estado: responseData.estado } : item
           );
           setData(updatedData);
           toast({
@@ -170,6 +178,16 @@ export function DataTableSolicitud({
     },
     {
       accessorKey: "status",
+      header: "Area",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.user_solicitante?.area?.nombre}</div>
+        </>)
+      },
+    },
+    {
+      accessorKey: "status",
       header: "Prima",
       cell: ({ row }) => {
         const data = row.original;
@@ -192,6 +210,16 @@ export function DataTableSolicitud({
         } else {
           return <div>NO</div>;
         }
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Horas",
+      cell: ({ row }) => {
+        const data = row.original;
+        return (<>
+          <div>{data?.horas}</div>
+        </>)
       },
     },
     {
@@ -254,6 +282,7 @@ export function DataTableSolicitud({
         const soli = data.etapa === "solicitud";
         const paga = data.etapa === "pago";
         const traba = data.etapa === "trabajando";
+        console.log(data?.empleados)
         return (
           <div className="flex items-center space-x-1">
             <Button
@@ -261,16 +290,43 @@ export function DataTableSolicitud({
               onClick={() => { navigate("/solicitud/solicitudes/" + data?.id) }}
             >{icons.ver("")}</Button>
 
-
             {
-              user?.all_permissions?.find(permisot => permisot == "CambiarEtapaSolicitudes") &&
-              <Button
-                size="sm"
-                variant={"outline"}
-                onClick={() => handleConfirmarSolicitud(data)}
-              //disabled={(!userDif && (soli || paga))}
-              >{icons.confirmar("")}</Button>
+              validarCambiarEtapa(data.etapa, data.estado) &&
+              <>
+                {
+                  user?.all_permissions?.find(permisot => permisot == "CambiarEtapaSolicitudes") &&
+                  <Button
+                    size="sm"
+                    variant={"outline"}
+                    onClick={() => handleConfirmarSolicitud(data)}
+                  //disabled={(!userDif && (soli || paga))}
+                  >{<FaForward />}</Button>
+                }
+
+                {
+                  user?.all_permissions?.find(permisot => permisot == "EliminarSolicitudes") &&
+                  <Button
+                    size="sm"
+                    variant={"outline"}
+                    onClick={() => handleOpenRejectDialog(data)}
+                  //disabled={(!userDif && paga)||(userDif && traba)}
+                  >{icons.cancelar("")}</Button>
+                }
+              </>
             }
+            <Popover>
+              <PopoverTrigger>
+                <Button variant={"outline"}><FaUsers /></Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                {data?.empleados?.map((empleado) => (<>
+                  <p>{empleado?.nombre}</p>
+                </>))
+                }
+              </PopoverContent>
+            </Popover>
+
+
 
             {/* <Button
               size="sm"
@@ -279,15 +335,6 @@ export function DataTableSolicitud({
             //disabled={(!userDif && (soli || paga))}
             >{icons.confirmar("")}</Button> */}
 
-            {
-              user?.all_permissions?.find(permisot => permisot == "EliminarSolicitudes") &&
-              <Button
-                size="sm"
-                variant={"outline"}
-                onClick={() => handleOpenRejectDialog(data)}
-              //disabled={(!userDif && paga)||(userDif && traba)}
-              >{icons.cancelar("")}</Button>
-            }
 
             {/* <Button
               size="sm"

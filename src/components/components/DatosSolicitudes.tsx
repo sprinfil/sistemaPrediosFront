@@ -79,6 +79,7 @@ const DatosSolicitudes = () => {
             setLoading={setLoadingData}
             userID={userID}
           />
+          <br />
           <PaginationSpl
             meta={meta}
             setMeta={setMeta}
