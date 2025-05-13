@@ -199,10 +199,10 @@ export function AppSidebar() {
                 validarPermiso("MostrarModuloAdministracion") &&
                 <SelectItem value="administracion">Administración del sistema</SelectItem>
               }
-              {/* {
+              {
                 validarPermiso("MostrarModuloCensos") &&
                 <SelectItem value="censos">Censos</SelectItem>
-              } */}
+              }
             </SelectGroup>
           </SelectContent>
         </Select>
