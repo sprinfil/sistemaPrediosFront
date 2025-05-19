@@ -730,54 +730,6 @@ const PermisosCensos = ({
             },
           ]
       },
-      {
-        title: "Solicitudes",
-        permisos:
-          [
-            {
-              titulo: "Crear",
-              permission: "CrearSolicitudes"
-            },
-            {
-              titulo: "Editar",
-              permission: "EditarSolicitudes"
-            },
-            {
-              titulo: "Cancelar solicitudes",
-              permission: "EliminarSolicitudes"
-            },
-            {
-              titulo: "Consultar",
-              permission: "ConsultarSolicitudes"
-            },
-            {
-              titulo: "Cambiar etapa",
-              permission: "CambiarEtapaSolicitudes"
-            },
-          ]
-      },
-      {
-        title: "Grupos",
-        permisos:
-          [
-            {
-              titulo: "Crear",
-              permission: "storeGrupo"
-            },
-            {
-              titulo: "Editar",
-              permission: "updateGrupo"
-            },
-            {
-              titulo: "Eliminar",
-              permission: "deleteGrupo"
-            },
-            {
-              titulo: "Consultar",
-              permission: "indexGrupo"
-            },
-          ]
-      },
     ]
 
   const AgregarQuitarPermiso = (nombre) => {
