@@ -13,7 +13,7 @@ import {
   SidebarHeader
 } from "@/components/ui/sidebar"
 import { Calendar, ChevronDown, ChevronsUpDown, ChevronUp, Home, icons, Inbox, LineChartIcon, } from "lucide-react"
-import { MdEngineering, MdOutlineExitToApp } from "react-icons/md";
+import { MdEngineering, MdOutlineCreateNewFolder, MdOutlineExitToApp } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,7 +28,7 @@ import { FaMapMarkedAlt } from "react-icons/fa";
 import { IoDocumentLockOutline, IoDocumentText, IoHome, IoKeyOutline, IoTimeOutline, IoTimeSharp } from "react-icons/io5";
 import { IoIosArrowDown, IoMdTime } from "react-icons/io";
 import { GiValve } from "react-icons/gi";
-import { HiDocumentCheck, HiMiniSquare3Stack3D } from "react-icons/hi2";
+import { HiDocumentCheck, HiDocumentText, HiMiniSquare3Stack3D } from "react-icons/hi2";
 import {
   Popover,
   PopoverContent,
@@ -120,6 +120,11 @@ export function AppSidebar() {
       url: "/censos",
       icon: <HiDocumentCheck/>
     },
+    {
+      title: "Configurador censos",
+      url: "/configuradorcensos",
+      icon: <HiDocumentText/>
+    },
   ]
 
 
@@ -199,10 +204,10 @@ export function AppSidebar() {
                 validarPermiso("MostrarModuloAdministracion") &&
                 <SelectItem value="administracion">Administración del sistema</SelectItem>
               }
-              {/* {
+              {
                 validarPermiso("MostrarModuloCensos") &&
                 <SelectItem value="censos">Censos</SelectItem>
-              } */}
+              }
             </SelectGroup>
           </SelectContent>
         </Select>

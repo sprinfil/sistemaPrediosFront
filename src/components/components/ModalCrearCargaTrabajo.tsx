@@ -20,6 +20,7 @@ import { Loader } from "./Loader";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { json } from "react-router-dom";
+import { crearCargaTrabajoCensos } from "@/lib/CensosService";
 
 
 
@@ -45,17 +46,14 @@ export function ModalCrearCargaTrabajo({ setData }) {
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
         setJsonData(jsonData);
         console.log(jsonData)
-        // Filtrar y modificar la primera columna según las reglas
         const modifiedData = jsonData
           .filter(row => {
             const firstColValue = row[Object.keys(row)[0]];
-            // Filtra solo los registros donde la longitud de al menos 7
             return firstColValue.toString().length >= 7;
           })
           .map(row => {
             const firstColKey = Object.keys(row)[0];
             const firstColValue = row[firstColKey].toString();
-            // Si la longitud es 7, agrega un 0 al principio
             if (firstColValue.length === 7) {
               row[firstColKey] = "0" + firstColValue;
             }
@@ -139,7 +137,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
             <Button disabled={fileData.length == 0 || loading}
               onClick={async () => {
                 try {
-                  await crearCargaTrabajo(fileData, selectedOperador, user?.id, setLoading, setData);
+                  await crearCargaTrabajoCensos(fileData, selectedOperador, user?.id, setLoading, setData);
                   cancelarButton?.current?.click();
                 }
                 catch (e) {
