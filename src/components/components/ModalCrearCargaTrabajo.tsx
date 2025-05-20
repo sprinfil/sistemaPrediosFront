@@ -20,7 +20,6 @@ import { Loader } from "./Loader";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { json } from "react-router-dom";
-import { crearCargaTrabajoCensos } from "@/lib/CensosService";
 
 
 
@@ -137,7 +136,7 @@ export function ModalCrearCargaTrabajo({ setData }) {
             <Button disabled={fileData.length == 0 || loading}
               onClick={async () => {
                 try {
-                  await crearCargaTrabajoCensos(fileData, selectedOperador, user?.id, setLoading, setData);
+                  await crearCargaTrabajo(fileData, selectedOperador, user?.id, setLoading, setData);
                   cancelarButton?.current?.click();
                 }
                 catch (e) {
