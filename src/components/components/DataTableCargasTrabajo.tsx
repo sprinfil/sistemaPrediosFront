@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, PlusCircle } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Download, MoreHorizontal, PlusCircle } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -55,7 +55,7 @@ import { ModalEditarCargaDeTrabajo, ModalVerCargaDeTrabajo } from "./ModalEditar
 import { ModalCancelarCargaTrabajo } from "./ModalCancelarCargaTrabajo"
 import { ModalConcluirCargaTrabajo } from "./ModalConcluirCargaTrabajo"
 import { ModalEnProgresoCargaTrabajo } from "./ModalEnProgresoCargaTrabajo"
-
+import * as XLSX from 'xlsx';
 
 export function DataTableCargasTrabajo() {
   const [data, setData] = React.useState([]);
@@ -226,7 +226,46 @@ export function DataTableCargasTrabajo() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [loading, setLoading] = React.useState(false);
+  // Función para exportar a Excel
+  const exportToExcel = () => {
+    const rows = table.getFilteredRowModel().rows.map(row => {
+      const original = row.original;
+      dayjs.extend(localizedFormat);
+      dayjs.locale('es');
+      
+      // Formatear fechas
+      const fechaAsignacion = original?.created_at;
+      const fechaAsignacionFormateada = fechaAsignacion ? dayjs(fechaAsignacion).format('D [de] MMMM [del] YYYY') : '';
+      
+      const fechaFinalizacion = original?.fecha_finalizacion;
+      const fechaFinalizacionFormateada = fechaFinalizacion ? dayjs(fechaFinalizacion).format('D [de] MMMM [del] YYYY') : 'NO FINALIZADA';
+      
+      // Determinar estado
+      let estado = '';
+      if (original?.status === 0) estado = 'EN PROCESO';
+      if (original?.status === 1) estado = 'CONCLUIDA';
+      if (original?.status === 2) estado = 'CANCELADA';
+      
+      return {
+        'Nombre': original.nombre_carga,
+        'Operador': original.operador_asignado?.name || '',
+        'Fecha de asignación': fechaAsignacionFormateada,
+        'Fecha de finalización': fechaFinalizacionFormateada,
+        'Estado': estado,
+        'Progreso': `${original.total_numero_asignaciones} / ${original.numero_detalles}`,
+        'Asignados': original.numero_detalles_asignados,
+        'Sin asignar': original.numero_asignaciones_nulas
+      };
+    });
 
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cargas de Trabajo");
+    
+    // Generar nombre de archivo con fecha
+    const fechaExportacion = dayjs().format('YYYY-MM-DD_HH-mm-ss');
+    XLSX.writeFile(workbook, `CargasTrabajo_${fechaExportacion}.xlsx`);
+  };
 
   getPrediosCargaTrabajos(setLoading, setData);
 
@@ -289,6 +328,15 @@ export function DataTableCargasTrabajo() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+
+              {/* Botón para exportar a Excel */}
+              <Button 
+                onClick={exportToExcel}
+                variant="outline"
+                className="ml-end"
+              >
+                <Download/>
+              </Button>
 
               <ModalCrearCargaTrabajo setData={setData} />
             </div>

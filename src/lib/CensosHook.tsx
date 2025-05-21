@@ -9,6 +9,21 @@ import { ModalEditarCargaDeTrabajo } from "@/components/components/ModalEditarCa
 import { getCensosCargasdeTrabajo, getEncuestas } from "./CensosService";
 import { useEffect } from "react";
 import { ModalCensosModificados } from "@/components/components/ModalCensosModificados";
+import { useRef, useState } from "react";
+import { Loader } from "./Loader";
+import { MdOutlineCancel } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
+import { updateCensosCargadeTrabajo } from "@/lib/CensosService";
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { PlusCircle } from "lucide-react";
+import * as XLSX from "xlsx";
+import ZustandPrincipal from "@/Zustand/ZustandPrincipal";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
+import { json } from "react-router-dom";
+import { crearCargaTrabajoCensos } from "@/lib/CensosService";
+import { ComboBoxOperadoresCensos } from "./ComboBoxOperadoresCensos";
+import { ComboBoxEncuestas } from "./ComboBoxEncuestas";
 
 export const useCensos = () => {
     const [data, setData] = React.useState([]);
@@ -226,6 +241,198 @@ export const useEncuestas = (setEncuestas, defualtOperador) => {
         setFrameworks,
         loading, 
         setLoading
+    }
+}
+
+export const useCensosModificados = (modificacion:string, cargaTrabajo:any, setData:any) => {
+    const [loading, setLoading] = useState(false);
+    const cancelarButton = useRef<HTMLButtonElement>(null);
+    const config = {
+      "0": {
+        title: "¿Poner en proceso la carga de trabajo?",
+        description: "La carga de trabajo se pondrá en progreso.",
+        buttonColor: "bg-white hover:bg-gray-50 text-blue-700 border border-gray-300",
+        textColor: "text-blue-500",
+        buttonText: "En Proceso",
+        icon: <FaArrowRotateRight className="ml-2" />
+      },
+      "1": {
+        title: "¿Concluir carga de trabajo?",
+        description: "La carga de trabajo se va a concluir.",
+        buttonColor: "bg-white hover:bg-gray-50 text-green-500 border border-gray-300",
+        textColor: "text-green-500",
+        buttonText: "Concluir",
+        icon: <FaCheckCircle className="ml-2" />
+      },
+      "2": {
+        title: "¿Cancelar carga de trabajo?",
+        description: "La carga de trabajo se va a cancelar y no aparecerá al operador.",
+        buttonColor: "bg-white hover:bg-gray-50 text-red-500 border border-gray-300",
+        textColor: "text-red-500",
+        buttonText: "Cancelar",
+        icon: <MdOutlineCancel className="ml-2" />
+      }
+    };
+    const currentConfig = config[modificacion];
+    const handleUpdateCensosCargadeTrabajo = async () => {
+        try {
+            await handlePeticionCensosCargadeTrabajo(
+                setLoading, 
+                cargaTrabajo, 
+                modificacion, 
+                setData
+            );
+            cancelarButton.current?.click();
+        } catch (e) {
+            //TODO:MOSTRAR ERROR
+        }
+    }
+
+    const handlePeticionCensosCargadeTrabajo = async (setLoading: Function,cargaTrabajo: { encuesta_id: number, operador_id: number, estado: string, id:number }, modificacion: string,setData: Function) => {
+        try {
+            setLoading(true);
+            const response = await updateCensosCargadeTrabajo(cargaTrabajo,modificacion)
+            setData(prev => {
+                return prev.map(carga => {
+                    if (cargaTrabajo.id == carga?.id) {
+                        return response?.data?.data;
+                    } else {
+                        return carga;
+                    }
+                });
+            });
+        }
+        catch (e) {
+            throw e;
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+    
+    return{
+        loading,
+        setLoading,
+        cancelarButton,
+        currentConfig,
+        handleUpdateCensosCargadeTrabajo
+    }
+}
+
+export const useModalCrearCArgaTrabajoCensos= (setData) =>{
+    const { toast } = useToast();
+    const [fileData, setFileData] = useState([]);
+    const [selectedOperador, setSelectedOperador] = useState(null);
+    const [selectedEncuestas, setselectedEncuestas] = useState(null)
+    const [loading, setLoading] = useState(false);
+    const [jsonData, setJsonData] = useState();
+    const cancelarButton = useRef();
+    const { user } = ZustandPrincipal();
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          setJsonData(jsonData);
+          console.log(jsonData)
+          const modifiedData = jsonData
+            .filter(row => {
+              const firstColValue = row[Object.keys(row)[0]];
+              return firstColValue.toString().length >= 7;
+            })
+            .map(row => {
+              const firstColKey = Object.keys(row)[0];
+              const firstColValue = row[firstColKey].toString();
+              if (firstColValue.length === 7) {
+                row[firstColKey] = "0" + firstColValue;
+              }
+              return row;
+            });
+  
+          console.log(modifiedData);
+          setFileData(modifiedData);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    };
+    useEffect(() => { }, [fileData])
+    const handleCrearCargaDeTrabajoCensos=async () => {
+        try {
+            await handleProcesarCrearCargaDeTrabajoCensos(fileData, selectedOperador, selectedEncuestas, user?.id, setLoading, setData);
+            cancelarButton?.current?.click();
+        }
+        catch (e) {
+            toast({
+                title: 'Ocurrio un error',
+                description: e?.response?.data?.data?.message,
+                action: <ToastAction altText="Intenar de nuevo">Intenar de nuevo</ToastAction>,
+            })
+        }
+    }
+    const handleProcesarCrearCargaDeTrabajoCensos = async (fileInfo, operadorSeleccionado, encuestaSeleccionada, asignedById, setLoading, setData) => {
+        try {
+            if (!Array.isArray(fileInfo) || fileInfo.length === 0) {
+            return;
+            }
+            setLoading(true);
+
+            const carga_trabajo_tomas = fileInfo.map((row) => {
+            const campos = Object.values(row);
+            return {
+                cuenta: campos[0].toString(),
+                usuario: campos[1].toString(),
+                orden: campos[2].toString(),
+                direccion: campos[3].toString(),
+                clave_catastral: campos[4] ? campos[4].toString() : "n/a",
+                no_medidor: campos[5] ? campos[5].toString() : "0"
+            };
+            });
+
+            const requestBody = {
+            encuesta_id: encuestaSeleccionada.id,
+            operador_id: operadorSeleccionado.id,
+            carga_trabajo_tomas: carga_trabajo_tomas
+            };
+
+            const response = await  crearCargaTrabajoCensos(requestBody);
+
+            setData(prev => {
+            const data = {
+                ...response?.data,
+                numero_detalles: carga_trabajo_tomas.length,
+            };
+            //console.log("response",response?.data)
+            return [data, ...prev];
+            });
+            return response;
+        } catch (e) {
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    return{
+        handleFileChange,
+        toast,
+        fileData,
+        setFileData,
+        selectedOperador,
+        setSelectedOperador,
+        selectedEncuestas,
+        setselectedEncuestas,
+        loading,
+        setLoading,
+        jsonData,
+        setJsonData,
+        cancelarButton,
+        user,
+        handleCrearCargaDeTrabajoCensos
     }
 }
 
