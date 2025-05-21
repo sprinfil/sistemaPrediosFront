@@ -20,6 +20,7 @@ import { Grupos } from './views/TiempoExtra/Grupos';
 import { EditarSolicitud } from './views/TiempoExtra/EditarSolicitud';
 import { RolesPermisos } from './views/AdministracionSistema/RolesPermisos';
 import { Censos } from './views/Censos/Censos';
+import { ConfiguradorCensos } from './views/Censos/ConfiguradorCensos';
 
 const router = createBrowserRouter([
   {
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
       {
         path: "/censos",
         element: <Censos />
+      },
+      {
+        path: "/configuradorcensos",
+        element: <ConfiguradorCensos/>
       }
     ]
   },
