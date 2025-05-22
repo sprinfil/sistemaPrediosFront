@@ -5,11 +5,11 @@ import {Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,Se
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow,} from "@/components/ui/table"
-import { ModalCrearCargaTrabajo } from "./ModalCrearCargaTrabajo"
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import { Loader } from "./Loader";
 import { useCensos } from "@/lib/CensosHook"
+import { ModalCrearCargaTrabajoCensos } from "./ModalCrearCargaTrabajoCensos"
 
 export function DataTableCensos() {
     const {
@@ -71,7 +71,7 @@ export function DataTableCensos() {
                     </SelectContent>
                 </Select>
 
-                <ModalCrearCargaTrabajo setData={setData} />
+                <ModalCrearCargaTrabajoCensos setData={setData} />
                 </div>
                 <div className="rounded-md border">
                 <Table>
