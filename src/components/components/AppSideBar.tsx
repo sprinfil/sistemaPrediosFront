@@ -118,15 +118,14 @@ export function AppSidebar() {
     {
       title: "Censos",
       url: "/censos",
-      icon: <HiDocumentCheck/>
+      icon: <HiDocumentCheck />
     },
     {
       title: "Configurador censos",
       url: "/configuradorcensos",
-      icon: <HiDocumentText/>
+      icon: <HiDocumentText />
     },
   ]
-
 
   const administracion = [
     {
@@ -151,16 +150,10 @@ export function AppSidebar() {
     },
   ]
 
-  useEffect(() => {
-    if (modulo == "valulasPredios") {
-      setItems(ValvulasYPrediositems);
+  const ValidarItems = () => {
+    if (modulo == "") {
+      setItems([]);
     }
-    if (modulo == "horasExtra") {
-      setItems(horasExtraItems);
-    }
-  }, [])
-
-  useEffect(() => {
     if (modulo == "valulasPredios") {
       setItems(ValvulasYPrediositems);
     }
@@ -173,8 +166,18 @@ export function AppSidebar() {
     if (modulo == "censos") {
       setItems(censosItems);
     }
+  }
 
+  useEffect(() => {
+    setModulo("");
+    ValidarItems();
+  }, [])
+
+  useEffect(() => {
+    ValidarItems();
   }, [modulo])
+
+
 
   return (
     <Sidebar>
