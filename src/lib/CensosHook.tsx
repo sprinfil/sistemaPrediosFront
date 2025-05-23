@@ -5,8 +5,7 @@ import {ColumnDef,ColumnFiltersState,SortingState,VisibilityState,flexRender,get
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { ModalEditarCargaDeTrabajo } from "@/components/components/ModalEditarCargaDeTrabajo";
-import { getCensosCargasdeTrabajo, getEncuestas } from "./CensosService";
+import { getCensosCargasdeTrabajo, getCensosCDTByid, getEncuestaRespuesta, getEncuestas } from "./CensosService";
 import { useEffect } from "react";
 import { ModalCensosModificados } from "@/components/components/ModalCensosModificados";
 import { useRef, useState } from "react";
@@ -24,6 +23,10 @@ import { json } from "react-router-dom";
 import { crearCargaTrabajoCensos } from "@/lib/CensosService";
 import { ComboBoxOperadoresCensos } from "./ComboBoxOperadoresCensos";
 import { ComboBoxEncuestas } from "./ComboBoxEncuestas";
+import { ModalEditarCensosCDT } from "@/components/components/ModalEditarCensosCDT";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 export const useCensos = () => {
     const [data, setData] = React.useState([]);
@@ -138,7 +141,7 @@ export const useCensos = () => {
                 };
                 return (
                 <div className="flex gap-2">
-                    {/* <ModalEditarCargaDeTrabajo setData={setData} cargaTrabajoId={data?.id} /> */}
+                    <ModalEditarCensosCDT setData={setData} cargaTrabajoId={data?.id} />
                     <ModalCensosModificados setData={setData} cargaTrabajo={datosSelect} modificacion={"2"}/>
                     <ModalCensosModificados setData={setData} cargaTrabajo={datosSelect} modificacion={"1"}/>
                     <ModalCensosModificados setData={setData} cargaTrabajo={datosSelect} modificacion={"0"}/>
@@ -434,6 +437,148 @@ export const useModalCrearCArgaTrabajoCensos= (setData) =>{
         user,
         handleCrearCargaDeTrabajoCensos
     }
+}
+
+export const useCargaTrabajoCensos = (cargaTrabajo, setCargaTrabajo, setData) =>{
+    const formSchema = z.object({
+        nombre_carga: z.string().min(2).max(50),
+        user_id: z.number(),
+        fecha_asignacion: z.string().min(2).max(50),
+        fecha_finalizacion: z.string().min(2).max(50),
+        status: z.string(),
+    });
+    const getEstatus = (status) => {
+        if (status === "0") {
+            return "EN PROCESO";
+        }
+        if (status === "1") {
+            return "CONCLUIDA";
+        }
+        if (status === "2") {
+            return "CANCELADA";
+        }
+        return "DESCONOCIDO";
+    };
+    const [operadorSeleccionado, setOperadorSeleccionado] = useState(cargaTrabajo?.operador ?? {});
+    const [loading, setLoading] = useState(false);
+    let status = getEstatus(cargaTrabajo?.estado);
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            nombre_carga: cargaTrabajo?.encuesta?.titulo,
+            user_id: operadorSeleccionado?.id ?? 0,
+            fecha_asignacion: cargaTrabajo?.created_at
+            ? dayjs(cargaTrabajo.created_at).format('D [de] MMMM [del] YYYY')
+            : "",
+            fecha_finalizacion: cargaTrabajo?.completado_at
+            ? dayjs(cargaTrabajo.completado_at).format('D [de] MMMM [del] YYYY')
+            : 'NO FINALIZADA',
+            status: status,
+        },
+    });
+    useEffect(() => { form.setValue('user_id', operadorSeleccionado?.id) }, [operadorSeleccionado])
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        let data =
+        {
+            user_id: values.user_id,
+            nombre_carga: values.nombre_carga
+        }
+        try {
+            await updateCargaTrabajo(setLoading, data, cargaTrabajo?.id, setCargaTrabajo, setData);
+            toast({
+            title: 'Exito',
+            description: 'Cambios Guardados',
+            action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
+            })
+        }
+        catch (e) {
+            toast({
+            title: 'Exito',
+            description: e?.response?.data?.data?.message,
+            action: <ToastAction altText="Aceptar">Aceptar</ToastAction>
+            })
+        }
+    }
+    return{
+        formSchema,
+        operadorSeleccionado,
+        setOperadorSeleccionado,
+        loading,
+        setLoading,
+        status,
+        toast,
+        form,
+        onSubmit
+    }
+}
+
+export const useGetCensosCDTByid = (setData,cargaTrabajoId) => {
+    const [cargaTrabajo, setCargaTrabajo] = useState({});
+    const [encuestaRespuesta, setEncuestaRespuesta] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [columnCount, setColumnCount] = useState(2);
+    const handlePeticionGetCensosCDTByid = async () =>{
+        try {
+            await handleGetCensosCDTByid(cargaTrabajoId, setCargaTrabajo, setLoading);
+            setColumnCount(2);
+        } catch (e) {
+            //TODO: Poner el error
+        }
+    }
+
+    const handleGetCensosCDTByid=async (id:number, setCargaTrabajo:Function,setLoading: Function) => {
+        try {
+            setLoading(true);
+            const response = await getCensosCDTByid(id);
+            setCargaTrabajo(response?.data?.data);
+        }
+        catch (e) {
+            throw e;
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    const handlePeticionGetEncuestaRespuesta = async (cargaTrabajoTomaId:number) =>{
+        try {
+            await handleGetEncuestaRespuesta(cargaTrabajoTomaId, setEncuestaRespuesta, setLoading);
+        } catch (e) {
+            //TODO: Poner el error
+        }
+    }
+
+    const handleGetEncuestaRespuesta=async (cargaTrabajoTomaId:number, setEncuestaRespuesta:Function,setLoading: Function) => {
+        try {
+            //setLoading(true);
+            const response = await getEncuestaRespuesta(cargaTrabajoTomaId);
+            setEncuestaRespuesta(response?.data);
+        }
+        catch (e) {
+            throw e;
+        }
+        finally {
+            //setLoading(false);
+        }
+    }
+
+    return{
+        cargaTrabajo,
+        setCargaTrabajo,
+        loading,
+        setLoading,
+        handlePeticionGetCensosCDTByid,
+        encuestaRespuesta,
+        setEncuestaRespuesta,
+        handlePeticionGetEncuestaRespuesta,
+        columnCount,
+        setColumnCount
+    }
+}
+
+export const useCargaTrabajoRespuesta = () =>{
+
 }
 
 export const useCensosConfigurador = () => {

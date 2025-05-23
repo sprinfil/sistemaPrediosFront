@@ -22,7 +22,6 @@ interface ModalCensosModificadosProps {
 export function ModalCensosModificados({ cargaTrabajo, setData, modificacion }: ModalCensosModificadosProps) {
   const{
     loading,
-    setLoading,
     cancelarButton,
     currentConfig,
     handleUpdateCensosCargadeTrabajo

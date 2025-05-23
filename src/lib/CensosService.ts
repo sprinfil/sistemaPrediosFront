@@ -24,3 +24,13 @@ export const updateCensosCargadeTrabajo = async (cargaTrabajo: { encuesta_id: nu
   });
   return response
 }
+
+export const getCensosCDTByid = async (id: number) => {
+  const response = await axiosClient.get('/encuestas-cargas-trabajos/' + id);
+  return response
+}
+
+export const getEncuestaRespuesta = async (id:number)=>{
+  const response = await axiosClient.get('encuestas-respuestas/respuestasCargaTrabajoToma/' +id)
+  return response
+}
